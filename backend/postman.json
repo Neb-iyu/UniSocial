@@ -1,0 +1,880 @@
+{
+    "info": {
+        "_postman_id": "unifyze-backend-collection",
+        "name": "Unifyze Backend API",
+        "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+        "description": "Postman collection for Unifyze backend API. Uses {{baseurl}} as the base URL."
+    },
+    "variable": [
+        {
+            "key": "baseurl",
+            "value": "http://localhost/unifyze/backend/public"
+        }
+    ],
+    "item": [
+        {
+            "name": "Auth",
+            "item": [
+                {
+                    "name": "Register",
+                    "request": {
+                        "method": "POST",
+                        "header": [],
+                        "url": {
+                            "raw": "{{baseurl}}/register",
+                            "host": [
+                                "{{baseurl}}"
+                            ],
+                            "path": [
+                                "register"
+                            ]
+                        },
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"email\": \"user@example.com\",\n  \"username\": \"username\",\n  \"password\": \"password123\",\n  \"fullname\": \"User Name\"\n}"
+                        }
+                    }
+                },
+                {
+                    "name": "Login",
+                    "request": {
+                        "method": "POST",
+                        "header": [],
+                        "url": {
+                            "raw": "{{baseurl}}/login",
+                            "host": [
+                                "{{baseurl}}"
+                            ],
+                            "path": [
+                                "login"
+                            ]
+                        },
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"login\": \"user@example.com\",\n  \"password\": \"password123\"\n}"
+                        }
+                    }
+                },
+                {
+                    "name": "Me",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{baseurl}}/me",
+                            "host": [
+                                "{{baseurl}}"
+                            ],
+                            "path": [
+                                "me"
+                            ]
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Users",
+            "item": [
+                {
+                    "name": "Get All Users",
+                    "request": {
+                        "method": "GET",
+                        "url": {
+                            "raw": "{{baseurl}}/users",
+                            "host": [
+                                "{{baseurl}}"
+                            ],
+                            "path": [
+                                "users"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Get User By ID",
+                    "request": {
+                        "method": "GET",
+                        "url": {
+                            "raw": "{{baseurl}}/users/:id",
+                            "host": [
+                                "{{baseurl}}"
+                            ],
+                            "path": [
+                                "users",
+                                ":id"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Update User",
+                    "request": {
+                        "method": "PATCH",
+                        "url": {
+                            "raw": "{{baseurl}}/users/:id",
+                            "host": [
+                                "{{baseurl}}"
+                            ],
+                            "path": [
+                                "users",
+                                ":id"
+                            ]
+                        },
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"email\": \"new@example.com\"\n}"
+                        }
+                    }
+                },
+                {
+                    "name": "Delete User",
+                    "request": {
+                        "method": "DELETE",
+                        "url": {
+                            "raw": "{{baseurl}}/users/:id",
+                            "host": [
+                                "{{baseurl}}"
+                            ],
+                            "path": [
+                                "users",
+                                ":id"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Get Followers",
+                    "request": {
+                        "method": "GET",
+                        "url": {
+                            "raw": "{{baseurl}}/users/:id/followers",
+                            "host": [
+                                "{{baseurl}}"
+                            ],
+                            "path": [
+                                "users",
+                                ":id",
+                                "followers"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Get Following",
+                    "request": {
+                        "method": "GET",
+                        "url": {
+                            "raw": "{{baseurl}}/users/:id/following",
+                            "host": [
+                                "{{baseurl}}"
+                            ],
+                            "path": [
+                                "users",
+                                ":id",
+                                "following"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Recover User",
+                    "request": {
+                        "method": "POST",
+                        "url": {
+                            "raw": "{{baseurl}}/users/:username/recover",
+                            "host": [
+                                "{{baseurl}}"
+                            ],
+                            "path": [
+                                "users",
+                                ":username",
+                                "recover"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Upload Profile Picture",
+                    "request": {
+                        "method": "POST",
+                        "url": {
+                            "raw": "{{baseurl}}/users/:id/profile-picture",
+                            "host": [
+                                "{{baseurl}}"
+                            ],
+                            "path": [
+                                "users",
+                                ":id",
+                                "profile-picture"
+                            ]
+                        },
+                        "body": {
+                            "mode": "formdata",
+                            "formdata": [
+                                {
+                                    "key": "profile_picture",
+                                    "type": "file"
+                                }
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Promote Admin",
+                    "request": {
+                        "method": "POST",
+                        "url": {
+                            "raw": "{{baseurl}}/users/:id/promote-admin",
+                            "host": [
+                                "{{baseurl}}"
+                            ],
+                            "path": [
+                                "users",
+                                ":id",
+                                "promote-admin"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Demote Admin",
+                    "request": {
+                        "method": "POST",
+                        "url": {
+                            "raw": "{{baseurl}}/users/:id/demote-admin",
+                            "host": [
+                                "{{baseurl}}"
+                            ],
+                            "path": [
+                                "users",
+                                ":id",
+                                "demote-admin"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Get Admin List",
+                    "request": {
+                        "method": "GET",
+                        "url": {
+                            "raw": "{{baseurl}}/admins",
+                            "host": [
+                                "{{baseurl}}"
+                            ],
+                            "path": [
+                                "admins"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Get Users By Role",
+                    "request": {
+                        "method": "GET",
+                        "url": {
+                            "raw": "{{baseurl}}/users/role/:role",
+                            "host": [
+                                "{{baseurl}}"
+                            ],
+                            "path": [
+                                "users",
+                                "role",
+                                ":role"
+                            ]
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Posts",
+            "item": [
+                {
+                    "name": "Get Post By ID",
+                    "request": {
+                        "method": "GET",
+                        "url": {
+                            "raw": "{{baseurl}}/posts/:id",
+                            "host": [
+                                "{{baseurl}}"
+                            ],
+                            "path": [
+                                "posts",
+                                ":id"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Create Post",
+                    "request": {
+                        "method": "POST",
+                        "url": {
+                            "raw": "{{baseurl}}/posts",
+                            "host": [
+                                "{{baseurl}}"
+                            ],
+                            "path": [
+                                "posts"
+                            ]
+                        },
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"content\": \"Hello world!\"\n}"
+                        }
+                    }
+                },
+                {
+                    "name": "Update Post",
+                    "request": {
+                        "method": "PATCH",
+                        "url": {
+                            "raw": "{{baseurl}}/posts/:id",
+                            "host": [
+                                "{{baseurl}}"
+                            ],
+                            "path": [
+                                "posts",
+                                ":id"
+                            ]
+                        },
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"content\": \"Updated post\"\n}"
+                        }
+                    }
+                },
+                {
+                    "name": "Delete Post",
+                    "request": {
+                        "method": "DELETE",
+                        "url": {
+                            "raw": "{{baseurl}}/posts/:id",
+                            "host": [
+                                "{{baseurl}}"
+                            ],
+                            "path": [
+                                "posts",
+                                ":id"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Get Feed",
+                    "request": {
+                        "method": "GET",
+                        "url": {
+                            "raw": "{{baseurl}}/feed",
+                            "host": [
+                                "{{baseurl}}"
+                            ],
+                            "path": [
+                                "feed"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Get Post Likes",
+                    "request": {
+                        "method": "GET",
+                        "url": {
+                            "raw": "{{baseurl}}/posts/:id/likes",
+                            "host": [
+                                "{{baseurl}}"
+                            ],
+                            "path": [
+                                "posts",
+                                ":id",
+                                "likes"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Get Post Like Count",
+                    "request": {
+                        "method": "GET",
+                        "url": {
+                            "raw": "{{baseurl}}/posts/:id/likes/count",
+                            "host": [
+                                "{{baseurl}}"
+                            ],
+                            "path": [
+                                "posts",
+                                ":id",
+                                "likes",
+                                "count"
+                            ]
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Comments",
+            "item": [
+                {
+                    "name": "Get All Comments",
+                    "request": {
+                        "method": "GET",
+                        "url": {
+                            "raw": "{{baseurl}}/comments",
+                            "host": [
+                                "{{baseurl}}"
+                            ],
+                            "path": [
+                                "comments"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Get Comment By ID",
+                    "request": {
+                        "method": "GET",
+                        "url": {
+                            "raw": "{{baseurl}}/comments/:id",
+                            "host": [
+                                "{{baseurl}}"
+                            ],
+                            "path": [
+                                "comments",
+                                ":id"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Create Comment",
+                    "request": {
+                        "method": "POST",
+                        "url": {
+                            "raw": "{{baseurl}}/comments",
+                            "host": [
+                                "{{baseurl}}"
+                            ],
+                            "path": [
+                                "comments"
+                            ]
+                        },
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"post_id\": 1,\n  \"content\": \"Nice post!\"\n}"
+                        }
+                    }
+                },
+                {
+                    "name": "Update Comment",
+                    "request": {
+                        "method": "PATCH",
+                        "url": {
+                            "raw": "{{baseurl}}/comments/:id",
+                            "host": [
+                                "{{baseurl}}"
+                            ],
+                            "path": [
+                                "comments",
+                                ":id"
+                            ]
+                        },
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"content\": \"Updated comment\"\n}"
+                        }
+                    }
+                },
+                {
+                    "name": "Delete Comment",
+                    "request": {
+                        "method": "DELETE",
+                        "url": {
+                            "raw": "{{baseurl}}/comments/:id",
+                            "host": [
+                                "{{baseurl}}"
+                            ],
+                            "path": [
+                                "comments",
+                                ":id"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Get Comment Likes",
+                    "request": {
+                        "method": "GET",
+                        "url": {
+                            "raw": "{{baseurl}}/comments/:id/likes",
+                            "host": [
+                                "{{baseurl}}"
+                            ],
+                            "path": [
+                                "comments",
+                                ":id",
+                                "likes"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Get Comment Like Count",
+                    "request": {
+                        "method": "GET",
+                        "url": {
+                            "raw": "{{baseurl}}/comments/:id/likes/count",
+                            "host": [
+                                "{{baseurl}}"
+                            ],
+                            "path": [
+                                "comments",
+                                ":id",
+                                "likes",
+                                "count"
+                            ]
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Notifications",
+            "item": [
+                {
+                    "name": "Get All Notifications",
+                    "request": {
+                        "method": "GET",
+                        "url": {
+                            "raw": "{{baseurl}}/notifications",
+                            "host": [
+                                "{{baseurl}}"
+                            ],
+                            "path": [
+                                "notifications"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Get Notification By ID",
+                    "request": {
+                        "method": "GET",
+                        "url": {
+                            "raw": "{{baseurl}}/notifications/:id",
+                            "host": [
+                                "{{baseurl}}"
+                            ],
+                            "path": [
+                                "notifications",
+                                ":id"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Create Notification",
+                    "request": {
+                        "method": "POST",
+                        "url": {
+                            "raw": "{{baseurl}}/notifications",
+                            "host": [
+                                "{{baseurl}}"
+                            ],
+                            "path": [
+                                "notifications"
+                            ]
+                        },
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"user_id\": 1,\n  \"from_user_id\": 2,\n  \"type\": \"like\",\n  \"reference_type\": \"post\",\n  \"reference_id\": 1\n}"
+                        }
+                    }
+                },
+                {
+                    "name": "Update Notification",
+                    "request": {
+                        "method": "PATCH",
+                        "url": {
+                            "raw": "{{baseurl}}/notifications/:id",
+                            "host": [
+                                "{{baseurl}}"
+                            ],
+                            "path": [
+                                "notifications",
+                                ":id"
+                            ]
+                        },
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"is_read\": true\n}"
+                        }
+                    }
+                },
+                {
+                    "name": "Delete Notification",
+                    "request": {
+                        "method": "DELETE",
+                        "url": {
+                            "raw": "{{baseurl}}/notifications/:id",
+                            "host": [
+                                "{{baseurl}}"
+                            ],
+                            "path": [
+                                "notifications",
+                                ":id"
+                            ]
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Mentions",
+            "item": [
+                {
+                    "name": "Get All Mentions",
+                    "request": {
+                        "method": "GET",
+                        "url": {
+                            "raw": "{{baseurl}}/mentions",
+                            "host": [
+                                "{{baseurl}}"
+                            ],
+                            "path": [
+                                "mentions"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Get Mention By ID",
+                    "request": {
+                        "method": "GET",
+                        "url": {
+                            "raw": "{{baseurl}}/mentions/:id",
+                            "host": [
+                                "{{baseurl}}"
+                            ],
+                            "path": [
+                                "mentions",
+                                ":id"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Create Mention",
+                    "request": {
+                        "method": "POST",
+                        "url": {
+                            "raw": "{{baseurl}}/mentions",
+                            "host": [
+                                "{{baseurl}}"
+                            ],
+                            "path": [
+                                "mentions"
+                            ]
+                        },
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"post_id\": 1,\n  \"mentioned_user_id\": 2,\n  \"from_user_id\": 1\n}"
+                        }
+                    }
+                },
+                {
+                    "name": "Update Mention",
+                    "request": {
+                        "method": "PATCH",
+                        "url": {
+                            "raw": "{{baseurl}}/mentions/:id",
+                            "host": [
+                                "{{baseurl}}"
+                            ],
+                            "path": [
+                                "mentions",
+                                ":id"
+                            ]
+                        },
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"post_id\": 1\n}"
+                        }
+                    }
+                },
+                {
+                    "name": "Delete Mention",
+                    "request": {
+                        "method": "DELETE",
+                        "url": {
+                            "raw": "{{baseurl}}/mentions/:id",
+                            "host": [
+                                "{{baseurl}}"
+                            ],
+                            "path": [
+                                "mentions",
+                                ":id"
+                            ]
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Likes",
+            "item": [
+                {
+                    "name": "Like Post",
+                    "request": {
+                        "method": "POST",
+                        "url": {
+                            "raw": "{{baseurl}}/posts/:id/like",
+                            "host": [
+                                "{{baseurl}}"
+                            ],
+                            "path": [
+                                "posts",
+                                ":id",
+                                "like"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Like Comment",
+                    "request": {
+                        "method": "POST",
+                        "url": {
+                            "raw": "{{baseurl}}/comments/:id/like",
+                            "host": [
+                                "{{baseurl}}"
+                            ],
+                            "path": [
+                                "comments",
+                                ":id",
+                                "like"
+                            ]
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Roles",
+            "item": [
+                {
+                    "name": "Create Role",
+                    "request": {
+                        "method": "POST",
+                        "url": {
+                            "raw": "{{baseurl}}/roles",
+                            "host": [
+                                "{{baseurl}}"
+                            ],
+                            "path": [
+                                "roles"
+                            ]
+                        },
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"name\": \"moderator\",\n  \"description\": \"Can moderate posts\"\n}"
+                        }
+                    }
+                },
+                {
+                    "name": "Delete Role",
+                    "request": {
+                        "method": "DELETE",
+                        "url": {
+                            "raw": "{{baseurl}}/roles/:role",
+                            "host": [
+                                "{{baseurl}}"
+                            ],
+                            "path": [
+                                "roles",
+                                ":role"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Get Roles",
+                    "request": {
+                        "method": "GET",
+                        "url": {
+                            "raw": "{{baseurl}}/roles",
+                            "host": [
+                                "{{baseurl}}"
+                            ],
+                            "path": [
+                                "roles"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Update Role",
+                    "request": {
+                        "method": "PATCH",
+                        "url": {
+                            "raw": "{{baseurl}}/roles/:role",
+                            "host": [
+                                "{{baseurl}}"
+                            ],
+                            "path": [
+                                "roles",
+                                ":role"
+                            ]
+                        },
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"description\": \"Updated description\"\n}"
+                        }
+                    }
+                },
+                {
+                    "name": "Assign Role",
+                    "request": {
+                        "method": "POST",
+                        "url": {
+                            "raw": "{{baseurl}}/roles/assign",
+                            "host": [
+                                "{{baseurl}}"
+                            ],
+                            "path": [
+                                "roles",
+                                "assign"
+                            ]
+                        },
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"user_id\": 1,\n  \"role\": \"admin\"\n}"
+                        }
+                    }
+                },
+                {
+                    "name": "Remove Role",
+                    "request": {
+                        "method": "POST",
+                        "url": {
+                            "raw": "{{baseurl}}/roles/remove",
+                            "host": [
+                                "{{baseurl}}"
+                            ],
+                            "path": [
+                                "roles",
+                                "remove"
+                            ]
+                        },
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"user_id\": 1,\n  \"role\": \"admin\"\n}"
+                        }
+                    }
+                }
+            ]
+        }
+    ]
+}

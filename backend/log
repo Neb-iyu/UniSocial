@@ -1,0 +1,29 @@
+[13-May-2025 11:57:22 Europe/Berlin] Auth header used: 
+[13-May-2025 14:49:33 Europe/Berlin] Auth header used: Bearer
+[13-May-2025 14:50:37 Europe/Berlin] Auth header used: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjoxLCJlbWFpbCI6InRlc3RAZXhhbXBsZS5jb20iLCJleHAiOjE3NDc3NDUzNjl9.fxDC3K0L0hXZ83Xtv58ZUF0MOc-ppT3UR6OFJFG7qm8
+[13-May-2025 14:50:37 Europe/Berlin] Permanent post cleanup failed: SQLSTATE[42000]: Syntax error or access violation: 1064 You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '\
+                 WHERE is_deleted = 1 \
+                 AND deleted_at I...' at line 1
+[13-May-2025 14:51:10 Europe/Berlin] Auth header used: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjoxLCJlbWFpbCI6InRlc3RAZXhhbXBsZS5jb20iLCJleHAiOjE3NDc3NDUzNjl9.fxDC3K0L0hXZ83Xtv58ZUF0MOc-ppT3UR6OFJFG7qm8
+[13-May-2025 14:51:26 Europe/Berlin] Auth header used: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjoxLCJlbWFpbCI6InRlc3RAZXhhbXBsZS5jb20iLCJleHAiOjE3NDc3NDUzNjl9.fxDC3K0L0hXZ83Xtv58ZUF0MOc-ppT3UR6OFJFG7qm8
+[13-May-2025 14:51:37 Europe/Berlin] Auth header used: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjoxLCJlbWFpbCI6InRlc3RAZXhhbXBsZS5jb20iLCJleHAiOjE3NDc3NDUzNjl9.fxDC3K0L0hXZ83Xtv58ZUF0MOc-ppT3UR6OFJFG7qm8
+[13-May-2025 14:53:18 Europe/Berlin] Auth header used: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjoxLCJlbWFpbCI6InRlc3RAZXhhbXBsZS5jb20iLCJleHAiOjE3NDc3NDUzNjl9.fxDC3K0L0hXZ83Xtv58ZUF0MOc-ppT3UR6OFJFG7qm8
+[13-May-2025 14:53:30 Europe/Berlin] Auth header used: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjoxLCJlbWFpbCI6InRlc3RAZXhhbXBsZS5jb20iLCJleHAiOjE3NDc3NDUzNjl9.fxDC3K0L0hXZ83Xtv58ZUF0MOc-ppT3UR6OFJFG7qm8
+[13-May-2025 14:53:44 Europe/Berlin] Auth header used: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjoxLCJlbWFpbCI6InRlc3RAZXhhbXBsZS5jb20iLCJleHAiOjE3NDc3NDUzNjl9.fxDC3K0L0hXZ83Xtv58ZUF0MOc-ppT3UR6OFJFG7qm8
+[13-May-2025 14:54:40 Europe/Berlin] Auth header used: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjoxLCJlbWFpbCI6InRlc3RAZXhhbXBsZS5jb20iLCJleHAiOjE3NDc3NDUzNjl9.fxDC3K0L0hXZ83Xtv58ZUF0MOc-ppT3UR6OFJFG7qm8
+[13-May-2025 14:54:57 Europe/Berlin] Auth header used: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjoxLCJlbWFpbCI6InRlc3RAZXhhbXBsZS5jb20iLCJleHAiOjE3NDc3NDUzNjl9.fxDC3K0L0hXZ83Xtv58ZUF0MOc-ppT3UR6OFJFG7qm8
+[13-May-2025 14:56:23 Europe/Berlin] Auth header used: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjoxLCJlbWFpbCI6InRlc3RAZXhhbXBsZS5jb20iLCJleHAiOjE3NDc3NDUzNjl9.fxDC3K0L0hXZ83Xtv58ZUF0MOc-ppT3UR6OFJFG7qm8
+[13-May-2025 15:07:57 Europe/Berlin] Auth header used: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjoxLCJlbWFpbCI6InRlc3RAZXhhbXBsZS5jb20iLCJleHAiOjE3NDc3NDUzNjl9.fxDC3K0L0hXZ83Xtv58ZUF0MOc-ppT3UR6OFJFG7qm8
+[13-May-2025 16:50:40 Europe/Berlin] User lookup failed for email test@example.com: SQLSTATE[42S02]: Base table or view not found: 1146 Table 'unisocial.users' doesn't exist
+[13-May-2025 16:50:40 Europe/Berlin] User lookup failed for username testuser: SQLSTATE[42S02]: Base table or view not found: 1146 Table 'unisocial.users' doesn't exist
+[13-May-2025 16:50:40 Europe/Berlin] User create failed: SQLSTATE[42S02]: Base table or view not found: 1146 Table 'unisocial.users' doesn't exist
+[13-May-2025 16:51:09 Europe/Berlin] User lookup failed for email test@example.com: SQLSTATE[42S02]: Base table or view not found: 1146 Table 'unisocial.users' doesn't exist
+[13-May-2025 16:51:09 Europe/Berlin] User lookup failed for username testuser: SQLSTATE[42S02]: Base table or view not found: 1146 Table 'unisocial.users' doesn't exist
+[13-May-2025 16:51:09 Europe/Berlin] User create failed: SQLSTATE[42S02]: Base table or view not found: 1146 Table 'unisocial.users' doesn't exist
+[13-May-2025 17:28:55 Europe/Berlin] Auth header used: Bearer
+[13-May-2025 17:32:02 Europe/Berlin] Auth header used: Bearer
+[13-May-2025 17:32:49 Europe/Berlin] Auth header used: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjoxLCJlbWFpbCI6InRlc3RAZXhhbXBsZS5jb20iLCJleHAiOjE3NDc3NTQ3ODB9.fBz8lWfA1PvrBPp88PECP8FCHl1SJX1jHdHiD5mxGVQ
+[13-May-2025 17:33:44 Europe/Berlin] Auth header used: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjoxLCJlbWFpbCI6InRlc3RAZXhhbXBsZS5jb20iLCJleHAiOjE3NDc3NTQ3ODB9.fBz8lWfA1PvrBPp88PECP8FCHl1SJX1jHdHiD5mxGVQ
+[13-May-2025 17:34:48 Europe/Berlin] Auth header used: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjoxLCJlbWFpbCI6InRlc3RAZXhhbXBsZS5jb20iLCJleHAiOjE3NDc3NTQ3ODB9.fBz8lWfA1PvrBPp88PECP8FCHl1SJX1jHdHiD5mxGVQ
+[13-May-2025 17:35:05 Europe/Berlin] Auth header used: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjoxLCJlbWFpbCI6InRlc3RAZXhhbXBsZS5jb20iLCJleHAiOjE3NDc3NTQ3ODB9.fBz8lWfA1PvrBPp88PECP8FCHl1SJX1jHdHiD5mxGVQ
+[13-May-2025 17:35:05 Europe/Berlin] Get feed failed: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'u.profile_image' in 'field list'
