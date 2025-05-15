@@ -6,33 +6,31 @@ use Src\Models\Notification;
 use Src\Core\Response;
 use Src\Core\Auth;
 
-class NotificationController
+class NotificationController extends BaseController
 {
-    // GET /notifications
-    public function getAllNotifications()
+    private Notification $notificationModel;
+
+    public function __construct()
     {
-        $auth = new Auth();
-        $currentUser = $auth->getCurrentUser();
-        if (!$currentUser) {
-            Response::unauthorized('You must be logged in.');
-            return;
-        }
-        $notificationModel = new Notification();
-        $notifications = $notificationModel->getNotifications($currentUser['id'], 20, 0);
+        parent::__construct();
+        $this->notificationModel = new Notification();
+    }
+
+    // GET /notifications
+    public function getAllNotifications(): void
+    {
+        $currentUser = $this->requireAuth();
+        if (!$currentUser) return;
+        $notifications = $this->notificationModel->getNotifications($currentUser['id'], 20, 0);
         Response::success($notifications, 'Notifications fetched successfully');
     }
 
     // GET /notifications/{id}
-    public function getNotificationById($id)
+    public function getNotificationById($id): void
     {
-        $auth = new Auth();
-        $currentUser = $auth->getCurrentUser();
-        if (!$currentUser) {
-            Response::unauthorized('You must be logged in.');
-            return;
-        }
-        $notificationModel = new Notification();
-        $notification = $notificationModel->find($id);
+        $currentUser = $this->requireAuth();
+        if (!$currentUser) return;
+        $notification = $this->notificationModel->find($id);
         if ($notification && !$notification['is_deleted'] && $notification['user_id'] == $currentUser['id']) {
             Response::success($notification, 'Notification found');
         } else {
@@ -41,19 +39,14 @@ class NotificationController
     }
 
     // POST /notifications
-    public function createNotification()
+    public function createNotification(): void
     {
-        $auth = new Auth();
-        $currentUser = $auth->getCurrentUser();
-        if (!$currentUser) {
-            Response::unauthorized('You must be logged in.');
-            return;
-        }
+        $currentUser = $this->requireAuth();
+        if (!$currentUser) return;
         $input = json_decode(file_get_contents('php://input'), true);
-        $notificationModel = new Notification();
-        $notificationId = $notificationModel->create($input);
+        $notificationId = $this->notificationModel->create($input);
         if ($notificationId) {
-            $notification = $notificationModel->find($notificationId);
+            $notification = $this->notificationModel->find($notificationId);
             Response::success($notification, 'Notification created', 201);
         } else {
             Response::error('Notification creation failed', 500);
@@ -61,19 +54,20 @@ class NotificationController
     }
 
     // PATCH /notifications/{id}
-    public function updateNotification($id)
+    public function updateNotification($id): void
     {
-        $auth = new Auth();
-        $currentUser = $auth->getCurrentUser();
-        if (!$currentUser) {
-            Response::unauthorized('You must be logged in.');
+        $currentUser = $this->requireAuth();
+        if (!$currentUser) return;
+        $notification = $this->notificationModel->find($id);
+        if (!$notification || $notification['is_deleted']) {
+            Response::notFound('Notification not found');
             return;
         }
+        if (isset($notification['user_id']) && !$this->requireSelfOrAdmin($currentUser, $notification['user_id'])) return;
         $input = json_decode(file_get_contents('php://input'), true);
-        $notificationModel = new Notification();
-        $success = $notificationModel->Update($id, $input);
+        $success = $this->notificationModel->Update($id, $input);
         if ($success) {
-            $notification = $notificationModel->find($id);
+            $notification = $this->notificationModel->find($id);
             Response::success($notification, 'Notification updated');
         } else {
             Response::error('Notification update failed or no valid fields provided', 400);
@@ -81,16 +75,17 @@ class NotificationController
     }
 
     // DELETE /notifications/{id}
-    public function deleteNotification($id)
+    public function deleteNotification($id): void
     {
-        $auth = new Auth();
-        $currentUser = $auth->getCurrentUser();
-        if (!$currentUser) {
-            Response::unauthorized('You must be logged in.');
+        $currentUser = $this->requireAuth();
+        if (!$currentUser) return;
+        $notification = $this->notificationModel->find($id);
+        if (!$notification || $notification['is_deleted']) {
+            Response::notFound('Notification not found');
             return;
         }
-        $notificationModel = new Notification();
-        $success = $notificationModel->Delete($id);
+        if (isset($notification['user_id']) && !$this->requireSelfOrAdmin($currentUser, $notification['user_id'])) return;
+        $success = $this->notificationModel->Delete($id);
         if ($success) {
             Response::success(null, 'Notification deleted');
         } else {

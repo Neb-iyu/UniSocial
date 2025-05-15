@@ -26,7 +26,7 @@ class Comment extends Model
             $this->db->commit();
 
             // Notify the post owner if not self-comment
-            $postModel = new \Src\Models\Post();
+            $postModel = new Post();
             $recipientId = $postModel->getOwnerId($data['post_id']);
             if ($recipientId && $recipientId != $data['user_id']) {
                 $this->notify('comment', [
@@ -56,6 +56,10 @@ class Comment extends Model
         try {
             // Get post_id before deletion using find
             $comment = $this->find($id);
+
+            // Deletes notifications related to this comment
+            $notificationModel = new Notification();
+            $notificationModel->deleteByCommentId($id);
 
             if (parent::delete($id)) {
                 $this->executeUpdate(

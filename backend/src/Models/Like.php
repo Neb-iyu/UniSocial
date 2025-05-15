@@ -184,13 +184,13 @@ class Like extends Model
 
     public function getPostOwnerId(int $postId): ?int
     {
-        $postModel = new \Src\Models\Post();
+        $postModel = new Post();
         return $postModel->getOwnerId($postId);
     }
 
     public function getCommentOwnerId(int $commentId): ?int
     {
-        $commentModel = new \Src\Models\Comment();
+        $commentModel = new Comment();
         return $commentModel->getOwnerId($commentId);
     }
 

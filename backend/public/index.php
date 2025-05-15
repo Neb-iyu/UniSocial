@@ -2,6 +2,8 @@
 
 // Ensure error.log is created in the root directory
 ini_set('error_log', __DIR__ . '/log');
+ini_set('display_errors', '0');
+ini_set('log_errors', '1');
 
 require_once __DIR__ . '/../vendor/autoload.php';
 
@@ -77,12 +79,5 @@ $router->addRoute('GET', '/roles', 'RoleController@getRoles');
 $router->addRoute('PATCH', '/roles/{role}', 'RoleController@updateRole');
 $router->addRoute('POST', '/roles/assign', 'RoleController@assignRole');
 $router->addRoute('POST', '/roles/remove', 'RoleController@removeRole');
-
-// Strips base path from REQUEST_URI for routing
-$basePath = '/unifyze/backend/public';
-$path = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
-if (strpos($path, $basePath) === 0) {
-    $_SERVER['REQUEST_URI'] = substr($path, strlen($basePath));
-}
 
 $router->dispatch();

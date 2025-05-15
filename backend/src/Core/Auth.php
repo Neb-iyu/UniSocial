@@ -3,7 +3,9 @@
 namespace Src\Core;
 
 use Src\Models\User;
+use Src\Models\Post;
 use Firebase\JWT\JWT;
+use Firebase\JWT\Key;
 
 class Auth
 {
@@ -13,7 +15,7 @@ class Auth
         if (!$token) return null;
 
         try {
-            $decoded = JWT::decode($token, new \Firebase\JWT\Key($_ENV['JWT_SECRET'], 'HS256'));
+            $decoded = JWT::decode($token, new Key($_ENV['JWT_SECRET'], 'HS256'));
             return $decoded->user_id;
         } catch (\Exception $e) {
             return null;
@@ -36,8 +38,9 @@ class Auth
         }
         // 86400 seconds = 24 hours
         if ($now - $lastCleanup > 86400) {
-            $postModel = new \Src\Models\Post();
-            $postModel->deleteOldSoftDeleted();
+            $postModel = new Post();
+            $postsDeleted = $postModel->deleteOldSoftDeleted();
+            error_log("Opportunistic cleanup: $postsDeleted posts permanently deleted.");
             file_put_contents($cacheFile, (string)$now);
         }
 

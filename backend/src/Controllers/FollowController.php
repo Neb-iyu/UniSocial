@@ -6,43 +6,45 @@ use Src\Models\Follow;
 use Src\Core\Response;
 use Src\Core\Auth;
 
-class FollowController
+class FollowController extends BaseController
 {
+    private Follow $followModel;
 
-   
-    // POST /users/{id}/follow
-    public function follow($id)
+    public function __construct()
     {
-        $auth = new Auth();
-        $currentUser = $auth->getCurrentUser();
+        parent::__construct();
+        $this->followModel = new Follow();
+    }
+
+    // POST /users/{id}/follow
+    public function follow($id): void
+    {
+        $currentUser = $this->requireAuth();
         if (!$currentUser || $currentUser['id'] == $id) {
-            return Response::error('Invalid follow request', 400);
+            Response::error('Invalid follow request', 400);
+            return;
         }
-        $followModel = new Follow();
-        $result = $followModel->follow($currentUser['id'], $id);
+        $result = $this->followModel->follow($currentUser['id'], $id);
         if ($result) {
-            return Response::success(null, 'Followed successfully');
+            Response::success(null, 'Followed successfully');
         } else {
-            return Response::error('Follow failed', 500);
+            Response::error('Follow failed', 500);
         }
     }
 
     // DELETE /users/{id}/follow
-    public function unfollow($id)
+    public function unfollow($id): void
     {
-        $auth = new Auth();
-        $currentUser = $auth->getCurrentUser();
+        $currentUser = $this->requireAuth();
         if (!$currentUser || $currentUser['id'] == $id) {
-            return Response::error('Invalid unfollow request', 400);
+            Response::error('Invalid unfollow request', 400);
+            return;
         }
-        $followModel = new Follow();
-        $result = $followModel->unfollow($currentUser['id'], $id);
+        $result = $this->followModel->unfollow($currentUser['id'], $id);
         if ($result) {
-            return Response::success(null, 'Unfollowed successfully');
+            Response::success(null, 'Unfollowed successfully');
         } else {
-            return Response::error('Unfollow failed', 500);
+            Response::error('Unfollow failed', 500);
         }
     }
-
-    
 }

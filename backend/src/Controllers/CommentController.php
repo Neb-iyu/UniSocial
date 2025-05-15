@@ -3,36 +3,37 @@
 namespace Src\Controllers;
 
 use Src\Models\Comment;
+use Src\Models\Like;
 use Src\Core\Response;
 use Src\Utilities\Validator;
 
-class CommentController
+class CommentController extends BaseController
 {
-    // GET /comments
-    public function getAllComments()
+    private Comment $commentModel;
+    private Like $likeModel;
+
+    public function __construct()
     {
-        $auth = new \Src\Core\Auth();
-        $currentUser = $auth->getCurrentUser();
-        if (!$currentUser) {
-            Response::unauthorized('You must be logged in.');
-            return;
-        }
-        $commentModel = new Comment();
-        $comments = $commentModel->all();
+        parent::__construct();
+        $this->commentModel = new Comment();
+        $this->likeModel = new Like();
+    }
+
+    // GET /comments
+    public function getAllComments(): void
+    {
+        $currentUser = $this->requireAuth();
+        if (!$currentUser) return;
+        $comments = $this->commentModel->all();
         Response::success($comments, 'Comments fetched successfully');
     }
 
     // GET /comments/{id}
-    public function getCommentById($id)
+    public function getCommentById($id): void
     {
-        $auth = new \Src\Core\Auth();
-        $currentUser = $auth->getCurrentUser();
-        if (!$currentUser) {
-            Response::unauthorized('You must be logged in.');
-            return;
-        }
-        $commentModel = new Comment();
-        $comment = $commentModel->find($id);
+        $currentUser = $this->requireAuth();
+        if (!$currentUser) return;
+        $comment = $this->commentModel->find($id);
         if ($comment && !$comment['is_deleted']) {
             Response::success($comment, 'Comment found');
         } else {
@@ -41,14 +42,10 @@ class CommentController
     }
 
     // POST /comments
-    public function createComment()
+    public function createComment(): void
     {
-        $auth = new \Src\Core\Auth();
-        $currentUser = $auth->getCurrentUser();
-        if (!$currentUser) {
-            Response::unauthorized('You must be logged in.');
-            return;
-        }
+        $currentUser = $this->requireAuth();
+        if (!$currentUser) return;
         $input = json_decode(file_get_contents('php://input'), true);
         $input = Validator::sanitizeInput($input);
         $errors = [];
@@ -59,10 +56,9 @@ class CommentController
             Response::validationError($errors);
             return;
         }
-        $commentModel = new Comment();
-        $commentId = $commentModel->create($input);
+        $commentId = $this->commentModel->create($input);
         if ($commentId) {
-            $comment = $commentModel->find($commentId);
+            $comment = $this->commentModel->find($commentId);
             Response::success($comment, 'Comment created', 201);
         } else {
             Response::error('Comment creation failed', 500);
@@ -70,14 +66,16 @@ class CommentController
     }
 
     // PATCH /comments/{id}
-    public function updateComment($id)
+    public function updateComment($id): void
     {
-        $auth = new \Src\Core\Auth();
-        $currentUser = $auth->getCurrentUser();
-        if (!$currentUser) {
-            Response::unauthorized('You must be logged in.');
+        $currentUser = $this->requireAuth();
+        if (!$currentUser) return;
+        $comment = $this->commentModel->find($id);
+        if (!$comment || $comment['is_deleted']) {
+            Response::notFound('Comment not found');
             return;
         }
+        if (isset($comment['user_id']) && !$this->requireSelfOrAdmin($currentUser, $comment['user_id'])) return;
         $input = json_decode(file_get_contents('php://input'), true);
         $input = Validator::sanitizeInput($input);
         $errors = [];
@@ -88,10 +86,9 @@ class CommentController
             Response::validationError($errors);
             return;
         }
-        $commentModel = new Comment();
-        $success = $commentModel->Update($id, $input);
+        $success = $this->commentModel->Update($id, $input);
         if ($success) {
-            $comment = $commentModel->find($id);
+            $comment = $this->commentModel->find($id);
             Response::success($comment, 'Comment updated');
         } else {
             Response::error('Comment update failed or no valid fields provided', 400);
@@ -99,16 +96,17 @@ class CommentController
     }
 
     // DELETE /comments/{id}
-    public function deleteComment($id)
+    public function deleteComment($id): void
     {
-        $auth = new \Src\Core\Auth();
-        $currentUser = $auth->getCurrentUser();
-        if (!$currentUser) {
-            Response::unauthorized('You must be logged in.');
+        $currentUser = $this->requireAuth();
+        if (!$currentUser) return;
+        $comment = $this->commentModel->find($id);
+        if (!$comment || $comment['is_deleted']) {
+            Response::notFound('Comment not found');
             return;
         }
-        $commentModel = new Comment();
-        $success = $commentModel->Delete($id);
+        if (isset($comment['user_id']) && !$this->requireSelfOrAdmin($currentUser, $comment['user_id'])) return;
+        $success = $this->commentModel->Delete($id);
         if ($success) {
             Response::success(null, 'Comment deleted');
         } else {
@@ -117,30 +115,20 @@ class CommentController
     }
 
     // GET /comments/{id}/likes
-    public function getCommentLikes($commentId)
+    public function getCommentLikes($commentId): void
     {
-        $auth = new \Src\Core\Auth();
-        $currentUser = $auth->getCurrentUser();
-        if (!$currentUser) {
-            Response::unauthorized('You must be logged in.');
-            return;
-        }
-        $likeModel = new \Src\Models\Like();
-        $likes = $likeModel->getLikesForComment($commentId);
+        $currentUser = $this->requireAuth();
+        if (!$currentUser) return;
+        $likes = $this->likeModel->getLikesForComment($commentId);
         Response::success($likes, 'Likes fetched successfully');
     }
 
     // GET /comments/{id}/likes/count
-    public function getCommentLikeCount($commentId)
+    public function getCommentLikeCount($commentId): void
     {
-        $auth = new \Src\Core\Auth();
-        $currentUser = $auth->getCurrentUser();
-        if (!$currentUser) {
-            Response::unauthorized('You must be logged in.');
-            return;
-        }
-        $likeModel = new \Src\Models\Like();
-        $count = $likeModel->countLikesForComment($commentId);
+        $currentUser = $this->requireAuth();
+        if (!$currentUser) return;
+        $count = $this->likeModel->countLikesForComment($commentId);
         Response::success($count, 'Like count fetched successfully');
     }
 }

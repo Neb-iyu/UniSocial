@@ -5,33 +5,31 @@ namespace Src\Controllers;
 use Src\Models\Mention;
 use Src\Core\Response;
 
-class MentionController
+class MentionController extends BaseController
 {
-    // GET /mentions
-    public function getAllMentions()
+    private Mention $mentionModel;
+
+    public function __construct()
     {
-        $auth = new \Src\Core\Auth();
-        $currentUser = $auth->getCurrentUser();
-        if (!$currentUser) {
-            \Src\Core\Response::unauthorized('You must be logged in.');
-            return;
-        }
-        $mentionModel = new Mention();
-        $mentions = $mentionModel->allActive();
+        parent::__construct();
+        $this->mentionModel = new Mention();
+    }
+
+    // GET /mentions
+    public function getAllMentions(): void
+    {
+        $currentUser = $this->requireAuth();
+        if (!$currentUser) return;
+        $mentions = $this->mentionModel->allActive();
         Response::success($mentions, 'Mentions fetched successfully');
     }
 
     // GET /mentions/{id}
-    public function getMentionById($id)
+    public function getMentionById($id): void
     {
-        $auth = new \Src\Core\Auth();
-        $currentUser = $auth->getCurrentUser();
-        if (!$currentUser) {
-            \Src\Core\Response::unauthorized('You must be logged in.');
-            return;
-        }
-        $mentionModel = new Mention();
-        $mention = $mentionModel->find($id);
+        $currentUser = $this->requireAuth();
+        if (!$currentUser) return;
+        $mention = $this->mentionModel->find($id);
         if ($mention && !$mention['is_deleted']) {
             Response::success($mention, 'Mention found');
         } else {
@@ -40,19 +38,14 @@ class MentionController
     }
 
     // POST /mentions
-    public function createMention()
+    public function createMention(): void
     {
-        $auth = new \Src\Core\Auth();
-        $currentUser = $auth->getCurrentUser();
-        if (!$currentUser) {
-            \Src\Core\Response::unauthorized('You must be logged in.');
-            return;
-        }
+        $currentUser = $this->requireAuth();
+        if (!$currentUser) return;
         $input = json_decode(file_get_contents('php://input'), true);
-        $mentionModel = new Mention();
-        $mentionId = $mentionModel->create($input);
+        $mentionId = $this->mentionModel->create($input);
         if ($mentionId) {
-            $mention = $mentionModel->find($mentionId);
+            $mention = $this->mentionModel->find($mentionId);
             Response::success($mention, 'Mention created', 201);
         } else {
             Response::error('Mention creation failed', 500);
@@ -60,19 +53,20 @@ class MentionController
     }
 
     // PATCH /mentions/{id}
-    public function updateMention($id)
+    public function updateMention($id): void
     {
-        $auth = new \Src\Core\Auth();
-        $currentUser = $auth->getCurrentUser();
-        if (!$currentUser) {
-            \Src\Core\Response::unauthorized('You must be logged in.');
+        $currentUser = $this->requireAuth();
+        if (!$currentUser) return;
+        $mention = $this->mentionModel->find($id);
+        if (!$mention || $mention['is_deleted']) {
+            Response::notFound('Mention not found');
             return;
         }
+        if (isset($mention['user_id']) && !$this->requireSelfOrAdmin($currentUser, $mention['user_id'])) return;
         $input = json_decode(file_get_contents('php://input'), true);
-        $mentionModel = new Mention();
-        $success = $mentionModel->Update($id, $input);
+        $success = $this->mentionModel->Update($id, $input);
         if ($success) {
-            $mention = $mentionModel->find($id);
+            $mention = $this->mentionModel->find($id);
             Response::success($mention, 'Mention updated');
         } else {
             Response::error('Mention update failed or no valid fields provided', 400);
@@ -80,16 +74,17 @@ class MentionController
     }
 
     // DELETE /mentions/{id}
-    public function deleteMention($id)
+    public function deleteMention($id): void
     {
-        $auth = new \Src\Core\Auth();
-        $currentUser = $auth->getCurrentUser();
-        if (!$currentUser) {
-            Response::unauthorized('You must be logged in.');
+        $currentUser = $this->requireAuth();
+        if (!$currentUser) return;
+        $mention = $this->mentionModel->find($id);
+        if (!$mention || $mention['is_deleted']) {
+            Response::notFound('Mention not found');
             return;
         }
-        $mentionModel = new Mention();
-        $success = $mentionModel->Delete($id);
+        if (isset($mention['user_id']) && !$this->requireSelfOrAdmin($currentUser, $mention['user_id'])) return;
+        $success = $this->mentionModel->Delete($id);
         if ($success) {
             Response::success(null, 'Mention deleted');
         } else {
