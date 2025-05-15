@@ -9,19 +9,23 @@ use Src\Models\Follow;
 use Src\Utilities\Validator;
 use Src\Utilities\FileUploader;
 
-class UserController
+class UserController extends BaseController
 {
-    // GET /users
-    public function getAllUsers()
+    private Follow $followModel;
+
+    public function __construct()
     {
-        $auth = new Auth();
-        $currentUser = $auth->getCurrentUser();
-        $userModel = new User();
-        if (!$currentUser || !$userModel->is_admin($currentUser['id'])) {
-            Response::unauthorized('You must be an admin to view all users.');
-            return;
-        }
-        $users = $userModel->allActive();
+        parent::__construct();
+        $this->followModel = new Follow();
+    }
+
+    // GET /users
+    public function getAllUsers(): void
+    {
+        $currentUser = $this->requireAuth();
+        if (!$currentUser) return;
+        if (!$this->requireAdmin($currentUser)) return;
+        $users = $this->userModel->allActive();
         foreach ($users as &$user) {
             unset($user['password']);
         }
@@ -29,16 +33,11 @@ class UserController
     }
 
     // GET /users/{id}
-    public function getUserById($id)
+    public function getUserById(int $id): void
     {
-        $auth = new Auth();
-        $currentUser = $auth->getCurrentUser();
-        if (!$currentUser) {
-            Response::unauthorized('You must be logged in to view user details.');
-            return;
-        }
-        $userModel = new User();
-        $user = $userModel->find($id);
+        $currentUser = $this->requireAuth();
+        if (!$currentUser) return;
+        $user = $this->userModel->find($id);
         if ($user && !$user['is_deleted']) {
             unset($user['password']);
             Response::success($user, 'User found');
@@ -48,38 +47,23 @@ class UserController
     }
 
     // PATCH /users/{id}
-    public function updateUser($id)
+    public function updateUser(int $id): void
     {
-        $auth = new Auth();
-        $currentUser = $auth->getCurrentUser();
-        if (!$currentUser) {
-            Response::unauthorized('You must be logged in to update your account.');
-            return;
-        }
+        $currentUser = $this->requireAuth();
+        if (!$currentUser) return;
         if ($currentUser['id'] != $id) {
             Response::unauthorized('You can only update your own account.');
             return;
         }
         $input = json_decode(file_get_contents('php://input'), true);
-        $input = Validator::sanitizeInput($input);
-        $errors = [];
-        if (isset($input['email']) && !Validator::email($input['email'])) {
-            $errors['email'] = 'Valid email is required';
-        }
-        if (isset($input['username']) && !Validator::username($input['username'])) {
-            $errors['username'] = 'Username must be 5-20 chars, alphanumeric or underscore';
-        }
-        if (isset($input['password']) && !Validator::password($input['password'])) {
-            $errors['password'] = 'Password must be at least 8 characters, include a letter and a number';
-        }
+        $errors = $this->validateUpdateInput($input);
         if ($errors) {
             Response::validationError($errors);
             return;
         }
-        $userModel = new User();
-        $success = $userModel->partialUpdate($id, $input);
+        $success = $this->userModel->partialUpdate($id, $input);
         if ($success) {
-            $user = $userModel->find($id);
+            $user = $this->userModel->find($id);
             unset($user['password']);
             Response::success($user, 'User updated');
         } else {
@@ -88,20 +72,12 @@ class UserController
     }
 
     // DELETE /users/{id}
-    public function deleteUser($id)
+    public function deleteUser(int $id): void
     {
-        $auth = new Auth();
-        $currentUser = $auth->getCurrentUser();
-        $userModel = new User();
-        if (!$currentUser) {
-            Response::unauthorized('You must be logged in to delete your account.');
-            return;
-        }
-        if ($currentUser['id'] != $id && !$userModel->is_admin($currentUser['id'])) {
-            Response::unauthorized('You can only delete your own account, unless you are an admin.');
-            return;
-        }
-        $success = $userModel->softDelete($id);
+        $currentUser = $this->requireAuth();
+        if (!$currentUser) return;
+        if (!$this->requireSelfOrAdmin($currentUser, $id)) return;
+        $success = $this->userModel->softDelete($id);
         if ($success) {
             Response::success(null, 'User deleted');
         } else {
@@ -110,46 +86,32 @@ class UserController
     }
 
     // GET /users/{id}/followers
-    public function getFollowers($id)
+    public function getFollowers(int $id): void
     {
-        $auth = new Auth();
-        $currentUser = $auth->getCurrentUser();
-        if (!$currentUser) {
-            Response::unauthorized('You must be logged in to view followers.');
-            return;
-        }
-        $followModel = new Follow();
-        $followers = $followModel->getFollowers($id); // returns array of ['follower_id' => ...]
+        $currentUser = $this->requireAuth();
+        if (!$currentUser) return;
+        $followers = $this->followModel->getFollowers($id); // returns array of ['follower_id' => ...]
         Response::success($followers, 'Followers fetched successfully');
     }
 
     // GET /users/{id}/following
-    public function getFollowing($id)
+    public function getFollowing(int $id): void
     {
-        $auth = new Auth();
-        $currentUser = $auth->getCurrentUser();
-        if (!$currentUser) {
-            Response::unauthorized('You must be logged in to view following.');
-            return;
-        }
-        $followModel = new Follow();
-        $following = $followModel->getFollowing($id); // returns array of ['followed_id' => ...]
+        $currentUser = $this->requireAuth();
+        if (!$currentUser) return;
+        $following = $this->followModel->getFollowing($id); // returns array of ['followed_id' => ...]
         Response::success($following, 'Following fetched successfully');
     }
 
     // POST /users/{username}/recover
-    public function recoverUser($username)
+    public function recoverUser(string $username): void
     {
-        $auth = new Auth();
-        $currentUser = $auth->getCurrentUser();
-        $userModel = new User();
-        if (!$currentUser || !$userModel->is_admin($currentUser['id'])) {
-            Response::unauthorized('You must be an admin to recover users.');
-            return;
-        }
-        $success = $userModel->recover($username);
+        $currentUser = $this->requireAuth();
+        if (!$currentUser) return;
+        if (!$this->requireAdmin($currentUser)) return;
+        $success = $this->userModel->recover($username);
         if ($success) {
-            $user = $userModel->findByUsername($username);
+            $user = $this->userModel->findByUsername($username);
             if ($user) {
                 unset($user['password']);
             }
@@ -160,14 +122,10 @@ class UserController
     }
 
     // POST /users/{id}/profile-picture
-    public function uploadProfilePicture($id)
+    public function uploadProfilePicture(int $id): void
     {
-        $auth = new Auth();
-        $currentUser = $auth->getCurrentUser();
-        if (!$currentUser) {
-            Response::unauthorized('You must be logged in to upload a profile picture.');
-            return;
-        }
+        $currentUser = $this->requireAuth();
+        if (!$currentUser) return;
         if ($currentUser['id'] != $id) {
             Response::unauthorized('You can only update your own profile picture.');
             return;
@@ -181,10 +139,9 @@ class UserController
             Response::error($result['error'], 400);
             return;
         }
-        $userModel = new User();
-        $success = $userModel->update($id, ['profile_picture_url' => $result['path']]);
+        $success = $this->userModel->update($id, ['profile_picture_url' => $result['path']]);
         if ($success) {
-            $user = $userModel->find($id);
+            $user = $this->userModel->find($id);
             unset($user['password']);
             Response::success($user, 'Profile picture updated');
         } else {
@@ -193,17 +150,12 @@ class UserController
     }
 
     // POST /users/{id}/promote-admin
-    public function promoteAdmin($id)
+    public function promoteAdmin(int $id): void
     {
-        $auth = new Auth();
-        $currentUser = $auth->getCurrentUser();
-        $userModel = new User();
-        $roles = $userModel->getUserRoles($currentUser['id']);
-        if (!$currentUser || !in_array('superadmin', $roles)) {
-            Response::unauthorized('Only superadmin can promote admins.');
-            return;
-        }
-        if ($userModel->promoteAdmin($id)) {
+        $currentUser = $this->requireAuth();
+        if (!$currentUser) return;
+        if (!$this->requireSuperAdmin($currentUser)) return;
+        if ($this->userModel->promoteAdmin($id)) {
             Response::success(null, 'User promoted to admin.');
         } else {
             Response::error('Failed to promote user.', 500);
@@ -211,17 +163,12 @@ class UserController
     }
 
     // POST /users/{id}/demote-admin
-    public function demoteAdmin($id)
+    public function demoteAdmin(int $id): void
     {
-        $auth = new Auth();
-        $currentUser = $auth->getCurrentUser();
-        $userModel = new User();
-        $roles = $userModel->getUserRoles($currentUser['id']);
-        if (!$currentUser || !in_array('superadmin', $roles)) {
-            Response::unauthorized('Only superadmin can demote admins.');
-            return;
-        }
-        if ($userModel->demoteAdmin($id)) {
+        $currentUser = $this->requireAuth();
+        if (!$currentUser) return;
+        if (!$this->requireSuperAdmin($currentUser)) return;
+        if ($this->userModel->demoteAdmin($id)) {
             Response::success(null, 'Admin demoted to user.');
         } else {
             Response::error('Failed to demote admin.', 500);
@@ -229,17 +176,16 @@ class UserController
     }
 
     // GET /admins
-    public function getAdminList()
+    public function getAdminList(): void
     {
-        $auth = new Auth();
-        $currentUser = $auth->getCurrentUser();
-        $userModel = new User();
-        $roles = $userModel->getUserRoles($currentUser['id']);
-        if (!$currentUser || (!in_array('admin', $roles) && !in_array('superadmin', $roles))) {
+        $currentUser = $this->requireAuth();
+        if (!$currentUser) return;
+        $roles = $this->userModel->getUserRoles($currentUser['id']);
+        if (!in_array('admin', $roles) && !in_array('superadmin', $roles)) {
             Response::unauthorized('Only admin or superadmin can view admin list.');
             return;
         }
-        $admins = $userModel->getAdminList();
+        $admins = $this->userModel->getAdminList();
         foreach ($admins as &$admin) {
             unset($admin['password']);
         }
@@ -247,20 +193,36 @@ class UserController
     }
 
     // GET /users/role/{role}
-    public function getUsersByRole($role)
+    public function getUsersByRole(string $role): void
     {
-        $auth = new Auth();
-        $currentUser = $auth->getCurrentUser();
-        $userModel = new User();
-        $roles = $userModel->getUserRoles($currentUser['id']);
-        if (!$currentUser || (!in_array('admin', $roles) && !in_array('superadmin', $roles))) {
+        $currentUser = $this->requireAuth();
+        if (!$currentUser) return;
+        $roles = $this->userModel->getUserRoles($currentUser['id']);
+        if (!in_array('admin', $roles) && !in_array('superadmin', $roles)) {
             Response::unauthorized('Only admin or superadmin can view users by role.');
             return;
         }
-        $users = $userModel->getUsersByRole($role);
+        $users = $this->userModel->getUsersByRole($role);
         foreach ($users as &$user) {
             unset($user['password']);
         }
         Response::success($users, 'Users with role ' . $role . ' fetched successfully');
+    }
+
+    // Validation helper
+    private function validateUpdateInput(array $input): array
+    {
+        $input = Validator::sanitizeInput($input);
+        $errors = [];
+        if (isset($input['email']) && !Validator::email($input['email'])) {
+            $errors['email'] = 'Valid email is required';
+        }
+        if (isset($input['username']) && !Validator::username($input['username'])) {
+            $errors['username'] = 'Username must be 5-20 chars, alphanumeric or underscore';
+        }
+        if (isset($input['password']) && !Validator::password($input['password'])) {
+            $errors['password'] = 'Password must be at least 8 characters, include a letter and a number';
+        }
+        return $errors;
     }
 }

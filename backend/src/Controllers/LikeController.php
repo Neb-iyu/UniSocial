@@ -4,21 +4,23 @@ namespace Src\Controllers;
 
 use Src\Models\Like;
 use Src\Core\Response;
-use Src\Core\Auth;
 
-class LikeController
+class LikeController extends BaseController
 {
-    // POST /posts/{id}/like
-    public function like($postId)
+    private Like $likeModel;
+
+    public function __construct()
     {
-        $auth = new Auth();
-        $currentUser = $auth->getCurrentUser();
-        if (!$currentUser) {
-            Response::unauthorized('You must be logged in to like or unlike a post.');
-            return;
-        }
-        $likeModel = new Like();
-        $liked = $likeModel->likeToggle($currentUser['id'], $postId, null);
+        parent::__construct();
+        $this->likeModel = new Like();
+    }
+
+    // POST /posts/{id}/like
+    public function like($postId): void
+    {
+        $currentUser = $this->requireAuth();
+        if (!$currentUser) return;
+        $liked = $this->likeModel->likeToggle($currentUser['id'], $postId, null);
         if ($liked) {
             Response::success(null, 'Post liked');
         } else {
@@ -27,21 +29,15 @@ class LikeController
     }
 
     // POST /comments/{id}/like
-    public function likeComment($commentId)
+    public function likeComment($commentId): void
     {
-        $auth = new Auth();
-        $currentUser = $auth->getCurrentUser();
-        if (!$currentUser) {
-            Response::unauthorized('You must be logged in to like or unlike a comment.');
-            return;
-        }
-        $likeModel = new Like();
-        $liked = $likeModel->likeToggle($currentUser['id'], null, $commentId);
+        $currentUser = $this->requireAuth();
+        if (!$currentUser) return;
+        $liked = $this->likeModel->likeToggle($currentUser['id'], null, $commentId);
         if ($liked) {
             Response::success(null, 'Comment liked');
         } else {
             Response::success(null, 'Comment unliked');
         }
-    }                 
-    
+    }
 }

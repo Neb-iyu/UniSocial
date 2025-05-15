@@ -264,19 +264,27 @@ class Notification extends Model
         }
     }
 
-    /**
-     * Get all notifications that are not soft deleted
-     * @return array
-     */
-    public function allActive(): array
+    public function deleteByPostId(int $postId): int
     {
         try {
-            $stmt = $this->db->prepare("SELECT * FROM {$this->table} WHERE is_deleted = 0");
-            $stmt->execute();
-            return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+            $stmt = $this->db->prepare("DELETE FROM {$this->table} WHERE reference_type = 'post' AND reference_id = ?");
+            $stmt->execute([$postId]);
+            return $stmt->rowCount();
         } catch (\PDOException $e) {
-            error_log('Fetch all active notifications failed: ' . $e->getMessage());
-            return [];
+            error_log('Delete notifications by post failed: ' . $e->getMessage());
+            return 0;
+        }
+    }
+
+    public function deleteByCommentId(int $commentId): int
+    {
+        try {
+            $stmt = $this->db->prepare("DELETE FROM {$this->table} WHERE reference_type = 'comment' AND reference_id = ?");
+            $stmt->execute([$commentId]);
+            return $stmt->rowCount();
+        } catch (\PDOException $e) {
+            error_log('Delete notifications by comment failed: ' . $e->getMessage());
+            return 0;
         }
     }
 }

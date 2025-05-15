@@ -177,34 +177,6 @@ INSERT INTO roles (name, description) VALUES
 ('admin', 'University-level administrator with moderation privileges'),
 ('superadmin', 'System-wide administrator with full privileges');
 
--- Enforce only one superadmin and make it unassignable/unremovable
-DELIMITER $$
-CREATE TRIGGER only_one_superadmin
-BEFORE INSERT ON user_roles
-FOR EACH ROW
-BEGIN
-    IF (SELECT name FROM roles WHERE id = NEW.role_id) = 'superadmin' THEN
-        IF (SELECT COUNT(*) FROM user_roles ur
-            JOIN roles r ON ur.role_id = r.id
-            WHERE r.name = 'superadmin') > 0 THEN
-            SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Only one superadmin allowed';
-        END IF;
-    END IF;
-END$$
-DELIMITER ;
-
-DELIMITER $$
-CREATE TRIGGER prevent_remove_superadmin
-BEFORE DELETE ON user_roles
-FOR EACH ROW
-BEGIN
-    IF (SELECT name FROM roles WHERE id = OLD.role_id) = 'superadmin' THEN
-        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Cannot remove superadmin role';
-    END IF;
-END$$
-DELIMITER ;
-
-
 -- superadmin user
 INSERT INTO users (fullname, username, email, password, bio, profile_picture_url, university_id, year_of_study, gender)
 VALUES (

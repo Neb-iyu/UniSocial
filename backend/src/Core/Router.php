@@ -5,6 +5,18 @@ namespace Src\Core;
 class Router
 {
     private array $routes = [];
+    private string $basePath;
+
+    public function __construct(?string $basePath = null)
+    {
+        if ($basePath !== null) {
+            $this->basePath = $basePath;
+        } elseif (!empty($_ENV['ROUTER_BASE_PATH'])) {
+            $this->basePath = $_ENV['ROUTER_BASE_PATH'];
+        } else {
+            $this->basePath = '/unifyze/backend/public';
+        }
+    }
 
     public function addRoute(string $method, string $path, callable|string $handler): void
     {
@@ -15,6 +27,16 @@ class Router
     {
         $method = $_SERVER['REQUEST_METHOD'];
         $path = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+
+        // Strip base path from the request URI
+        if (strpos($path, $this->basePath) === 0) {
+            $path = substr($path, strlen($this->basePath));
+        }
+
+        // Ensure path starts with a forward slash
+        if (empty($path)) {
+            $path = '/';
+        }
 
         foreach ($this->routes[$method] ?? [] as $routePath => $handler) {
             $routePattern = preg_replace('/\{[^\/]+\}/', '([^/]+)', $routePath);

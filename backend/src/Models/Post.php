@@ -99,18 +99,26 @@ class Post extends Model
         }
     }
 
-    /**
-     * Permanently delete posts that have been soft deleted for over 2 weeks
-     * @return int Number of posts deleted
-     */
+    // Empties the recycle bin
     public function deleteOldSoftDeleted(): int
     {
         try {
+            // Find posts to be deleted
             $stmt = $this->db->prepare(
-                "DELETE FROM {$this->table} \
-                 WHERE is_deleted = 1 \
-                 AND deleted_at IS NOT NULL \
-                 AND deleted_at < DATE_SUB(NOW(), INTERVAL 2 WEEK)"
+                "SELECT id FROM {$this->table} WHERE is_deleted = 1 AND deleted_at IS NOT NULL AND deleted_at < DATE_SUB(NOW(), INTERVAL 2 WEEK)"
+            );
+            $stmt->execute();
+            $posts = $stmt->fetchAll(\PDO::FETCH_COLUMN);
+
+            // Delete notifications for each post
+            $notificationModel = new \Src\Models\Notification();
+            foreach ($posts as $postId) {
+                $notificationModel->deleteByPostId($postId);
+            }
+
+            // Now delete the posts
+            $stmt = $this->db->prepare(
+                "DELETE FROM {$this->table} WHERE is_deleted = 1 AND deleted_at IS NOT NULL AND deleted_at < DATE_SUB(NOW(), INTERVAL 2 WEEK)"
             );
             $stmt->execute();
             return $stmt->rowCount();

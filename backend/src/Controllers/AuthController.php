@@ -8,10 +8,15 @@ use Firebase\JWT\JWT;
 use Src\Core\Auth;
 use Src\Utilities\Validator;
 
-class AuthController
+class AuthController extends BaseController
 {
+    public function __construct()
+    {
+        parent::__construct();
+    }
+
     // POST /register
-    public function register()
+    public function register(): void
     {
         $input = json_decode(file_get_contents('php://input'), true);
         $input = Validator::sanitizeInput($input);
@@ -32,18 +37,17 @@ class AuthController
             Response::validationError($errors);
             return;
         }
-        $userModel = new User();
-        if ($userModel->findByEmail($input['email'])) {
+        if ($this->userModel->findByEmail($input['email'])) {
             Response::error('Email already registered', 409);
             return;
         }
-        if ($userModel->findByUsername($input['username'])) {
+        if ($this->userModel->findByUsername($input['username'])) {
             Response::error('Username already taken', 409);
             return;
         }
-        $userId = $userModel->create($input);
+        $userId = $this->userModel->create($input);
         if ($userId) {
-            $user = $userModel->find($userId);
+            $user = $this->userModel->find($userId);
             unset($user['password']);
             Response::success($user, 'Registration successful', 201);
         } else {
@@ -52,7 +56,7 @@ class AuthController
     }
 
     // POST /login
-    public function login()
+    public function login(): void
     {
         $input = json_decode(file_get_contents('php://input'), true);
         $input = Validator::sanitizeInput($input);
@@ -63,20 +67,15 @@ class AuthController
             ]);
             return;
         }
-        $userModel = new User();
         $login = $input['login'];
-        $user = null;
-        if (Validator::email($login)) {
-            $user = $userModel->findByEmail($login);
-        } else {
-            $user = $userModel->findByUsername($login);
-        }
+        $user = Validator::email($login)
+            ? $this->userModel->findByEmail($login)
+            : $this->userModel->findByUsername($login);
         if (!$user || !password_verify($input['password'], $user['password'])) {
             Response::unauthorized('Invalid credentials');
             return;
         }
-        $auth = new Auth();
-        $jwt = $auth->generateToken($user);
+        $jwt = $this->auth->generateToken($user);
         unset($user['password']);
         Response::success([
             'user' => $user,
@@ -85,14 +84,10 @@ class AuthController
     }
 
     // GET /me
-    public function me()
+    public function me(): void
     {
-        $auth = new Auth();
-        $user = $auth->getCurrentUser();
-        if (!$user) {
-            Response::unauthorized();
-            return;
-        }
+        $user = $this->requireAuth();
+        if (!$user) return;
         unset($user['password']);
         Response::success($user, 'Authenticated user');
     }

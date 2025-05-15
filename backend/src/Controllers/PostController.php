@@ -4,18 +4,25 @@ namespace Src\Controllers;
 
 use Src\Core\Response;
 use Src\Models\Post;
-use Src\Core\Auth;
+use Src\Models\Like;
 use Src\Utilities\Validator;
-use Src\Models\User;
 
-class PostController
+class PostController extends BaseController
 {
+    private Post $postModel;
+    private Like $likeModel;
+
+    public function __construct()
+    {
+        parent::__construct();
+        $this->postModel = new Post();
+        $this->likeModel = new Like();
+    }
 
     // GET /posts/{id}
-    public function getPostById($id)
+    public function getPostById($id): void
     {
-        $postModel = new Post();
-        $post = $postModel->find($id);
+        $post = $this->postModel->find($id);
         if ($post && !$post['is_deleted']) {
             Response::success($post, 'Post found');
         } else {
@@ -24,14 +31,10 @@ class PostController
     }
 
     // POST /posts
-    public function createPost()
+    public function createPost(): void
     {
-        $auth = new Auth();
-        $currentUser = $auth->getCurrentUser();
-        if (!$currentUser) {
-            Response::unauthorized('You must be logged in to create a post.');
-            return;
-        }
+        $currentUser = $this->requireAuth();
+        if (!$currentUser) return;
         $input = json_decode(file_get_contents('php://input'), true);
         $input = Validator::sanitizeInput($input);
         $input['user_id'] = $currentUser['id'];
@@ -43,10 +46,9 @@ class PostController
             Response::validationError($errors);
             return;
         }
-        $postModel = new Post();
-        $postId = $postModel->create($input);
+        $postId = $this->postModel->create($input);
         if ($postId) {
-            $post = $postModel->find($postId);
+            $post = $this->postModel->find($postId);
             Response::success($post, 'Post created', 201);
         } else {
             Response::error('Post creation failed', 500);
@@ -54,25 +56,16 @@ class PostController
     }
 
     // PATCH /posts/{id}
-    public function updatePost($id)
+    public function updatePost($id): void
     {
-        $auth = new Auth();
-        $currentUser = $auth->getCurrentUser();
-        if (!$currentUser) {
-            Response::unauthorized('You must be logged in to update a post.');
-            return;
-        }
-        $userModel = new User();
-        $postModel = new Post();
-        $post = $postModel->find($id);
+        $currentUser = $this->requireAuth();
+        if (!$currentUser) return;
+        $post = $this->postModel->find($id);
         if (!$post || $post['is_deleted']) {
             Response::notFound('Post not found');
             return;
         }
-        if ($post['user_id'] != $currentUser['id'] && !$userModel->is_admin($currentUser['id'])) {
-            Response::unauthorized('You can only update your own posts.');
-            return;
-        }
+        if (! $this->requireSelfOrAdmin($currentUser, $post['user_id'])) return;
         $input = json_decode(file_get_contents('php://input'), true);
         $input = Validator::sanitizeInput($input);
         $input['is_edited'] = true;
@@ -84,9 +77,9 @@ class PostController
             Response::validationError($errors);
             return;
         }
-        $success = $postModel->update($id, $input);
+        $success = $this->postModel->update($id, $input);
         if ($success) {
-            $post = $postModel->find($id);
+            $post = $this->postModel->find($id);
             Response::success($post, 'Post updated');
         } else {
             Response::error('Post update failed or no valid fields provided', 400);
@@ -94,27 +87,18 @@ class PostController
     }
 
     // DELETE /posts/{id}
-    public function deletePost($id)
+    public function deletePost($id): void
     {
-        $auth = new Auth();
-        $currentUser = $auth->getCurrentUser();
-        if (!$currentUser) {
-            Response::unauthorized('You must be logged in to delete a post.');
-            return;
-        }
-        $userModel = new User();
-        $postModel = new Post();
-        $post = $postModel->find($id);
+        $currentUser = $this->requireAuth();
+        if (!$currentUser) return;
+        $post = $this->postModel->find($id);
         if (!$post || $post['is_deleted']) {
             Response::notFound('Post not found');
             return;
         }
-        if ($post['user_id'] != $currentUser['id'] && !$userModel->is_admin($currentUser['id'])) {
-            Response::unauthorized('You can only delete your own posts.');
-            return;
-        }
+        if (! $this->requireSelfOrAdmin($currentUser, $post['user_id'])) return;
         // Soft delete: set is_deleted=1, deleted_at=NOW()
-        $success = $postModel->update($id, [
+        $success = $this->postModel->update($id, [
             'is_deleted' => 1,
             'deleted_at' => date('Y-m-d H:i:s')
         ]);
@@ -126,32 +110,25 @@ class PostController
     }
 
     // GET /feed
-    public function getFeed()
+    public function getFeed(): void
     {
-        $auth = new Auth();
-        $currentUser = $auth->getCurrentUser();
-        if (!$currentUser) {
-            Response::unauthorized('You must be logged in to view your feed.');
-            return;
-        }
-        $postModel = new Post();
-        $feed = $postModel->getFeed($currentUser['id']);
+        $currentUser = $this->requireAuth();
+        if (!$currentUser) return;
+        $feed = $this->postModel->getFeed($currentUser['id']);
         Response::success($feed, 'Feed fetched successfully');
     }
 
     // GET /posts/{id}/likes
-    public function getLikes($postId)
+    public function getLikes($postId): void
     {
-        $likeModel = new \Src\Models\Like();
-        $likes = $likeModel->getLikesForPost($postId);
+        $likes = $this->likeModel->getLikesForPost($postId);
         Response::success($likes, 'Likes fetched successfully');
     }
 
     // GET /posts/{id}/likes/count
-    public function getLikeCount($postId)
+    public function getLikeCount($postId): void
     {
-        $likeModel = new \Src\Models\Like();
-        $count = $likeModel->countLikesForPost($postId);
+        $count = $this->likeModel->countLikesForPost($postId);
         Response::success($count, 'Like count fetched successfully');
     }
 }
