@@ -11,13 +11,8 @@ class Role extends Model
     protected string $table = 'roles';
     protected string $primaryKey = 'id';
 
-    /**
-     * Create a new role (superadmin only)
-     * @param string $name
-     * @param string|null $description
-     * @return bool
-     */
-    public function createRole(string $name, string $description = null): bool
+
+    public function createRole(string $name, ?string $description = null): bool
     {
         try {
             $stmt = $this->db->prepare("INSERT INTO roles (name, description) VALUES (?, ?)");
@@ -28,11 +23,7 @@ class Role extends Model
         }
     }
 
-    /**
-     * Delete a role (superadmin only)
-     * @param string $name
-     * @return bool
-     */
+
     public function deleteRole(string $name): bool
     {
         try {
@@ -44,12 +35,7 @@ class Role extends Model
         }
     }
 
-    /**
-     * Update a role's description (superadmin only)
-     * @param string $name
-     * @param string $description
-     * @return bool
-     */
+
     public function updateRole(string $name, string $description): bool
     {
         try {
@@ -61,10 +47,7 @@ class Role extends Model
         }
     }
 
-    /**
-     * Get all available roles
-     * @return array
-     */
+
     public function getRoles(): array
     {
         try {

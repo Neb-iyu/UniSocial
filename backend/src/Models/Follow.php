@@ -10,36 +10,55 @@ class Follow extends Model
     protected string $table = 'follows';
     protected array $fillable = ['follower_id', 'followed_id'];
 
-    public function follow(int $followerId, int $followedId): bool
+    /**
+     * Follow a user. Returns ['success' => bool, 'message' => string]
+     */
+    public function follow(int $followerId, int $followedId): array
     {
+        if ($followerId == $followedId) {
+            return ['success' => false, 'message' => 'You cannot follow yourself.'];
+        }
         try {
             $result = $this->executeUpdate(
                 "INSERT IGNORE INTO {$this->table} (follower_id, followed_id) VALUES (?, ?)",
                 [$followerId, $followedId]
             );
-            if ($result && $followerId != $followedId) {
+            if ($result) {
                 $this->notify('follow', [
                     'recipient_id' => $followedId,
                     'actor_id' => $followerId
                 ]);
+                return ['success' => true, 'message' => 'Followed successfully.'];
+            } else {
+                return ['success' => false, 'message' => 'You are already following this user.'];
             }
-            return $result;
         } catch (PDOException $e) {
             error_log('Follow failed: ' . $e->getMessage());
-            return false;
+            return ['success' => false, 'message' => 'Database error: ' . $e->getMessage()];
         }
     }
 
-    public function unfollow(int $followerId, int $followedId): bool
+    /**
+     * Unfollow a user. Returns ['success' => bool, 'message' => string]
+     */
+    public function unfollow(int $followerId, int $followedId): array
     {
+        if ($followerId == $followedId) {
+            return ['success' => false, 'message' => 'You cannot unfollow yourself.'];
+        }
         try {
-            return $this->executeUpdate(
+            $result = $this->executeUpdate(
                 "DELETE FROM {$this->table} WHERE follower_id = ? AND followed_id = ?",
                 [$followerId, $followedId]
             );
+            if ($result) {
+                return ['success' => true, 'message' => 'Unfollowed successfully.'];
+            } else {
+                return ['success' => false, 'message' => 'You are not following this user.'];
+            }
         } catch (PDOException $e) {
             error_log('Unfollow failed: ' . $e->getMessage());
-            return false;
+            return ['success' => false, 'message' => 'Database error: ' . $e->getMessage()];
         }
     }
 

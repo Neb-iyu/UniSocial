@@ -11,13 +11,42 @@ class Like extends Model
     protected string $primaryKey = 'id';
     protected array $fillable = ['user_id', 'post_id', 'comment_id'];
 
-    public function likeToggle(int $userId, ?int $postId = null, ?int $commentId = null): bool
+    /**
+     * Toggle like for a post or comment.
+     * Returns ['success' => bool, 'message' => string]
+     */
+    public function likeToggle(int $userId, ?int $postId = null, ?int $commentId = null): array
     {
         if (($postId === null && $commentId === null) || ($postId !== null && $commentId !== null)) {
-            throw new \InvalidArgumentException('Either postId or commentId must be provided, but not both.');
+            return ['success' => false, 'message' => 'Either postId or commentId must be provided, but not both.'];
         }
         $this->db->beginTransaction();
         try {
+            // Existence and soft-delete check
+            if ($postId !== null) {
+                $postModel = new \Src\Models\Post();
+                $post = $postModel->find($postId);
+                if (!$post) {
+                    $this->db->rollBack();
+                    return ['success' => false, 'message' => 'Post not found.'];
+                }
+                if (!empty($post['is_deleted'])) {
+                    $this->db->rollBack();
+                    return ['success' => false, 'message' => 'Cannot like a deleted post.'];
+                }
+            } else {
+                $commentModel = new \Src\Models\Comment();
+                $comment = $commentModel->find($commentId);
+                if (!$comment) {
+                    $this->db->rollBack();
+                    return ['success' => false, 'message' => 'Comment not found.'];
+                }
+                if (!empty($comment['is_deleted'])) {
+                    $this->db->rollBack();
+                    return ['success' => false, 'message' => 'Cannot like a deleted comment.'];
+                }
+            }
+
             $query = "SELECT 1 FROM {$this->table} WHERE user_id = ? AND ";
             $params = [$userId];
             if ($postId !== null) {
@@ -31,27 +60,37 @@ class Like extends Model
             $exists = $this->executeQuery($query, $params);
 
             if ($exists) {
-                $this->removeLike($userId, $postId, $commentId);
+                $result = $this->removeLike($userId, $postId, $commentId);
+                if ($result !== true) {
+                    $this->db->rollBack();
+                    return ['success' => false, 'message' => $result ?: 'Failed to unlike.'];
+                }
                 $this->db->commit();
-                return false;
+                return ['success' => true, 'message' => 'Unliked successfully.'];
             }
 
-            $this->addLike($userId, $postId, $commentId);
+            $result = $this->addLike($userId, $postId, $commentId);
+            if ($result !== true) {
+                $this->db->rollBack();
+                return ['success' => false, 'message' => $result ?: 'Failed to like.'];
+            }
             $this->db->commit();
-            return true;
+            return ['success' => true, 'message' => 'Liked successfully.'];
         } catch (PDOException $e) {
             $this->db->rollBack();
             error_log('Like toggle failed: ' . $e->getMessage());
-            return false;
+            return ['success' => false, 'message' => 'Database error: ' . $e->getMessage()];
         }
     }
 
-    private function addLike(int $userId, ?int $postId, ?int $commentId): void
+    /**
+     * Add a like. Returns true on success, or error message string on failure.
+     */
+    private function addLike(int $userId, ?int $postId, ?int $commentId)
     {
         if (($postId === null && $commentId === null) || ($postId !== null && $commentId !== null)) {
-            throw new \InvalidArgumentException('Either postId or commentId must be provided, but not both.');
+            return 'Either postId or commentId must be provided, but not both.';
         }
-        $this->db->beginTransaction();
         try {
             $this->executeUpdate(
                 "INSERT INTO {$this->table} (user_id, post_id, comment_id) VALUES (?, ?, ?)",
@@ -65,7 +104,6 @@ class Like extends Model
                 "UPDATE {$table} SET likes_count = likes_count + 1 WHERE id = ?",
                 [$id]
             );
-            $this->db->commit();
 
             // Notify the owner if not self-like
             if ($postId !== null) {
@@ -89,18 +127,21 @@ class Like extends Model
                     ]);
                 }
             }
+            return true;
         } catch (PDOException $e) {
-            $this->db->rollBack();
             error_log('Add like failed: ' . $e->getMessage());
+            return 'Database error: ' . $e->getMessage();
         }
     }
 
-    private function removeLike(int $userId, ?int $postId, ?int $commentId): void
+    /**
+     * Remove a like. Returns true on success, or error message string on failure.
+     */
+    private function removeLike(int $userId, ?int $postId, ?int $commentId)
     {
         if (($postId === null && $commentId === null) || ($postId !== null && $commentId !== null)) {
-            throw new \InvalidArgumentException('Either postId or commentId must be provided, but not both.');
+            return 'Either postId or commentId must be provided, but not both.';
         }
-        $this->db->beginTransaction();
         try {
             $query = "DELETE FROM {$this->table} WHERE user_id = ? AND ";
             $params = [$userId];
@@ -121,10 +162,10 @@ class Like extends Model
                 "UPDATE {$table} SET likes_count = likes_count - 1 WHERE id = ?",
                 [$id]
             );
-            $this->db->commit();
+            return true;
         } catch (PDOException $e) {
-            $this->db->rollBack();
             error_log('Remove like failed: ' . $e->getMessage());
+            return 'Database error: ' . $e->getMessage();
         }
     }
 
@@ -193,5 +234,4 @@ class Like extends Model
         $commentModel = new Comment();
         return $commentModel->getOwnerId($commentId);
     }
-
 }
