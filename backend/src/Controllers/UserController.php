@@ -27,31 +27,36 @@ class UserController extends BaseController
         if (!$this->requireAdmin($currentUser)) return;
         $users = $this->userModel->allActive();
         foreach ($users as &$user) {
-            unset($user['password']);
+            $user = $this->filterUserResponse($user);
         }
         Response::success($users, 'Users fetched successfully');
     }
 
-    // GET /users/{id}
-    public function getUserById(int $id): void
+    // GET /users/{uuid}
+    public function getUserByUuid(string $uuid): void
     {
         $currentUser = $this->requireAuth();
         if (!$currentUser) return;
-        $user = $this->userModel->find($id);
+        $user = $this->userModel->findByUuid($uuid);
         if ($user && !$user['is_deleted']) {
-            unset($user['password']);
+            $user = $this->filterUserResponse($user);
             Response::success($user, 'User found');
         } else {
             Response::notFound('User not found');
         }
     }
 
-    // PATCH /users/{id}
-    public function updateUser(int $id): void
+    // PATCH /users/{uuid}
+    public function updateUser(string $uuid): void
     {
         $currentUser = $this->requireAuth();
         if (!$currentUser) return;
-        if ($currentUser['id'] != $id) {
+        $user = $this->userModel->findByUuid($uuid);
+        if (!$user) {
+            Response::notFound('User not found');
+            return;
+        }
+        if ($currentUser['public_uuid'] !== $uuid) {
             Response::unauthorized('You can only update your own account.');
             return;
         }
@@ -61,23 +66,28 @@ class UserController extends BaseController
             Response::validationError($errors);
             return;
         }
-        $success = $this->userModel->partialUpdate($id, $input);
+        $success = $this->userModel->partialUpdate($user['id'], $input);
         if ($success) {
-            $user = $this->userModel->find($id);
-            unset($user['password']);
+            $user = $this->userModel->findByUuid($uuid);
+            $user = $this->filterUserResponse($user);
             Response::success($user, 'User updated');
         } else {
             Response::error('User update failed or no valid fields provided', 400);
         }
     }
 
-    // DELETE /users/{id}
-    public function deleteUser(int $id): void
+    // DELETE /users/{uuid}
+    public function deleteUser(string $uuid): void
     {
         $currentUser = $this->requireAuth();
         if (!$currentUser) return;
-        if (!$this->requireSelfOrAdmin($currentUser, $id)) return;
-        $success = $this->userModel->softDelete($id);
+        $user = $this->userModel->findByUuid($uuid);
+        if (!$user) {
+            Response::notFound('User not found');
+            return;
+        }
+        if ($currentUser['public_uuid'] !== $uuid && !$this->requireSelfOrAdmin($currentUser, $user['id'])) return;
+        $success = $this->userModel->softDelete($user['id']);
         if ($success) {
             Response::success(null, 'User deleted');
         } else {
@@ -85,21 +95,37 @@ class UserController extends BaseController
         }
     }
 
-    // GET /users/{id}/followers
-    public function getFollowers(int $id): void
+    // GET /users/{uuid}/followers
+    public function getFollowers(string $uuid): void
     {
         $currentUser = $this->requireAuth();
         if (!$currentUser) return;
-        $followers = $this->followModel->getFollowers($id); // returns array of ['follower_id' => ...]
+        $user = $this->userModel->findByUuid($uuid);
+        if (!$user) {
+            Response::notFound('User not found');
+            return;
+        }
+        $followers = $this->followModel->getFollowers($user['id']);
+        foreach ($followers as &$follower) {
+            $follower = $this->filterUserResponse($follower);
+        }
         Response::success($followers, 'Followers fetched successfully');
     }
 
-    // GET /users/{id}/following
-    public function getFollowing(int $id): void
+    // GET /users/{uuid}/following
+    public function getFollowing(string $uuid): void
     {
         $currentUser = $this->requireAuth();
         if (!$currentUser) return;
-        $following = $this->followModel->getFollowing($id); // returns array of ['followed_id' => ...]
+        $user = $this->userModel->findByUuid($uuid);
+        if (!$user) {
+            Response::notFound('User not found');
+            return;
+        }
+        $following = $this->followModel->getFollowing($user['id']);
+        foreach ($following as &$followee) {
+            $followee = $this->filterUserResponse($followee);
+        }
         Response::success($following, 'Following fetched successfully');
     }
 
@@ -113,7 +139,7 @@ class UserController extends BaseController
         if ($success) {
             $user = $this->userModel->findByUsername($username);
             if ($user) {
-                unset($user['password']);
+                $user = $this->filterUserResponse($user);
             }
             Response::success($user, 'User recovered');
         } else {
@@ -121,12 +147,17 @@ class UserController extends BaseController
         }
     }
 
-    // POST /users/{id}/profile-picture
-    public function uploadProfilePicture(int $id): void
+    // POST /users/{uuid}/profile-picture
+    public function uploadProfilePicture(string $uuid): void
     {
         $currentUser = $this->requireAuth();
         if (!$currentUser) return;
-        if ($currentUser['id'] != $id) {
+        $user = $this->userModel->findByUuid($uuid);
+        if (!$user) {
+            Response::notFound('User not found');
+            return;
+        }
+        if ($currentUser['public_uuid'] !== $uuid) {
             Response::unauthorized('You can only update your own profile picture.');
             return;
         }
@@ -139,36 +170,46 @@ class UserController extends BaseController
             Response::error($result['error'], 400);
             return;
         }
-        $success = $this->userModel->update($id, ['profile_picture_url' => $result['path']]);
+        $success = $this->userModel->update($user['id'], ['profile_picture_url' => $result['path']]);
         if ($success) {
-            $user = $this->userModel->find($id);
-            unset($user['password']);
+            $user = $this->userModel->findByUuid($uuid);
+            $user = $this->filterUserResponse($user);
             Response::success($user, 'Profile picture updated');
         } else {
             Response::error('Failed to update profile picture', 500);
         }
     }
 
-    // POST /users/{id}/promote-admin
-    public function promoteAdmin(int $id): void
+    // POST /users/{uuid}/promote-admin
+    public function promoteAdmin(string $uuid): void
     {
         $currentUser = $this->requireAuth();
         if (!$currentUser) return;
         if (!$this->requireSuperAdmin($currentUser)) return;
-        if ($this->userModel->promoteAdmin($id)) {
+        $user = $this->userModel->findByUuid($uuid);
+        if (!$user) {
+            Response::notFound('User not found');
+            return;
+        }
+        if ($this->userModel->promoteAdmin($user['id'])) {
             Response::success(null, 'User promoted to admin.');
         } else {
             Response::error('Failed to promote user.', 500);
         }
     }
 
-    // POST /users/{id}/demote-admin
-    public function demoteAdmin(int $id): void
+    // POST /users/{uuid}/demote-admin
+    public function demoteAdmin(string $uuid): void
     {
         $currentUser = $this->requireAuth();
         if (!$currentUser) return;
         if (!$this->requireSuperAdmin($currentUser)) return;
-        if ($this->userModel->demoteAdmin($id)) {
+        $user = $this->userModel->findByUuid($uuid);
+        if (!$user) {
+            Response::notFound('User not found');
+            return;
+        }
+        if ($this->userModel->demoteAdmin($user['id'])) {
             Response::success(null, 'Admin demoted to user.');
         } else {
             Response::error('Failed to demote admin.', 500);
@@ -187,7 +228,7 @@ class UserController extends BaseController
         }
         $admins = $this->userModel->getAdminList();
         foreach ($admins as &$admin) {
-            unset($admin['password']);
+            $admin = $this->filterUserResponse($admin);
         }
         Response::success($admins, 'Admin list fetched successfully');
     }
@@ -204,7 +245,7 @@ class UserController extends BaseController
         }
         $users = $this->userModel->getUsersByRole($role);
         foreach ($users as &$user) {
-            unset($user['password']);
+            $user = $this->filterUserResponse($user);
         }
         Response::success($users, 'Users with role ' . $role . ' fetched successfully');
     }
@@ -224,5 +265,11 @@ class UserController extends BaseController
             $errors['password'] = 'Password must be at least 8 characters, include a letter and a number';
         }
         return $errors;
+    }
+
+    private function filterUserResponse(array $user): array
+    {
+        unset($user['id'], $user['password'], $user['is_deleted']);
+        return $user;
     }
 }

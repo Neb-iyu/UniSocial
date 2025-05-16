@@ -2,6 +2,7 @@
 
 namespace Src\Core;
 
+use Src\Models\Notification;
 use PDO;
 use PDOException;
 
@@ -97,20 +98,11 @@ abstract class Model
         }
     }
 
-    /**
-     * Notify users of actions (like, comment, follow, post, mention).
-     *
-     * @param string $type Notification type: 'like', 'comment', 'follow', 'post', 'mention'
-     * @param array $data Data required for the notification, keys depend on type:
-     *   - like:    recipient_id, actor_id, content_type, content_id
-     *   - comment: recipient_id, actor_id, post_id
-     *   - follow:  recipient_id, actor_id
-     *   - post:    recipient_id, actor_id, post_id
-     *   - mention: recipient_id, actor_id, content_type, content_id
-     */
+    // Notify users of actions (like, comment, follow, post, mention).
+    
     protected function notify(string $type, array $data): void
     {
-        $notification = new \Src\Models\Notification();
+        $notification = new Notification();
         switch ($type) {
             case 'like':
                 $notification->createLikeNotification(

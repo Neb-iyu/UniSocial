@@ -4,6 +4,7 @@ namespace Src\Controllers;
 
 use Src\Models\Role;
 use Src\Core\Response;
+use Src\Models\User;
 
 class RoleController extends BaseController
 {
@@ -88,14 +89,20 @@ class RoleController extends BaseController
         if (!$currentUser) return;
         if (!$this->requireSuperAdmin($currentUser)) return;
         $input = json_decode(file_get_contents('php://input'), true);
-        $userId = $input['user_id'] ?? null;
+        $userUuid = $input['user_uuid'] ?? null;
         $roleName = $input['role'] ?? null;
-        if (!$userId || !$roleName) {
-            Response::validationError(['user_id' => 'User ID ("user_id") and role ("role") are required.']);
+        if (!$userUuid || !$roleName) {
+            Response::validationError(['user_uuid' => 'User UUID ("user_uuid") and role ("role") are required.']);
             return;
         }
-        if ($this->userModel->assignRole($userId, $roleName)) {
-            Response::success(['user_id' => $userId, 'role' => $roleName], 'Role assigned to user successfully.');
+        $userModel = new User();
+        $user = $userModel->findByUuid($userUuid);
+        if (!$user) {
+            Response::error('User not found', 404);
+            return;
+        }
+        if ($this->userModel->assignRole($user['id'], $roleName)) {
+            Response::success(['user_uuid' => $userUuid, 'role' => $roleName], 'Role assigned to user successfully.');
         } else {
             Response::error('Failed to assign role. The user or role may not exist, or the user already has this role.', 500);
         }
@@ -108,14 +115,20 @@ class RoleController extends BaseController
         if (!$currentUser) return;
         if (!$this->requireSuperAdmin($currentUser)) return;
         $input = json_decode(file_get_contents('php://input'), true);
-        $userId = $input['user_id'] ?? null;
+        $userUuid = $input['user_uuid'] ?? null;
         $roleName = $input['role'] ?? null;
-        if (!$userId || !$roleName) {
-            Response::validationError(['user_id' => 'User ID ("user_id") and role ("role") are required.']);
+        if (!$userUuid || !$roleName) {
+            Response::validationError(['user_uuid' => 'User UUID ("user_uuid") and role ("role") are required.']);
             return;
         }
-        if ($this->userModel->removeRole($userId, $roleName)) {
-            Response::success(['user_id' => $userId, 'role' => $roleName], 'Role removed from user successfully.');
+        $userModel = new User();
+        $user = $userModel->findByUuid($userUuid);
+        if (!$user) {
+            Response::error('User not found', 404);
+            return;
+        }
+        if ($this->userModel->removeRole($user['id'], $roleName)) {
+            Response::success(['user_uuid' => $userUuid, 'role' => $roleName], 'Role removed from user successfully.');
         } else {
             Response::error('Failed to remove role. The user or role may not exist, or the user does not have this role.', 500);
         }

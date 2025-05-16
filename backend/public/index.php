@@ -24,53 +24,53 @@ $router->addRoute('GET', '/me', 'AuthController@me');
 
 // User routes
 $router->addRoute('GET', '/users', 'UserController@getAllUsers');
-$router->addRoute('GET', '/users/{id}', 'UserController@getUserById');
-$router->addRoute('PATCH', '/users/{id}', 'UserController@updateUser');
-$router->addRoute('DELETE', '/users/{id}', 'UserController@deleteUser');
-$router->addRoute('GET', '/users/{id}/followers', 'UserController@getFollowers');
-$router->addRoute('GET', '/users/{id}/following', 'UserController@getFollowing');
+$router->addRoute('GET', '/users/{uuid}', 'UserController@getUserByUuid');
+$router->addRoute('PATCH', '/users/{uuid}', 'UserController@updateUser');
+$router->addRoute('DELETE', '/users/{uuid}', 'UserController@deleteUser');
+$router->addRoute('GET', '/users/{uuid}/followers', 'UserController@getFollowers');
+$router->addRoute('GET', '/users/{uuid}/following', 'UserController@getFollowing');
 $router->addRoute('POST', '/users/{username}/recover', 'UserController@recoverUser');
-$router->addRoute('POST', '/users/{id}/profile-picture', 'UserController@uploadProfilePicture');
-$router->addRoute('POST', '/users/{id}/promote-admin', 'UserController@promoteAdmin');
-$router->addRoute('POST', '/users/{id}/demote-admin', 'UserController@demoteAdmin');
+$router->addRoute('POST', '/users/{uuid}/profile-picture', 'UserController@uploadProfilePicture');
+$router->addRoute('POST', '/users/{uuid}/promote-admin', 'UserController@promoteAdmin');
+$router->addRoute('POST', '/users/{uuid}/demote-admin', 'UserController@demoteAdmin');
 $router->addRoute('GET', '/admins', 'UserController@getAdminList');
 $router->addRoute('GET', '/users/role/{role}', 'UserController@getUsersByRole');
 
 // Post routes
-$router->addRoute('GET', '/posts/{id}', 'PostController@getPostById');
+$router->addRoute('GET', '/posts/{uuid}', 'PostController@getPostByUuid');
 $router->addRoute('POST', '/posts', 'PostController@createPost');
-$router->addRoute('PATCH', '/posts/{id}', 'PostController@updatePost');
-$router->addRoute('DELETE', '/posts/{id}', 'PostController@deletePost');
+$router->addRoute('PATCH', '/posts/{uuid}', 'PostController@updatePost');
+$router->addRoute('DELETE', '/posts/{uuid}', 'PostController@deletePost');
 $router->addRoute('GET', '/feed', 'PostController@getFeed');
-$router->addRoute('GET', '/posts/{id}/likes', 'PostController@getLikes');
-$router->addRoute('GET', '/posts/{id}/likes/count', 'PostController@getLikeCount');
+$router->addRoute('GET', '/posts/{uuid}/likes', 'PostController@getLikes');
+$router->addRoute('GET', '/posts/{uuid}/likes/count', 'PostController@getLikeCount');
 
 // Comment routes
 $router->addRoute('GET', '/comments', 'CommentController@getAllComments');
-$router->addRoute('GET', '/comments/{id}', 'CommentController@getCommentById');
+$router->addRoute('GET', '/comments/{uuid}', 'CommentController@getCommentByUuid');
 $router->addRoute('POST', '/comments', 'CommentController@createComment');
-$router->addRoute('PATCH', '/comments/{id}', 'CommentController@updateComment');
-$router->addRoute('DELETE', '/comments/{id}', 'CommentController@deleteComment');
-$router->addRoute('GET', '/comments/{id}/likes', 'CommentController@getCommentLikes');
-$router->addRoute('GET', '/comments/{id}/likes/count', 'CommentController@getCommentLikeCount');
+$router->addRoute('PATCH', '/comments/{uuid}', 'CommentController@updateComment');
+$router->addRoute('DELETE', '/comments/{uuid}', 'CommentController@deleteComment');
+$router->addRoute('GET', '/comments/{uuid}/likes', 'CommentController@getCommentLikes');
+$router->addRoute('GET', '/comments/{uuid}/likes/count', 'CommentController@getCommentLikeCount');
 
 // Notification routes
 $router->addRoute('GET', '/notifications', 'NotificationController@getAllNotifications');
-$router->addRoute('GET', '/notifications/{id}', 'NotificationController@getNotificationById');
+$router->addRoute('GET', '/notifications/{uuid}', 'NotificationController@getNotificationByUuid');
 $router->addRoute('POST', '/notifications', 'NotificationController@createNotification');
-$router->addRoute('PATCH', '/notifications/{id}', 'NotificationController@updateNotification');
-$router->addRoute('DELETE', '/notifications/{id}', 'NotificationController@deleteNotification');
+$router->addRoute('PATCH', '/notifications/{uuid}', 'NotificationController@updateNotification');
+$router->addRoute('DELETE', '/notifications/{uuid}', 'NotificationController@deleteNotification');
 
 // Mention routes
 $router->addRoute('GET', '/mentions', 'MentionController@getAllMentions');
-$router->addRoute('GET', '/mentions/{id}', 'MentionController@getMentionById');
+$router->addRoute('GET', '/mentions/{uuid}', 'MentionController@getMentionByUuid');
 $router->addRoute('POST', '/mentions', 'MentionController@createMention');
-$router->addRoute('PATCH', '/mentions/{id}', 'MentionController@updateMention');
-$router->addRoute('DELETE', '/mentions/{id}', 'MentionController@deleteMention');
+$router->addRoute('PATCH', '/mentions/{uuid}', 'MentionController@updateMention');
+$router->addRoute('DELETE', '/mentions/{uuid}', 'MentionController@deleteMention');
 
 // Like routes
-$router->addRoute('POST', '/posts/{id}/like', 'LikeController@like');
-$router->addRoute('POST', '/comments/{id}/like', 'LikeController@likeComment');
+$router->addRoute('POST', '/posts/{uuid}/like', 'LikeController@like');
+$router->addRoute('POST', '/comments/{uuid}/like', 'LikeController@likeComment');
 
 // Role routes
 $router->addRoute('POST', '/roles', 'RoleController@createRole');
@@ -79,5 +79,9 @@ $router->addRoute('GET', '/roles', 'RoleController@getRoles');
 $router->addRoute('PATCH', '/roles/{role}', 'RoleController@updateRole');
 $router->addRoute('POST', '/roles/assign', 'RoleController@assignRole');
 $router->addRoute('POST', '/roles/remove', 'RoleController@removeRole');
+
+// Follow routes
+$router->addRoute('POST', '/users/{uuid}/follow', 'FollowController@follow');
+$router->addRoute('DELETE', '/users/{uuid}/follow', 'FollowController@unfollow');
 
 $router->dispatch();

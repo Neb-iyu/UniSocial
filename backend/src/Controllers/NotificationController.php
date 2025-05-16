@@ -16,23 +16,31 @@ class NotificationController extends BaseController
         $this->notificationModel = new Notification();
     }
 
+    private function filterNotificationResponse(array $notification): array
+    {
+        unset($notification['id'], $notification['user_id'], $notification['from_user_id']);
+        return $notification;
+    }
+
     // GET /notifications
     public function getAllNotifications(): void
     {
         $currentUser = $this->requireAuth();
         if (!$currentUser) return;
         $notifications = $this->notificationModel->getNotifications($currentUser['id'], 20, 0);
-        Response::success($notifications, 'Notifications fetched successfully');
+        $filteredNotifications = array_map([$this, 'filterNotificationResponse'], $notifications);
+        Response::success($filteredNotifications, 'Notifications fetched successfully');
     }
 
-    // GET /notifications/{id}
-    public function getNotificationById($id): void
+    // GET /notifications/{uuid}
+    public function getNotificationByUuid(string $uuid): void
     {
         $currentUser = $this->requireAuth();
         if (!$currentUser) return;
-        $notification = $this->notificationModel->find($id);
+        $notification = $this->notificationModel->findByUuid($uuid);
         if ($notification && !$notification['is_deleted'] && $notification['user_id'] == $currentUser['id']) {
-            Response::success($notification, 'Notification found');
+            $filteredNotification = $this->filterNotificationResponse($notification);
+            Response::success($filteredNotification, 'Notification found');
         } else {
             Response::notFound('Notification not found');
         }
@@ -47,45 +55,47 @@ class NotificationController extends BaseController
         $notificationId = $this->notificationModel->create($input);
         if ($notificationId) {
             $notification = $this->notificationModel->find($notificationId);
-            Response::success($notification, 'Notification created', 201);
+            $filteredNotification = $this->filterNotificationResponse($notification);
+            Response::success($filteredNotification, 'Notification created', 201);
         } else {
             Response::error('Notification creation failed', 500);
         }
     }
 
-    // PATCH /notifications/{id}
-    public function updateNotification($id): void
+    // PATCH /notifications/{uuid}
+    public function updateNotification(string $uuid): void
     {
         $currentUser = $this->requireAuth();
         if (!$currentUser) return;
-        $notification = $this->notificationModel->find($id);
+        $notification = $this->notificationModel->findByUuid($uuid);
         if (!$notification || $notification['is_deleted']) {
             Response::notFound('Notification not found');
             return;
         }
         if (isset($notification['user_id']) && !$this->requireSelfOrAdmin($currentUser, $notification['user_id'])) return;
         $input = json_decode(file_get_contents('php://input'), true);
-        $success = $this->notificationModel->Update($id, $input);
+        $success = $this->notificationModel->Update($notification['id'], $input);
         if ($success) {
-            $notification = $this->notificationModel->find($id);
-            Response::success($notification, 'Notification updated');
+            $notification = $this->notificationModel->findByUuid($uuid);
+            $filteredNotification = $this->filterNotificationResponse($notification);
+            Response::success($filteredNotification, 'Notification updated');
         } else {
             Response::error('Notification update failed or no valid fields provided', 400);
         }
     }
 
-    // DELETE /notifications/{id}
-    public function deleteNotification($id): void
+    // DELETE /notifications/{uuid}
+    public function deleteNotification(string $uuid): void
     {
         $currentUser = $this->requireAuth();
         if (!$currentUser) return;
-        $notification = $this->notificationModel->find($id);
+        $notification = $this->notificationModel->findByUuid($uuid);
         if (!$notification || $notification['is_deleted']) {
             Response::notFound('Notification not found');
             return;
         }
         if (isset($notification['user_id']) && !$this->requireSelfOrAdmin($currentUser, $notification['user_id'])) return;
-        $success = $this->notificationModel->Delete($id);
+        $success = $this->notificationModel->Delete($notification['id']);
         if ($success) {
             Response::success(null, 'Notification deleted');
         } else {

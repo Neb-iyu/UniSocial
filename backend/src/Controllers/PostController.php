@@ -19,11 +19,18 @@ class PostController extends BaseController
         $this->likeModel = new Like();
     }
 
-    // GET /posts/{id}
-    public function getPostById($id): void
+    private function filterPostResponse(array $post): array
     {
-        $post = $this->postModel->find($id);
+        unset($post['id'], $post['user_id'], $post['is_deleted']);
+        return $post;
+    }
+
+    // GET /posts/{uuid}
+    public function getPostByUuid(string $uuid): void
+    {
+        $post = $this->postModel->findByUuid($uuid);
         if ($post && !$post['is_deleted']) {
+            $post = $this->filterPostResponse($post);
             Response::success($post, 'Post found');
         } else {
             Response::notFound('Post not found');
@@ -49,18 +56,19 @@ class PostController extends BaseController
         $postId = $this->postModel->create($input);
         if ($postId) {
             $post = $this->postModel->find($postId);
+            $post = $this->filterPostResponse($post);
             Response::success($post, 'Post created', 201);
         } else {
             Response::error('Post creation failed', 500);
         }
     }
 
-    // PATCH /posts/{id}
-    public function updatePost($id): void
+    // PATCH /posts/{uuid}
+    public function updatePost(string $uuid): void
     {
         $currentUser = $this->requireAuth();
         if (!$currentUser) return;
-        $post = $this->postModel->find($id);
+        $post = $this->postModel->findByUuid($uuid);
         if (!$post || $post['is_deleted']) {
             Response::notFound('Post not found');
             return;
@@ -77,28 +85,29 @@ class PostController extends BaseController
             Response::validationError($errors);
             return;
         }
-        $success = $this->postModel->update($id, $input);
+        $success = $this->postModel->update($post['id'], $input);
         if ($success) {
-            $post = $this->postModel->find($id);
+            $post = $this->postModel->findByUuid($uuid);
+            $post = $this->filterPostResponse($post);
             Response::success($post, 'Post updated');
         } else {
             Response::error('Post update failed or no valid fields provided', 400);
         }
     }
 
-    // DELETE /posts/{id}
-    public function deletePost($id): void
+    // DELETE /posts/{uuid}
+    public function deletePost(string $uuid): void
     {
         $currentUser = $this->requireAuth();
         if (!$currentUser) return;
-        $post = $this->postModel->find($id);
+        $post = $this->postModel->findByUuid($uuid);
         if (!$post || $post['is_deleted']) {
             Response::notFound('Post not found');
             return;
         }
         if (! $this->requireSelfOrAdmin($currentUser, $post['user_id'])) return;
         // Soft delete: set is_deleted=1, deleted_at=NOW()
-        $success = $this->postModel->update($id, [
+        $success = $this->postModel->update($post['id'], [
             'is_deleted' => 1,
             'deleted_at' => date('Y-m-d H:i:s')
         ]);
@@ -118,17 +127,27 @@ class PostController extends BaseController
         Response::success($feed, 'Feed fetched successfully');
     }
 
-    // GET /posts/{id}/likes
-    public function getLikes($postId): void
+    // GET /posts/{uuid}/likes
+    public function getLikes(string $uuid): void
     {
-        $likes = $this->likeModel->getLikesForPost($postId);
+        $post = $this->postModel->findByUuid($uuid);
+        if (!$post || $post['is_deleted']) {
+            Response::notFound('Post not found');
+            return;
+        }
+        $likes = $this->likeModel->getLikesForPost($post['id']);
         Response::success($likes, 'Likes fetched successfully');
     }
 
-    // GET /posts/{id}/likes/count
-    public function getLikeCount($postId): void
+    // GET /posts/{uuid}/likes/count
+    public function getLikeCount(string $uuid): void
     {
-        $count = $this->likeModel->countLikesForPost($postId);
+        $post = $this->postModel->findByUuid($uuid);
+        if (!$post || $post['is_deleted']) {
+            Response::notFound('Post not found');
+            return;
+        }
+        $count = $this->likeModel->countLikesForPost($post['id']);
         Response::success($count, 'Like count fetched successfully');
     }
 }

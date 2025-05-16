@@ -97,4 +97,20 @@ class Comment extends Model
             return [];
         }
     }
+
+    public function findByUuid(string $uuid): ?array
+    {
+        try {
+            $stmt = $this->db->prepare(
+                "SELECT * FROM {$this->table} WHERE public_uuid = :uuid AND is_deleted = 0 LIMIT 1"
+            );
+            $stmt->bindValue(':uuid', $uuid, \PDO::PARAM_STR);
+            $stmt->execute();
+            $result = $stmt->fetch(\PDO::FETCH_ASSOC);
+            return $result ?: null;
+        } catch (\PDOException $e) {
+            error_log("Comment lookup failed for uuid {$uuid}: " . $e->getMessage());
+            return null;
+        }
+    }
 }

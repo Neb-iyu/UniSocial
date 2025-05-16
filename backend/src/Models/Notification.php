@@ -287,4 +287,20 @@ class Notification extends Model
             return 0;
         }
     }
+
+    public function findByUuid(string $uuid): ?array
+    {
+        try {
+            $stmt = $this->db->prepare(
+                "SELECT * FROM {$this->table} WHERE public_uuid = :uuid LIMIT 1"
+            );
+            $stmt->bindValue(':uuid', $uuid, \PDO::PARAM_STR);
+            $stmt->execute();
+            $result = $stmt->fetch(\PDO::FETCH_ASSOC);
+            return $result ?: null;
+        } catch (\PDOException $e) {
+            error_log("Notification lookup failed for uuid {$uuid}: " . $e->getMessage());
+            return null;
+        }
+    }
 }

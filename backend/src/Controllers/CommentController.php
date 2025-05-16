@@ -19,6 +19,12 @@ class CommentController extends BaseController
         $this->likeModel = new Like();
     }
 
+    private function filterCommentResponse(array $comment): array
+    {
+        unset($comment['id'], $comment['user_id'], $comment['post_id'], $comment['is_deleted']);
+        return $comment;
+    }
+
     // GET /comments
     public function getAllComments(): void
     {
@@ -28,13 +34,14 @@ class CommentController extends BaseController
         Response::success($comments, 'Comments fetched successfully');
     }
 
-    // GET /comments/{id}
-    public function getCommentById($id): void
+    // GET /comments/{uuid}
+    public function getCommentByUuid(string $uuid): void
     {
         $currentUser = $this->requireAuth();
         if (!$currentUser) return;
-        $comment = $this->commentModel->find($id);
+        $comment = $this->commentModel->findByUuid($uuid);
         if ($comment && !$comment['is_deleted']) {
+            $comment = $this->filterCommentResponse($comment);
             Response::success($comment, 'Comment found');
         } else {
             Response::notFound('Comment not found');
@@ -59,18 +66,19 @@ class CommentController extends BaseController
         $commentId = $this->commentModel->create($input);
         if ($commentId) {
             $comment = $this->commentModel->find($commentId);
+            $comment = $this->filterCommentResponse($comment);
             Response::success($comment, 'Comment created', 201);
         } else {
             Response::error('Comment creation failed', 500);
         }
     }
 
-    // PATCH /comments/{id}
-    public function updateComment($id): void
+    // PATCH /comments/{uuid}
+    public function updateComment(string $uuid): void
     {
         $currentUser = $this->requireAuth();
         if (!$currentUser) return;
-        $comment = $this->commentModel->find($id);
+        $comment = $this->commentModel->findByUuid($uuid);
         if (!$comment || $comment['is_deleted']) {
             Response::notFound('Comment not found');
             return;
@@ -86,27 +94,28 @@ class CommentController extends BaseController
             Response::validationError($errors);
             return;
         }
-        $success = $this->commentModel->Update($id, $input);
+        $success = $this->commentModel->Update($comment['id'], $input);
         if ($success) {
-            $comment = $this->commentModel->find($id);
+            $comment = $this->commentModel->findByUuid($uuid);
+            $comment = $this->filterCommentResponse($comment);
             Response::success($comment, 'Comment updated');
         } else {
             Response::error('Comment update failed or no valid fields provided', 400);
         }
     }
 
-    // DELETE /comments/{id}
-    public function deleteComment($id): void
+    // DELETE /comments/{uuid}
+    public function deleteComment(string $uuid): void
     {
         $currentUser = $this->requireAuth();
         if (!$currentUser) return;
-        $comment = $this->commentModel->find($id);
+        $comment = $this->commentModel->findByUuid($uuid);
         if (!$comment || $comment['is_deleted']) {
             Response::notFound('Comment not found');
             return;
         }
         if (isset($comment['user_id']) && !$this->requireSelfOrAdmin($currentUser, $comment['user_id'])) return;
-        $success = $this->commentModel->Delete($id);
+        $success = $this->commentModel->Delete($comment['id']);
         if ($success) {
             Response::success(null, 'Comment deleted');
         } else {
@@ -114,21 +123,31 @@ class CommentController extends BaseController
         }
     }
 
-    // GET /comments/{id}/likes
-    public function getCommentLikes($commentId): void
+    // GET /comments/{uuid}/likes
+    public function getCommentLikes(string $uuid): void
     {
         $currentUser = $this->requireAuth();
         if (!$currentUser) return;
-        $likes = $this->likeModel->getLikesForComment($commentId);
+        $comment = $this->commentModel->findByUuid($uuid);
+        if (!$comment || $comment['is_deleted']) {
+            Response::notFound('Comment not found');
+            return;
+        }
+        $likes = $this->likeModel->getLikesForComment($comment['id']);
         Response::success($likes, 'Likes fetched successfully');
     }
 
-    // GET /comments/{id}/likes/count
-    public function getCommentLikeCount($commentId): void
+    // GET /comments/{uuid}/likes/count
+    public function getCommentLikeCount(string $uuid): void
     {
         $currentUser = $this->requireAuth();
         if (!$currentUser) return;
-        $count = $this->likeModel->countLikesForComment($commentId);
+        $comment = $this->commentModel->findByUuid($uuid);
+        if (!$comment || $comment['is_deleted']) {
+            Response::notFound('Comment not found');
+            return;
+        }
+        $count = $this->likeModel->countLikesForComment($comment['id']);
         Response::success($count, 'Like count fetched successfully');
     }
 }

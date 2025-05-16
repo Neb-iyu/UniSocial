@@ -4,7 +4,7 @@ namespace Src\Controllers;
 
 use Src\Models\Follow;
 use Src\Core\Response;
-use Src\Core\Auth;
+use Src\Models\User;
 
 class FollowController extends BaseController
 {
@@ -16,35 +16,47 @@ class FollowController extends BaseController
         $this->followModel = new Follow();
     }
 
-    // POST /users/{id}/follow
-    public function follow($id): void
+    // POST /users/{uuid}/follow
+    public function follow(string $uuid): void
     {
         $currentUser = $this->requireAuth();
-        if (!$currentUser || $currentUser['id'] == $id) {
+        if (!$currentUser) {
             Response::error('Invalid follow request', 400);
             return;
         }
-        $result = $this->followModel->follow($currentUser['id'], $id);
-        if ($result) {
-            Response::success(null, 'Followed successfully');
+        $userModel = new User();
+        $targetUser = $userModel->findByUuid($uuid);
+        if (!$targetUser) {
+            Response::error('Invalid follow request', 400);
+            return;
+        }
+        $result = $this->followModel->follow($currentUser['id'], $targetUser['id']);
+        if ($result['success']) {
+            Response::success(null, $result['message']);
         } else {
-            Response::error('Follow failed', 500);
+            Response::error($result['message'], 400);
         }
     }
 
-    // DELETE /users/{id}/follow
-    public function unfollow($id): void
+    // DELETE /users/{uuid}/follow
+    public function unfollow(string $uuid): void
     {
         $currentUser = $this->requireAuth();
-        if (!$currentUser || $currentUser['id'] == $id) {
+        if (!$currentUser) {
             Response::error('Invalid unfollow request', 400);
             return;
         }
-        $result = $this->followModel->unfollow($currentUser['id'], $id);
-        if ($result) {
-            Response::success(null, 'Unfollowed successfully');
+        $userModel = new User();
+        $targetUser = $userModel->findByUuid($uuid);
+        if (!$targetUser) {
+            Response::error('Invalid unfollow request', 400);
+            return;
+        }
+        $result = $this->followModel->unfollow($currentUser['id'], $targetUser['id']);
+        if ($result['success']) {
+            Response::success(null, $result['message']);
         } else {
-            Response::error('Unfollow failed', 500);
+            Response::error($result['message'], 400);
         }
     }
 }

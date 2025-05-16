@@ -141,18 +141,6 @@ class User extends Model
     }
 
 
-    public function isAdmin(int $userId): bool
-    {
-        try {
-            $user = $this->find($userId);
-            return $user && !empty($user['is_admin']);
-        } catch (PDOException $e) {
-            error_log('isAdmin check failed: ' . $e->getMessage());
-            return false;
-        }
-    }
-
-
     public function findByUsername(string $username): ?array
     {
         try {
@@ -203,11 +191,7 @@ class User extends Model
         }
     }
 
-    /**
-     * Recover a soft-deleted user (admin only)
-     * @param string $username The username to restore (unprefixed)
-     * @return bool
-     */
+
     public function recover(string $username): bool
     {
         try {
@@ -334,11 +318,7 @@ class User extends Model
         }
     }
 
-    /**
-     * Get all users with a specific role
-     * @param string $roleName
-     * @return array
-     */
+
     public function getUsersByRole(string $roleName): array
     {
         try {
@@ -353,6 +333,23 @@ class User extends Model
         } catch (PDOException $e) {
             error_log('Get users by role failed: ' . $e->getMessage());
             return [];
+        }
+    }
+
+
+    public function findByUuid(string $uuid): ?array
+    {
+        try {
+            $stmt = $this->db->prepare(
+                "SELECT * FROM {$this->table} WHERE public_uuid = :uuid AND is_deleted = 0 LIMIT 1"
+            );
+            $stmt->bindValue(':uuid', $uuid, PDO::PARAM_STR);
+            $stmt->execute();
+            $result = $stmt->fetch(PDO::FETCH_ASSOC);
+            return $result ?: null;
+        } catch (PDOException $e) {
+            error_log("User lookup failed for uuid {$uuid}: " . $e->getMessage());
+            return null;
         }
     }
 }

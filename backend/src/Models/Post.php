@@ -65,7 +65,7 @@ class Post extends Model
     {
         try {
             return $this->executeQuery(
-                "SELECT p.*, u.username, u.profile_image 
+                "SELECT p.*, u.username, u.profile_image_url
                  FROM {$this->table} p
                  JOIN users u ON p.user_id = u.id
                  LEFT JOIN follows f ON p.user_id = f.followed_id
@@ -127,4 +127,22 @@ class Post extends Model
             return 0;
         }
     }
+
+    public function findByUuid(string $uuid): ?array
+    {
+        try {
+            $stmt = $this->db->prepare(
+                "SELECT * FROM {$this->table} WHERE public_uuid = :uuid AND is_deleted = 0 LIMIT 1"
+            );
+            $stmt->bindValue(':uuid', $uuid, \PDO::PARAM_STR);
+            $stmt->execute();
+            $result = $stmt->fetch(\PDO::FETCH_ASSOC);
+            return $result ?: null;
+        } catch (\PDOException $e) {
+            error_log("Post lookup failed for uuid {$uuid}: " . $e->getMessage());
+            return null;
+        }
+    }
+
+
 }

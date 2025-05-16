@@ -4,6 +4,9 @@ namespace Src\Controllers;
 
 use Src\Models\Like;
 use Src\Core\Response;
+use Src\Models\Post;
+use Src\Models\Comment;
+
 
 class LikeController extends BaseController
 {
@@ -15,29 +18,41 @@ class LikeController extends BaseController
         $this->likeModel = new Like();
     }
 
-    // POST /posts/{id}/like
-    public function like($postId): void
+    // POST /posts/{uuid}/like
+    public function like(string $uuid): void
     {
         $currentUser = $this->requireAuth();
         if (!$currentUser) return;
-        $liked = $this->likeModel->likeToggle($currentUser['id'], $postId, null);
-        if ($liked) {
-            Response::success(null, 'Post liked');
+        $postModel = new Post();
+        $post = $postModel->findByUuid($uuid);
+        if (!$post) {
+            Response::notFound('Post not found');
+            return;
+        }
+        $result = $this->likeModel->likeToggle($currentUser['id'], $post['id'], null);
+        if ($result['success']) {
+            Response::success(null, $result['message']);
         } else {
-            Response::success(null, 'Post unliked');
+            Response::error($result['message']);
         }
     }
 
-    // POST /comments/{id}/like
-    public function likeComment($commentId): void
+    // POST /comments/{uuid}/like
+    public function likeComment(string $uuid): void
     {
         $currentUser = $this->requireAuth();
         if (!$currentUser) return;
-        $liked = $this->likeModel->likeToggle($currentUser['id'], null, $commentId);
-        if ($liked) {
-            Response::success(null, 'Comment liked');
+        $commentModel = new Comment();
+        $comment = $commentModel->findByUuid($uuid);
+        if (!$comment) {
+            Response::notFound('Comment not found');
+            return;
+        }
+        $result = $this->likeModel->likeToggle($currentUser['id'], null, $comment['id']);
+        if ($result['success']) {
+            Response::success(null, $result['message']);
         } else {
-            Response::success(null, 'Comment unliked');
+            Response::error($result['message']);
         }
     }
 }
