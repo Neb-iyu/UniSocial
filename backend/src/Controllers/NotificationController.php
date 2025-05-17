@@ -18,8 +18,17 @@ class NotificationController extends BaseController
 
     private function filterNotificationResponse(array $notification): array
     {
-        unset($notification['id'], $notification['user_id'], $notification['from_user_id']);
-        return $notification;
+        return [
+            'public_uuid' => $notification['public_uuid'] ?? null,
+            'from_user_uuid' => $notification['from_user_uuid'] ?? null,
+            'type' => $notification['type'] ?? null,
+            'reference_type' => $notification['reference_type'] ?? null,
+            'reference_id' => $notification['reference_id'] ?? null,
+            'is_read' => (bool)($notification['is_read'] ?? false),
+            'is_hidden' => (bool)($notification['is_hidden'] ?? false),
+            'created_at' => $notification['created_at'] ?? null,
+            'updated_at' => $notification['updated_at'] ?? null
+        ];
     }
 
     // GET /notifications

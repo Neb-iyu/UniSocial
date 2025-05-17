@@ -22,6 +22,10 @@ $router->addRoute('POST', '/register', 'AuthController@register');
 $router->addRoute('POST', '/login', 'AuthController@login');
 $router->addRoute('GET', '/me', 'AuthController@me');
 
+// Password reset routes
+$router->addRoute('POST', '/password-reset/request', 'AuthController@sendResetCode');
+$router->addRoute('POST', '/password-reset/verify', 'AuthController@verifyResetCode');
+
 // User routes
 $router->addRoute('GET', '/users', 'UserController@getAllUsers');
 $router->addRoute('GET', '/users/{uuid}', 'UserController@getUserByUuid');
@@ -37,13 +41,13 @@ $router->addRoute('GET', '/admins', 'UserController@getAdminList');
 $router->addRoute('GET', '/users/role/{role}', 'UserController@getUsersByRole');
 
 // Post routes
+$router->addRoute('GET', '/posts/trash', 'PostController@getSoftDeletedPosts');
 $router->addRoute('GET', '/posts/{uuid}', 'PostController@getPostByUuid');
 $router->addRoute('POST', '/posts', 'PostController@createPost');
 $router->addRoute('PATCH', '/posts/{uuid}', 'PostController@updatePost');
+$router->addRoute('PATCH', '/posts/{uuid}/recover', 'PostController@recoverPost');
 $router->addRoute('DELETE', '/posts/{uuid}', 'PostController@deletePost');
 $router->addRoute('GET', '/feed', 'PostController@getFeed');
-$router->addRoute('GET', '/posts/{uuid}/likes', 'PostController@getLikes');
-$router->addRoute('GET', '/posts/{uuid}/likes/count', 'PostController@getLikeCount');
 
 // Comment routes
 $router->addRoute('GET', '/comments', 'CommentController@getAllComments');
@@ -51,8 +55,6 @@ $router->addRoute('GET', '/comments/{uuid}', 'CommentController@getCommentByUuid
 $router->addRoute('POST', '/comments', 'CommentController@createComment');
 $router->addRoute('PATCH', '/comments/{uuid}', 'CommentController@updateComment');
 $router->addRoute('DELETE', '/comments/{uuid}', 'CommentController@deleteComment');
-$router->addRoute('GET', '/comments/{uuid}/likes', 'CommentController@getCommentLikes');
-$router->addRoute('GET', '/comments/{uuid}/likes/count', 'CommentController@getCommentLikeCount');
 
 // Notification routes
 $router->addRoute('GET', '/notifications', 'NotificationController@getAllNotifications');
@@ -69,8 +71,12 @@ $router->addRoute('PATCH', '/mentions/{uuid}', 'MentionController@updateMention'
 $router->addRoute('DELETE', '/mentions/{uuid}', 'MentionController@deleteMention');
 
 // Like routes
-$router->addRoute('POST', '/posts/{uuid}/like', 'LikeController@like');
-$router->addRoute('POST', '/comments/{uuid}/like', 'LikeController@likeComment');
+$router->addRoute('POST', '/posts/{uuid}/like', 'LikeController@togglePostLike');
+$router->addRoute('POST', '/comments/{uuid}/like', 'LikeController@toggleCommentLike');
+$router->addRoute('GET', '/posts/{uuid}/likes', 'LikeController@getPostLikes');
+$router->addRoute('GET', '/posts/{uuid}/likes/count', 'LikeController@getPostLikeCount');
+$router->addRoute('GET', '/comments/{uuid}/likes', 'LikeController@getCommentLikes');
+$router->addRoute('GET', '/comments/{uuid}/likes/count', 'LikeController@getCommentLikeCount');
 
 // Role routes
 $router->addRoute('POST', '/roles', 'RoleController@createRole');

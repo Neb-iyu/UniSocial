@@ -1,0 +1,451 @@
+{
+  "info": {
+    "_postman_id": "unifyze-collection-001",
+    "name": "Unifyze Backend API Collection",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": "Comprehensive tests for all Unifyze backend controllers."
+  },
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Register",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": { "raw": "{{base_url}}/register", "host": ["{{base_url}}"], "path": ["register"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{test_email}}\",\n  \"password\": \"TestPass123\",\n  \"username\": \"testuser\",\n  \"fullname\": \"Test User\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.collectionVariables.set('test_email', 'testuser'+Math.floor(Math.random()*10000)+'@test.com');"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Login",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": { "raw": "{{base_url}}/login", "host": ["{{base_url}}"], "path": ["login"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"login\": \"testuser\",\n  \"password\": \"TestPass123\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var json = pm.response.json();",
+                  "if(json.token){ pm.collectionVariables.set('jwt', json.token); }",
+                  "if(json.user && json.user.public_uuid){ pm.collectionVariables.set('user_uuid', json.user.public_uuid); }"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Me",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{jwt}}" }
+            ],
+            "url": { "raw": "{{base_url}}/me", "host": ["{{base_url}}"], "path": ["me"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "User",
+      "item": [
+        {
+          "name": "Get All Users",
+          "request": {
+            "method": "GET",
+            "header": [ { "key": "Authorization", "value": "Bearer {{jwt}}" } ],
+            "url": { "raw": "{{base_url}}/users", "host": ["{{base_url}}"], "path": ["users"] }
+          }
+        },
+        {
+          "name": "Get User By UUID",
+          "request": {
+            "method": "GET",
+            "header": [ { "key": "Authorization", "value": "Bearer {{jwt}}" } ],
+            "url": { "raw": "{{base_url}}/users/{{user_uuid}}", "host": ["{{base_url}}"], "path": ["users", "{{user_uuid}}"] }
+          }
+        },
+        {
+          "name": "Update User",
+          "request": {
+            "method": "PATCH",
+            "header": [ { "key": "Authorization", "value": "Bearer {{jwt}}" }, { "key": "Content-Type", "value": "application/json" } ],
+            "url": { "raw": "{{base_url}}/users/{{user_uuid}}", "host": ["{{base_url}}"], "path": ["users", "{{user_uuid}}"] },
+            "body": { "mode": "raw", "raw": "{\n  \"fullname\": \"Updated User\"\n}" }
+          }
+        },
+        {
+          "name": "Delete User",
+          "request": {
+            "method": "DELETE",
+            "header": [ { "key": "Authorization", "value": "Bearer {{jwt}}" } ],
+            "url": { "raw": "{{base_url}}/users/{{user_uuid}}", "host": ["{{base_url}}"], "path": ["users", "{{user_uuid}}"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Post",
+      "item": [
+        {
+          "name": "Create Post",
+          "request": {
+            "method": "POST",
+            "header": [ { "key": "Authorization", "value": "Bearer {{jwt}}" }, { "key": "Content-Type", "value": "application/json" } ],
+            "url": { "raw": "{{base_url}}/posts", "host": ["{{base_url}}"], "path": ["posts"] },
+            "body": { "mode": "raw", "raw": "{\n  \"content\": \"Hello World!\"\n}" }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var json = pm.response.json();",
+                  "if(json && json.uuid){ pm.collectionVariables.set('post_uuid', json.uuid); }"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get Post By UUID",
+          "request": {
+            "method": "GET",
+            "header": [ { "key": "Authorization", "value": "Bearer {{jwt}}" } ],
+            "url": { "raw": "{{base_url}}/posts/{{post_uuid}}", "host": ["{{base_url}}"], "path": ["posts", "{{post_uuid}}"] }
+          }
+        },
+        {
+          "name": "Update Post",
+          "request": {
+            "method": "PATCH",
+            "header": [ { "key": "Authorization", "value": "Bearer {{jwt}}" }, { "key": "Content-Type", "value": "application/json" } ],
+            "url": { "raw": "{{base_url}}/posts/{{post_uuid}}", "host": ["{{base_url}}"], "path": ["posts", "{{post_uuid}}"] },
+            "body": { "mode": "raw", "raw": "{\n  \"content\": \"Updated post content!\"\n}" }
+          }
+        },
+        {
+          "name": "Delete Post",
+          "request": {
+            "method": "DELETE",
+            "header": [ { "key": "Authorization", "value": "Bearer {{jwt}}" } ],
+            "url": { "raw": "{{base_url}}/posts/{{post_uuid}}", "host": ["{{base_url}}"], "path": ["posts", "{{post_uuid}}"] }
+          }
+        },
+        {
+          "name": "Get Feed",
+          "request": {
+            "method": "GET",
+            "header": [ { "key": "Authorization", "value": "Bearer {{jwt}}" } ],
+            "url": { "raw": "{{base_url}}/feed", "host": ["{{base_url}}"], "path": ["feed"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Comment",
+      "item": [
+        {
+          "name": "Create Comment",
+          "request": {
+            "method": "POST",
+            "header": [ { "key": "Authorization", "value": "Bearer {{jwt}}" }, { "key": "Content-Type", "value": "application/json" } ],
+            "url": { "raw": "{{base_url}}/comments", "host": ["{{base_url}}"], "path": ["comments"] },
+            "body": { "mode": "raw", "raw": "{\n  \"content\": \"Test comment\",\n  \"post_uuid\": \"{{post_uuid}}\"\n}" }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var json = pm.response.json();",
+                  "if(json && json.uuid){ pm.collectionVariables.set('comment_uuid', json.uuid); }"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get All Comments",
+          "request": {
+            "method": "GET",
+            "header": [ { "key": "Authorization", "value": "Bearer {{jwt}}" } ],
+            "url": { "raw": "{{base_url}}/comments", "host": ["{{base_url}}"], "path": ["comments"] }
+          }
+        },
+        {
+          "name": "Get Comment By UUID",
+          "request": {
+            "method": "GET",
+            "header": [ { "key": "Authorization", "value": "Bearer {{jwt}}" } ],
+            "url": { "raw": "{{base_url}}/comments/{{comment_uuid}}", "host": ["{{base_url}}"], "path": ["comments", "{{comment_uuid}}"] }
+          }
+        },
+        {
+          "name": "Update Comment",
+          "request": {
+            "method": "PATCH",
+            "header": [ { "key": "Authorization", "value": "Bearer {{jwt}}" }, { "key": "Content-Type", "value": "application/json" } ],
+            "url": { "raw": "{{base_url}}/comments/{{comment_uuid}}", "host": ["{{base_url}}"], "path": ["comments", "{{comment_uuid}}"] },
+            "body": { "mode": "raw", "raw": "{\n  \"content\": \"Updated comment\"\n}" }
+          }
+        },
+        {
+          "name": "Delete Comment",
+          "request": {
+            "method": "DELETE",
+            "header": [ { "key": "Authorization", "value": "Bearer {{jwt}}" } ],
+            "url": { "raw": "{{base_url}}/comments/{{comment_uuid}}", "host": ["{{base_url}}"], "path": ["comments", "{{comment_uuid}}"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Like",
+      "item": [
+        {
+          "name": "Like Post",
+          "request": {
+            "method": "POST",
+            "header": [ { "key": "Authorization", "value": "Bearer {{jwt}}" } ],
+            "url": { "raw": "{{base_url}}/posts/{{post_uuid}}/like", "host": ["{{base_url}}"], "path": ["posts", "{{post_uuid}}", "like"] }
+          }
+        },
+        {
+          "name": "Like Comment",
+          "request": {
+            "method": "POST",
+            "header": [ { "key": "Authorization", "value": "Bearer {{jwt}}" } ],
+            "url": { "raw": "{{base_url}}/comments/{{comment_uuid}}/like", "host": ["{{base_url}}"], "path": ["comments", "{{comment_uuid}}", "like"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Follow",
+      "item": [
+        {
+          "name": "Follow User",
+          "request": {
+            "method": "POST",
+            "header": [ { "key": "Authorization", "value": "Bearer {{jwt}}" } ],
+            "url": { "raw": "{{base_url}}/users/{{user_uuid}}/follow", "host": ["{{base_url}}"], "path": ["users", "{{user_uuid}}", "follow"] }
+          }
+        },
+        {
+          "name": "Unfollow User",
+          "request": {
+            "method": "DELETE",
+            "header": [ { "key": "Authorization", "value": "Bearer {{jwt}}" } ],
+            "url": { "raw": "{{base_url}}/users/{{user_uuid}}/follow", "host": ["{{base_url}}"], "path": ["users", "{{user_uuid}}", "follow"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Mention",
+      "item": [
+        {
+          "name": "Create Mention",
+          "request": {
+            "method": "POST",
+            "header": [ { "key": "Authorization", "value": "Bearer {{jwt}}" }, { "key": "Content-Type", "value": "application/json" } ],
+            "url": { "raw": "{{base_url}}/mentions", "host": ["{{base_url}}"], "path": ["mentions"] },
+            "body": { "mode": "raw", "raw": "{\n  \"post_uuid\": \"{{post_uuid}}\",\n  \"mentioned_user_uuid\": \"{{user_uuid}}\"\n}" }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var json = pm.response.json();",
+                  "if(json && json.uuid){ pm.collectionVariables.set('mention_uuid', json.uuid); }"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get All Mentions",
+          "request": {
+            "method": "GET",
+            "header": [ { "key": "Authorization", "value": "Bearer {{jwt}}" } ],
+            "url": { "raw": "{{base_url}}/mentions", "host": ["{{base_url}}"], "path": ["mentions"] }
+          }
+        },
+        {
+          "name": "Get Mention By UUID",
+          "request": {
+            "method": "GET",
+            "header": [ { "key": "Authorization", "value": "Bearer {{jwt}}" } ],
+            "url": { "raw": "{{base_url}}/mentions/{{mention_uuid}}", "host": ["{{base_url}}"], "path": ["mentions", "{{mention_uuid}}"] }
+          }
+        },
+        {
+          "name": "Update Mention",
+          "request": {
+            "method": "PATCH",
+            "header": [ { "key": "Authorization", "value": "Bearer {{jwt}}" }, { "key": "Content-Type", "value": "application/json" } ],
+            "url": { "raw": "{{base_url}}/mentions/{{mention_uuid}}", "host": ["{{base_url}}"], "path": ["mentions", "{{mention_uuid}}"] },
+            "body": { "mode": "raw", "raw": "{\n  \"extra_field\": \"Updated\"\n}" }
+          }
+        },
+        {
+          "name": "Delete Mention",
+          "request": {
+            "method": "DELETE",
+            "header": [ { "key": "Authorization", "value": "Bearer {{jwt}}" } ],
+            "url": { "raw": "{{base_url}}/mentions/{{mention_uuid}}", "host": ["{{base_url}}"], "path": ["mentions", "{{mention_uuid}}"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Notification",
+      "item": [
+        {
+          "name": "Create Notification",
+          "request": {
+            "method": "POST",
+            "header": [ { "key": "Authorization", "value": "Bearer {{jwt}}" }, { "key": "Content-Type", "value": "application/json" } ],
+            "url": { "raw": "{{base_url}}/notifications", "host": ["{{base_url}}"], "path": ["notifications"] },
+            "body": { "mode": "raw", "raw": "{\n  \"type\": \"test\",\n  \"message\": \"Test notification\"\n}" }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var json = pm.response.json();",
+                  "if(json && json.uuid){ pm.collectionVariables.set('notification_uuid', json.uuid); }"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get All Notifications",
+          "request": {
+            "method": "GET",
+            "header": [ { "key": "Authorization", "value": "Bearer {{jwt}}" } ],
+            "url": { "raw": "{{base_url}}/notifications", "host": ["{{base_url}}"], "path": ["notifications"] }
+          }
+        },
+        {
+          "name": "Get Notification By UUID",
+          "request": {
+            "method": "GET",
+            "header": [ { "key": "Authorization", "value": "Bearer {{jwt}}" } ],
+            "url": { "raw": "{{base_url}}/notifications/{{notification_uuid}}", "host": ["{{base_url}}"], "path": ["notifications", "{{notification_uuid}}"] }
+          }
+        },
+        {
+          "name": "Update Notification",
+          "request": {
+            "method": "PATCH",
+            "header": [ { "key": "Authorization", "value": "Bearer {{jwt}}" }, { "key": "Content-Type", "value": "application/json" } ],
+            "url": { "raw": "{{base_url}}/notifications/{{notification_uuid}}", "host": ["{{base_url}}"], "path": ["notifications", "{{notification_uuid}}"] },
+            "body": { "mode": "raw", "raw": "{\n  \"message\": \"Updated notification\"\n}" }
+          }
+        },
+        {
+          "name": "Delete Notification",
+          "request": {
+            "method": "DELETE",
+            "header": [ { "key": "Authorization", "value": "Bearer {{jwt}}" } ],
+            "url": { "raw": "{{base_url}}/notifications/{{notification_uuid}}", "host": ["{{base_url}}"], "path": ["notifications", "{{notification_uuid}}"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Role",
+      "item": [
+        {
+          "name": "Create Role",
+          "request": {
+            "method": "POST",
+            "header": [ { "key": "Authorization", "value": "Bearer {{jwt}}" }, { "key": "Content-Type", "value": "application/json" } ],
+            "url": { "raw": "{{base_url}}/roles", "host": ["{{base_url}}"], "path": ["roles"] },
+            "body": { "mode": "raw", "raw": "{\n  \"name\": \"testrole\",\n  \"description\": \"A test role\"\n}" }
+          }
+        },
+        {
+          "name": "Get All Roles",
+          "request": {
+            "method": "GET",
+            "header": [ { "key": "Authorization", "value": "Bearer {{jwt}}" } ],
+            "url": { "raw": "{{base_url}}/roles", "host": ["{{base_url}}"], "path": ["roles"] }
+          }
+        },
+        {
+          "name": "Update Role",
+          "request": {
+            "method": "PATCH",
+            "header": [ { "key": "Authorization", "value": "Bearer {{jwt}}" }, { "key": "Content-Type", "value": "application/json" } ],
+            "url": { "raw": "{{base_url}}/roles/testrole", "host": ["{{base_url}}"], "path": ["roles", "testrole"] },
+            "body": { "mode": "raw", "raw": "{\n  \"description\": \"Updated description\"\n}" }
+          }
+        },
+        {
+          "name": "Delete Role",
+          "request": {
+            "method": "DELETE",
+            "header": [ { "key": "Authorization", "value": "Bearer {{jwt}}" } ],
+            "url": { "raw": "{{base_url}}/roles/testrole", "host": ["{{base_url}}"], "path": ["roles", "testrole"] }
+          }
+        },
+        {
+          "name": "Assign Role",
+          "request": {
+            "method": "POST",
+            "header": [ { "key": "Authorization", "value": "Bearer {{jwt}}" }, { "key": "Content-Type", "value": "application/json" } ],
+            "url": { "raw": "{{base_url}}/roles/assign", "host": ["{{base_url}}"], "path": ["roles", "assign"] },
+            "body": { "mode": "raw", "raw": "{\n  \"user_uuid\": \"{{user_uuid}}\",\n  \"role\": \"testrole\"\n}" }
+          }
+        },
+        {
+          "name": "Remove Role",
+          "request": {
+            "method": "POST",
+            "header": [ { "key": "Authorization", "value": "Bearer {{jwt}}" }, { "key": "Content-Type", "value": "application/json" } ],
+            "url": { "raw": "{{base_url}}/roles/remove", "host": ["{{base_url}}"], "path": ["roles", "remove"] },
+            "body": { "mode": "raw", "raw": "{\n  \"user_uuid\": \"{{user_uuid}}\",\n  \"role\": \"testrole\"\n}" }
+          }
+        }
+      ]
+    }
+  ],
+  "variable": [
+    { "key": "base_url", "value": "http://localhost/unifyze/backend/public" },
+    { "key": "jwt", "value": "" },
+    { "key": "user_uuid", "value": "" },
+    { "key": "post_uuid", "value": "" },
+    { "key": "test_email", "value": "" }
+  ]
+}

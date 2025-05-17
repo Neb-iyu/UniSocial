@@ -70,8 +70,6 @@ class Auth
                 ?? '';
         }
 
-        error_log('Auth header used: ' . $authHeader);
-
         return preg_match('/Bearer\s(\S+)/', $authHeader, $matches)
             ? $matches[1]
             : null;

@@ -100,16 +100,20 @@ CREATE TABLE comments (
 
 -- Likes Table
 CREATE TABLE likes (
+    id INT AUTO_INCREMENT PRIMARY KEY,
     user_id INT NOT NULL,
-    post_id INT,
-    comment_id INT,
+    post_id INT NULL,
+    comment_id INT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    PRIMARY KEY (user_id, post_id, comment_id),
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
     FOREIGN KEY (post_id) REFERENCES posts(id) ON DELETE CASCADE,
     FOREIGN KEY (comment_id) REFERENCES comments(id) ON DELETE CASCADE,
+    UNIQUE KEY uk_user_content (user_id, post_id, comment_id), -- Prevents duplicate likes
+    INDEX idx_user (user_id),
     INDEX idx_post (post_id),
     INDEX idx_comment (comment_id),
+    INDEX idx_user_post (user_id, post_id),
+    INDEX idx_user_comment (user_id, comment_id),
     CONSTRAINT chk_like_target CHECK (
         (post_id IS NOT NULL AND comment_id IS NULL) OR 
         (post_id IS NULL AND comment_id IS NOT NULL)
@@ -160,6 +164,19 @@ CREATE TABLE notifications (
     FOREIGN KEY (from_user_id) REFERENCES users(id) ON DELETE CASCADE,
     INDEX idx_user (user_id),
     INDEX idx_reference (reference_type, reference_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Password Resets Table
+CREATE TABLE password_resets (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    code VARCHAR(10) NOT NULL,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    expires_at DATETIME NOT NULL,
+    used_at DATETIME NULL,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    INDEX idx_user_id (user_id),
+    INDEX idx_code (code)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Initial Data 

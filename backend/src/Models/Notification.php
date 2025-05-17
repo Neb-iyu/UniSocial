@@ -82,7 +82,7 @@ class Notification extends Model
     {
         try {
             return $this->executeQuery(
-                "SELECT n.*, u.username, u.profile_image 
+                "SELECT n.*, u.username, u.profile_picture_url
                  FROM {$this->table} n
                  JOIN users u ON n.from_user_id = u.id
                  WHERE n.user_id = ? AND n.is_read = 0
@@ -196,7 +196,7 @@ class Notification extends Model
     ): array {
         try {
             return $this->executeQuery(
-                "SELECT n.*, u.username, u.profile_image 
+                "SELECT n.*, u.username, u.profile_picture_url
                  FROM {$this->table} n
                  JOIN users u ON n.from_user_id = u.id
                  WHERE n.user_id = ?

@@ -81,11 +81,36 @@ class User extends Model
     }
 
 
+    public function getProfilePictureUrl(int $userId): string
+    {
+        $user = $this->find($userId);
+
+        if (!$user) {
+            return 'uploads/profiles/default.svg';
+        }
+
+        if (empty($user['profile_picture_url'])) {
+            return 'uploads/profiles/default.svg';
+        }
+
+        $filePath = __DIR__ . '/../../public/' . ltrim($user['profile_picture_url'], '/');
+        if (!file_exists($filePath)) {
+            return 'uploads/profiles/default.svg';
+        }
+
+        return $user['profile_picture_url'];
+    }
+
     public function create(array $data): int
     {
         try {
             if (isset($data['password'])) {
                 $data['password'] = $this->hashPassword($data['password']);
+            }
+
+            // Sets default profile picture if not provided
+            if (empty($data['profile_picture_url'])) {
+                $data['profile_picture_url'] = 'uploads/profiles/default.svg';
             }
 
             $data = array_intersect_key($data, array_flip($this->fillable));

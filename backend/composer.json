@@ -5,12 +5,12 @@
     "license": "MIT",
     "require": {
         "php": "^8.1",
-        "ext-pdo": "*",
         "ext-json": "*",
-        "vlucas/phpdotenv": "^5.5",
-        "firebase/php-jwt": "^6.4"
+        "ext-pdo": "*",
+        "firebase/php-jwt": "^6.4",
+        "phpmailer/phpmailer": "^6.10",
+        "vlucas/phpdotenv": "^5.5"
     },
-    "require-dev": {},
     "autoload": {
         "psr-4": {
             "Src\\": "src/"
