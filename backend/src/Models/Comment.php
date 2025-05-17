@@ -15,7 +15,7 @@ class Comment extends Model
         $this->db->beginTransaction();
         try {
             $filteredData = array_intersect_key($data, array_flip($this->fillable));
-            
+
             $id = parent::create($filteredData);
 
             $this->executeUpdate(
@@ -29,7 +29,9 @@ class Comment extends Model
 
             // Notify the post owner if not self-comment
             $postModel = new Post();
-            $recipientId = $postModel->getOwnerId($data['post_id']);
+            $post = $postModel->find($data['post_id']);
+            $recipientId = $post['user_id'];
+
             if ($recipientId && $recipientId != $data['user_id']) {
                 $this->notify('comment', [
                     'recipient_id' => $recipientId,
@@ -81,13 +83,6 @@ class Comment extends Model
         }
     }
 
-    public function getOwnerId(int $commentId): ?int
-    {
-        $comment = $this->find($commentId);
-        return $comment['user_id'] ?? null;
-    }
-
-
     public function all(): array
     {
         try {
@@ -116,19 +111,18 @@ class Comment extends Model
                         updated_at = NOW() 
                     WHERE post_id = :postId 
                     AND post_deleted = 1";
-            
+
             $stmt = $this->db->prepare($sql);
             $stmt->bindParam(':postId', $postId, \PDO::PARAM_INT);
             $success = $stmt->execute();
-            
+
             if ($success) {
                 $this->db->commit();
                 return true;
             }
-            
+
             $this->db->rollBack();
             return false;
-            
         } catch (\PDOException $e) {
             $this->db->rollBack();
             error_log('Recovering comments from post deletion failed: ' . $e->getMessage());
@@ -150,19 +144,18 @@ class Comment extends Model
                         updated_at = NOW() 
                     WHERE post_id = :postId 
                     AND is_deleted = 0";
-            
+
             $stmt = $this->db->prepare($sql);
             $stmt->bindParam(':postId', $postId, \PDO::PARAM_INT);
             $success = $stmt->execute();
-            
+
             if ($success) {
                 $this->db->commit();
                 return true;
             }
-            
+
             $this->db->rollBack();
             return false;
-            
         } catch (\PDOException $e) {
             $this->db->rollBack();
             error_log('Marking comments as post_deleted failed: ' . $e->getMessage());

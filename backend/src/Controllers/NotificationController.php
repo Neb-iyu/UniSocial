@@ -20,10 +20,11 @@ class NotificationController extends BaseController
     {
         return [
             'public_uuid' => $notification['public_uuid'] ?? null,
+            'user_uuid' => $notification['user_uuid'] ?? null,
             'from_user_uuid' => $notification['from_user_uuid'] ?? null,
             'type' => $notification['type'] ?? null,
             'reference_type' => $notification['reference_type'] ?? null,
-            'reference_id' => $notification['reference_id'] ?? null,
+            'reference_uuid' => $notification['reference_uuid'] ?? null,
             'is_read' => (bool)($notification['is_read'] ?? false),
             'is_hidden' => (bool)($notification['is_hidden'] ?? false),
             'created_at' => $notification['created_at'] ?? null,
@@ -36,7 +37,7 @@ class NotificationController extends BaseController
     {
         $currentUser = $this->requireAuth();
         if (!$currentUser) return;
-        $notifications = $this->notificationModel->getNotifications($currentUser['id'], 20, 0);
+        $notifications = $this->notificationModel->getNotifications($currentUser['public_uuid'], 20, 0);
         $filteredNotifications = array_map([$this, 'filterNotificationResponse'], $notifications);
         Response::success($filteredNotifications, 'Notifications fetched successfully');
     }
@@ -47,7 +48,7 @@ class NotificationController extends BaseController
         $currentUser = $this->requireAuth();
         if (!$currentUser) return;
         $notification = $this->notificationModel->findByUuid($uuid);
-        if ($notification && !$notification['is_deleted'] && $notification['user_id'] == $currentUser['id']) {
+        if ($notification && $this->requireSelfOrAdmin($currentUser, $notification['user_id'])) {
             $filteredNotification = $this->filterNotificationResponse($notification);
             Response::success($filteredNotification, 'Notification found');
         } else {
@@ -61,13 +62,28 @@ class NotificationController extends BaseController
         $currentUser = $this->requireAuth();
         if (!$currentUser) return;
         $input = json_decode(file_get_contents('php://input'), true);
-        $notificationId = $this->notificationModel->create($input);
-        if ($notificationId) {
-            $notification = $this->notificationModel->find($notificationId);
-            $filteredNotification = $this->filterNotificationResponse($notification);
-            Response::success($filteredNotification, 'Notification created', 201);
-        } else {
-            Response::error('Notification creation failed', 500);
+
+        if (isset($input['user_uuid']) && $this->requireSelfOrAdmin($currentUser, $input['user_uuid'])) {
+            Response::error('Cannot create notification (only current user or admin can create notifications)', 403);
+            return;
+        }
+
+        // Sets the from_user_uuid if not provided
+        if (!isset($input['from_user_uuid'])) {
+            $input['from_user_uuid'] = $currentUser['public_uuid'];
+        }
+
+        try {
+            $notificationUuid = $this->notificationModel->create($input);
+            if ($notificationUuid) {
+                $notification = $this->notificationModel->findByUuid($notificationUuid);
+                $filteredNotification = $this->filterNotificationResponse($notification);
+                Response::success($filteredNotification, 'Notification created', 201);
+            } else {
+                Response::error('Notification creation failed', 500);
+            }
+        } catch (\Exception $e) {
+            Response::error($e->getMessage(), 400);
         }
     }
 
@@ -81,7 +97,7 @@ class NotificationController extends BaseController
             Response::notFound('Notification not found');
             return;
         }
-        if (isset($notification['user_id']) && !$this->requireSelfOrAdmin($currentUser, $notification['user_id'])) return;
+        if (isset($notification['user_uuid']) && !$this->requireSelfOrAdmin($currentUser, $notification['user_uuid'])) return;
         $input = json_decode(file_get_contents('php://input'), true);
         $success = $this->notificationModel->Update($notification['id'], $input);
         if ($success) {

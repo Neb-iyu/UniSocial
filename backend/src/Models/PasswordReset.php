@@ -68,7 +68,7 @@ class PasswordReset extends Model
             [$user_id]
         );
     }
- public function isCodeValid(array $resetEntry): bool
+    public function isCodeValid(array $resetEntry): bool
     {
         if (!$resetEntry) return false;
         if (!empty($resetEntry['used_at'])) return false;

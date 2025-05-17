@@ -21,7 +21,7 @@ class FileUploader
 
     private const VALID_DIRS = ['profiles', 'posts'];
 
-   
+
     public static function upload(array $file, string $type, ?array $allowedTypes = null, ?int $maxSize = null): array
     {
         try {

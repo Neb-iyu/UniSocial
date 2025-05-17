@@ -117,65 +117,65 @@ class PostController extends BaseController
     {
         $currentUser = $this->requireAuth();
         if (!$currentUser) return;
-        
+
         $deletedPosts = $this->postModel->getSoftDeletedPostByUser($currentUser['id']);
-        
+
         // Filter the response to include only necessary fields
-        $filteredPosts = array_map(function($post) {
+        $filteredPosts = array_map(function ($post) {
             return $this->filterPostResponse($post);
         }, $deletedPosts);
-        
+
         Response::success($filteredPosts, 'Soft-deleted posts retrieved successfully');
     }
-    
+
     // PATCH /posts/{uuid}/recover
     public function recoverPost(string $uuid): void
     {
         $currentUser = $this->requireAuth();
         if (!$currentUser) return;
-        
+
         $post = $this->postModel->findByUuid($uuid);
         if (!$post) {
             Response::notFound('Post not found');
             return;
         }
-        
+
         if ($post['is_deleted'] === 0) {
             Response::error('Post is not deleted', 400);
             return;
         }
-        
+
         if (! $this->requireSelfOrAdmin($currentUser, $post['user_id'])) {
             return;
         }
-        
+
         $success = $this->postModel->recover($post['id']);
-        
+
         if ($success) {
             Response::success(null, 'Post recovered successfully');
         } else {
             Response::error('Failed to recover post', 500);
         }
     }
-    
+
     // DELETE /posts/{uuid}
     public function deletePost(string $uuid): void
     {
         $currentUser = $this->requireAuth();
         if (!$currentUser) return;
-        
+
         $post = $this->postModel->findByUuid($uuid);
         if (!$post || $post['is_deleted']) {
             Response::notFound('Post not found');
             return;
         }
-        
+
         if (! $this->requireSelfOrAdmin($currentUser, $post['user_id'])) {
             return;
         }
-        
+
         $success = $this->postModel->softDelete($post['id']);
-        
+
         if ($success) {
             Response::success(null, 'Post deleted');
         } else {
@@ -191,5 +191,4 @@ class PostController extends BaseController
         $feed = $this->postModel->getFeed($currentUser['id']);
         Response::success($feed, 'Feed fetched successfully');
     }
-
 }

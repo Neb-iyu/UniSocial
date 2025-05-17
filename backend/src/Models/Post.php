@@ -26,8 +26,10 @@ class Post extends Model
             // Notify all followers of the post creator
             $followModel = new \Src\Models\Follow();
             $followers = $followModel->getFollowers($data['user_id']); // returns array of ['follower_id' => ...]
+
             foreach ($followers as $follower) {
                 if ($follower['follower_id'] != $data['user_id']) { // avoid self-notification
+
                     $this->notify('post', [
                         'recipient_id' => $follower['follower_id'],
                         'actor_id' => $data['user_id'],
@@ -56,7 +58,7 @@ class Post extends Model
         try {
             // 30 days retention period
             $retentionDays = 30;
-            
+
             $sql = "SELECT 
                         p.public_uuid,
                         GREATEST(0, $retentionDays - DATEDIFF(NOW(), p.deleted_at)) as days_remaining
@@ -64,11 +66,11 @@ class Post extends Model
                     WHERE p.user_id = :userId 
                     AND p.is_deleted = 1
                     ORDER BY p.deleted_at ASC";
-            
+
             $stmt = $this->db->prepare($sql);
             $stmt->bindParam(':userId', $userId, \PDO::PARAM_INT);
             $stmt->execute();
-            
+
             return $stmt->fetchAll(\PDO::FETCH_ASSOC);
         } catch (\PDOException $e) {
             error_log('Error fetching soft-deleted posts: ' . $e->getMessage());
@@ -88,24 +90,23 @@ class Post extends Model
             $stmt = $this->db->prepare($sql);
             $stmt->bindParam(':id', $id, \PDO::PARAM_INT);
             $success = $stmt->execute();
-            
+
             if (!$success) {
                 $this->db->rollBack();
                 return false;
             }
-            
+
             // It recovers comments that were marked as post_deleted
             $commentModel = new Comment();
             $commentsRecovered = $commentModel->recoverFromPostDeletion($id);
-            
+
             if ($commentsRecovered === false) {
                 $this->db->rollBack();
                 return false;
             }
-            
+
             $this->db->commit();
             return true;
-            
         } catch (\PDOException $e) {
             $this->db->rollBack();
             error_log('Post recovery failed: ' . $e->getMessage());
@@ -122,24 +123,23 @@ class Post extends Model
             $stmt = $this->db->prepare($sql);
             $stmt->bindParam(':id', $id, \PDO::PARAM_INT);
             $success = $stmt->execute();
-            
+
             if (!$success) {
                 $this->db->rollBack();
                 return false;
             }
-            
+
             // Then marks all comments for this post as post_deleted
             $commentModel = new Comment();
             $commentsMarked = $commentModel->markAsPostDeleted($id);
-            
+
             if (!$commentsMarked) {
                 $this->db->rollBack();
                 return false;
             }
-            
+
             $this->db->commit();
             return true;
-            
         } catch (\PDOException $e) {
             $this->db->rollBack();
             error_log('Post soft delete failed: ' . $e->getMessage());
@@ -179,10 +179,10 @@ class Post extends Model
         }
     }
 
-    public function getOwnerId(int $postId): ?int
+    public function getOwnerUuid(int $postId): ?string
     {
         $post = $this->find($postId);
-        return $post['user_id'] ?? null;
+        return $post['user_uuid'] ?? null;
     }
 
 
@@ -212,15 +212,15 @@ class Post extends Model
             );
             $stmt->execute();
             $posts = $stmt->fetchAll(\PDO::FETCH_ASSOC);
-            
+
             if (empty($posts)) {
                 $this->db->commit();
                 return 0;
             }
-            
+
             $postIds = array_column($posts, 'id');
             $placeholders = rtrim(str_repeat('?,', count($postIds)), ',');
-            
+
             // 1. Delete related notifications
             $notificationModel = new \Src\Models\Notification();
             $stmt = $this->db->prepare(
@@ -229,26 +229,26 @@ class Post extends Model
                 AND reference_id IN ({$placeholders})"
             );
             $stmt->execute($postIds);
-            
+
             // 2. Deletes related comments
             $commentModel = new Comment();
             $stmt = $this->db->prepare("DELETE FROM comments WHERE post_id IN ({$placeholders})");
             $stmt->execute($postIds);
-            
+
             // 3. Deletes related likes
             $stmt = $this->db->prepare("DELETE FROM likes WHERE post_id IN ({$placeholders})");
             $stmt->execute($postIds);
-            
+
             // 4. Deletes related mentions
             $stmt = $this->db->prepare("DELETE FROM mentions WHERE post_id IN ({$placeholders})");
             $stmt->execute($postIds);
-            
+
             // 5. Deletes the posts
             $stmt = $this->db->prepare("DELETE FROM {$this->table} WHERE id IN ({$placeholders})");
             $stmt->execute($postIds);
-            
+
             $deletedCount = $stmt->rowCount();
-            
+
             // Update user's post counts
             foreach ($posts as $post) {
                 if (!empty($post['user_id'])) {
@@ -258,7 +258,7 @@ class Post extends Model
                     );
                 }
             }
-            
+
             $this->db->commit();
             return $deletedCount;
         } catch (\PDOException $e) {

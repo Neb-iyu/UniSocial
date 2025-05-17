@@ -270,7 +270,7 @@ class UserController extends BaseController
     private function filterUserResponse(array $user): array
     {
         $profilePictureUrl = $this->userModel->getProfilePictureUrl($user['id']);
-        
+
         return [
             'public_uuid' => $user['public_uuid'] ?? null,
             'username' => $user['username'] ?? null,

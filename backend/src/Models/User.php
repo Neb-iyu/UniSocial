@@ -113,6 +113,9 @@ class User extends Model
                 $data['profile_picture_url'] = 'uploads/profiles/default.svg';
             }
 
+            if (isset($data['username'])) {
+                $data['username'] = strtolower($data['username']);
+            }
             $data = array_intersect_key($data, array_flip($this->fillable));
             $userId = parent::create($data);
 

@@ -43,32 +43,6 @@ class Mention extends Model
         }
     }
 
-    public function getMentionsForPost(int $postId): array
-    {
-        try {
-            return $this->executeQuery(
-                "SELECT * FROM {$this->table} WHERE post_id = ?",
-                [$postId]
-            );
-        } catch (PDOException $e) {
-            error_log('Get mentions for post failed: ' . $e->getMessage());
-            return [];
-        }
-    }
-
-    public function getMentionsForComment(int $commentId): array
-    {
-        try {
-            return $this->executeQuery(
-                "SELECT * FROM {$this->table} WHERE comment_id = ?",
-                [$commentId]
-            );
-        } catch (PDOException $e) {
-            error_log('Get mentions for comment failed: ' . $e->getMessage());
-            return [];
-        }
-    }
-
     /**
      * Get all mentions (no soft delete implemented)
      * @return array
@@ -85,11 +59,6 @@ class Mention extends Model
         }
     }
 
-    /**
-     * Find a mention by its public UUID
-     * @param string $uuid
-     * @return array|null
-     */
     public function findByUuid(string $uuid): ?array
     {
         try {
@@ -103,6 +72,16 @@ class Mention extends Model
         } catch (\PDOException $e) {
             error_log("Mention lookup failed for uuid {$uuid}: " . $e->getMessage());
             return null;
+        }
+    }
+
+    public function getTable(): string
+    {
+        try {
+            return $this->table;
+        } catch (PDOException $e) {
+            error_log('Get table failed: ' . $e->getMessage());
+            return '';
         }
     }
 }
