@@ -153,9 +153,8 @@ class AuthController extends BaseController
     {
         $input = json_decode(file_get_contents('php://input'), true);
         $code = $input['code'] ?? '';
-        $code = Validator::sanitizeInput(['code' => $code])['code'];
-
-        if (empty($code)) {
+        $code = Validator::sanitizeInt(['code' => $code])['code'];
+        if (!$code) {
             Response::validationError(['code' => 'Code is required']);
             return;
         }
@@ -175,7 +174,7 @@ class AuthController extends BaseController
     private function filterUserResponse(array $user, bool $minimal = false): array
     {
         // sensitive fields
-        unset($user['password'], $user['is_deleted'], $user['deleted_at']);
+        unset($user['password'], $user['is_deleted'], $user['deleted_at'], $user['created_at'], $user['updated_at']);
 
 
         $profilePictureUrl = $this->userModel->getProfilePictureUrl($user['id']);
@@ -192,6 +191,7 @@ class AuthController extends BaseController
         }
 
         // For other responses, include all non-sensitive fields
+        unset($user['id']);
         $user['profile_picture_url'] = $profilePictureUrl;
         $user['bio'] = $user['bio'] ?? null;
         $user['university_id'] = $user['university_id'] ?? null;

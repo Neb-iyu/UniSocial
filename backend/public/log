@@ -1,0 +1,58 @@
+[17-May-2025 20:15:37 Europe/Berlin] Opportunistic cleanup: 0 posts permanently deleted.
+[17-May-2025 20:16:51 Europe/Berlin] PHP Fatal error:  Uncaught TypeError: array_map(): Argument #1 ($callback) must be a valid callback or null, class Src\Models\Notification does not have a method "formatNotificationResponse" in C:\xampp\htdocs\unifyze\backend\src\Models\Notification.php:290
+Stack trace:
+#0 C:\xampp\htdocs\unifyze\backend\src\Models\Notification.php(290): array_map(Array, Array)
+#1 C:\xampp\htdocs\unifyze\backend\src\Controllers\NotificationController.php(54): Src\Models\Notification->getNotifications(2, 20, 0)
+#2 [internal function]: Src\Controllers\NotificationController->getAllNotifications()
+#3 C:\xampp\htdocs\unifyze\backend\src\Core\Router.php(61): call_user_func_array(Array, Array)
+#4 C:\xampp\htdocs\unifyze\backend\src\Core\Router.php(46): Src\Core\Router->executeHandler('NotificationCon...', Array)
+#5 C:\xampp\htdocs\unifyze\backend\public\index.php(93): Src\Core\Router->dispatch()
+#6 {main}
+  thrown in C:\xampp\htdocs\unifyze\backend\src\Models\Notification.php on line 290
+[17-May-2025 21:02:59 Europe/Berlin] PHP Fatal error:  Uncaught TypeError: Src\Controllers\NotificationController::filterNotificationResponse(): Argument #1 ($notification) must be of type array, string given in C:\xampp\htdocs\unifyze\backend\src\Controllers\NotificationController.php:19
+Stack trace:
+#0 [internal function]: Src\Controllers\NotificationController->filterNotificationResponse('uploads/profile...')
+#1 C:\xampp\htdocs\unifyze\backend\src\Controllers\NotificationController.php(55): array_map(Array, Array)
+#2 [internal function]: Src\Controllers\NotificationController->getAllNotifications()
+#3 C:\xampp\htdocs\unifyze\backend\src\Core\Router.php(61): call_user_func_array(Array, Array)
+#4 C:\xampp\htdocs\unifyze\backend\src\Core\Router.php(46): Src\Core\Router->executeHandler('NotificationCon...', Array)
+#5 C:\xampp\htdocs\unifyze\backend\public\index.php(93): Src\Core\Router->dispatch()
+#6 {main}
+  thrown in C:\xampp\htdocs\unifyze\backend\src\Controllers\NotificationController.php on line 19
+[17-May-2025 21:08:28 Europe/Berlin] PHP Warning:  Undefined array key "reference_type" in C:\xampp\htdocs\unifyze\backend\src\Models\Notification.php on line 68
+[17-May-2025 21:10:49 Europe/Berlin] Add mention failed: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'updated_at' in 'field list'
+[17-May-2025 21:10:49 Europe/Berlin] Error processing mentions: Failed to add mention for user 1
+[17-May-2025 21:15:35 Europe/Berlin] Add mention failed: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'updated_at' in 'field list'
+[17-May-2025 21:15:35 Europe/Berlin] Error processing mentions: Failed to add mention for user 1
+[17-May-2025 21:42:51 Europe/Berlin] Add mention failed: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'updated_at' in 'field list'
+[17-May-2025 21:42:51 Europe/Berlin] Error processing mentions: Failed to add mention for user 1
+[17-May-2025 21:45:39 Europe/Berlin] Add mention failed: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'updated_at' in 'field list'
+[17-May-2025 21:45:39 Europe/Berlin] Error processing mentions: Failed to add mention for user 1
+[17-May-2025 21:52:50 Europe/Berlin] PHP Fatal error:  Uncaught TypeError: Src\Models\PasswordReset::isCodeValid(): Argument #1 ($resetEntry) must be of type array, null given, called in C:\xampp\htdocs\unifyze\backend\src\Controllers\AuthController.php on line 165 and defined in C:\xampp\htdocs\unifyze\backend\src\Models\PasswordReset.php:71
+Stack trace:
+#0 C:\xampp\htdocs\unifyze\backend\src\Controllers\AuthController.php(165): Src\Models\PasswordReset->isCodeValid(NULL)
+#1 [internal function]: Src\Controllers\AuthController->verifyResetCode()
+#2 C:\xampp\htdocs\unifyze\backend\src\Core\Router.php(61): call_user_func_array(Array, Array)
+#3 C:\xampp\htdocs\unifyze\backend\src\Core\Router.php(46): Src\Core\Router->executeHandler('AuthController@...', Array)
+#4 C:\xampp\htdocs\unifyze\backend\public\index.php(93): Src\Core\Router->dispatch()
+#5 {main}
+  thrown in C:\xampp\htdocs\unifyze\backend\src\Models\PasswordReset.php on line 71
+[17-May-2025 21:52:52 Europe/Berlin] PHP Fatal error:  Uncaught TypeError: Src\Models\PasswordReset::isCodeValid(): Argument #1 ($resetEntry) must be of type array, null given, called in C:\xampp\htdocs\unifyze\backend\src\Controllers\AuthController.php on line 165 and defined in C:\xampp\htdocs\unifyze\backend\src\Models\PasswordReset.php:71
+Stack trace:
+#0 C:\xampp\htdocs\unifyze\backend\src\Controllers\AuthController.php(165): Src\Models\PasswordReset->isCodeValid(NULL)
+#1 [internal function]: Src\Controllers\AuthController->verifyResetCode()
+#2 C:\xampp\htdocs\unifyze\backend\src\Core\Router.php(61): call_user_func_array(Array, Array)
+#3 C:\xampp\htdocs\unifyze\backend\src\Core\Router.php(46): Src\Core\Router->executeHandler('AuthController@...', Array)
+#4 C:\xampp\htdocs\unifyze\backend\public\index.php(93): Src\Core\Router->dispatch()
+#5 {main}
+  thrown in C:\xampp\htdocs\unifyze\backend\src\Models\PasswordReset.php on line 71
+[17-May-2025 21:58:42 Europe/Berlin] PHP Parse error:  syntax error, unexpected token "private" in C:\xampp\htdocs\unifyze\backend\src\Controllers\AuthController.php on line 175
+[17-May-2025 22:03:04 Europe/Berlin] PHP Warning:  Trying to access array offset on value of type bool in C:\xampp\htdocs\unifyze\backend\src\Controllers\AuthController.php on line 156
+[17-May-2025 22:03:07 Europe/Berlin] PHP Warning:  Trying to access array offset on value of type bool in C:\xampp\htdocs\unifyze\backend\src\Controllers\AuthController.php on line 156
+[17-May-2025 22:03:08 Europe/Berlin] PHP Warning:  Trying to access array offset on value of type bool in C:\xampp\htdocs\unifyze\backend\src\Controllers\AuthController.php on line 156
+[17-May-2025 22:03:10 Europe/Berlin] PHP Warning:  Trying to access array offset on value of type bool in C:\xampp\htdocs\unifyze\backend\src\Controllers\AuthController.php on line 156
+[17-May-2025 22:03:15 Europe/Berlin] PHP Warning:  Trying to access array offset on value of type bool in C:\xampp\htdocs\unifyze\backend\src\Controllers\AuthController.php on line 156
+[17-May-2025 22:03:17 Europe/Berlin] PHP Warning:  Trying to access array offset on value of type bool in C:\xampp\htdocs\unifyze\backend\src\Controllers\AuthController.php on line 156
+[17-May-2025 22:03:18 Europe/Berlin] PHP Warning:  Trying to access array offset on value of type bool in C:\xampp\htdocs\unifyze\backend\src\Controllers\AuthController.php on line 156
+[17-May-2025 22:03:31 Europe/Berlin] PHP Warning:  Trying to access array offset on value of type bool in C:\xampp\htdocs\unifyze\backend\src\Controllers\AuthController.php on line 156
+[17-May-2025 22:03:37 Europe/Berlin] PHP Warning:  Trying to access array offset on value of type bool in C:\xampp\htdocs\unifyze\backend\src\Controllers\AuthController.php on line 156

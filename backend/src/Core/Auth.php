@@ -25,6 +25,7 @@ class Auth
     public function getCurrentUser(): ?array
     {
         $userId = $this->validateRequest();
+
         if (!$userId) return null;
         $userModel = new User();
         $user = $userModel->find($userId);

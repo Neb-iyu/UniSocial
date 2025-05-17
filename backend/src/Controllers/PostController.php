@@ -21,12 +21,13 @@ class PostController extends BaseController
 
     private function filterPostResponse(array $post): array
     {
+        $user_uuid = $this->userModel->getUuidFromId($post['user_id']);
         $response = [
             'public_uuid' => $post['public_uuid'] ?? null,
             'content' => $post['content'] ?? '',
             'media_urls' => json_decode($post['media_urls'] ?? '[]', true) ?: [],
             'visibility' => $post['visibility'] ?? 'public',
-            'user_uuid' => $post['user_uuid'] ?? null,
+            'user_uuid' => $user_uuid,
             'likes_count' => (int)($post['likes_count'] ?? 0),
             'comments_count' => (int)($post['comments_count'] ?? 0),
             'created_at' => $post['created_at'] ?? null,

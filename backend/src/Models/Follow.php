@@ -10,51 +10,82 @@ class Follow extends Model
     protected string $table = 'follows';
     protected array $fillable = ['follower_id', 'followed_id'];
 
-    /**
-     * Follow a user. Returns ['success' => bool, 'message' => string]
-     */
-    public function follow(int $followerId, int $followedId): array
+
+    public function followToggle(int $followerId, int $followedId): array
     {
         if ($followerId == $followedId) {
-            return ['success' => false, 'message' => 'You cannot follow yourself.'];
+            return ['success' => false, 'action' => 'following', 'message' => 'You cannot follow yourself.'];
         }
+        $exists = $this->executeQuery(
+            "SELECT 1 FROM {$this->table} WHERE follower_id = ? AND followed_id = ? LIMIT 1",
+            [$followerId, $followedId]
+        );
+        if (!empty($exists)) {
+            // Already following, so unfollow
+            return $this->unfollow($followerId, $followedId);
+        } else {
+            // Not following, so follow
+            return $this->follow($followerId, $followedId);
+        }
+    }
+
+
+    private function follow(int $followerId, int $followedId): array
+    {
+
         try {
             $result = $this->executeUpdate(
-                "INSERT IGNORE INTO {$this->table} (follower_id, followed_id) VALUES (?, ?)",
+                "INSERT INTO {$this->table} (follower_id, followed_id) VALUES (?, ?)",
                 [$followerId, $followedId]
             );
             if ($result) {
+                // Increments following_count for follower
+                $this->executeUpdate(
+                    "UPDATE users SET following_count = following_count + 1 WHERE id = ?",
+                    [$followerId]
+                );
+                // Increments followers_count for followed user
+                $this->executeUpdate(
+                    "UPDATE users SET followers_count = followers_count + 1 WHERE id = ?",
+                    [$followedId]
+                );
                 $this->notify('follow', [
                     'recipient_id' => $followedId,
                     'actor_id' => $followerId
                 ]);
-                return ['success' => true, 'message' => 'Followed successfully.'];
+                return ['success' => true, 'action' => 'following', 'message' => 'Followed successfully.'];
             } else {
-                return ['success' => false, 'message' => 'You are already following this user.'];
+                return ['success' => false, 'action' => 'following', 'message' => 'Failed to follow user.'];
             }
         } catch (PDOException $e) {
             error_log('Follow failed: ' . $e->getMessage());
-            return ['success' => false, 'message' => 'Database error: ' . $e->getMessage()];
+            return ['success' => false, 'action' => 'following', 'message' => 'Database error: ' . $e->getMessage()];
         }
     }
 
-    /**
-     * Unfollow a user. Returns ['success' => bool, 'message' => string]
-     */
-    public function unfollow(int $followerId, int $followedId): array
+ 
+    private function unfollow(int $followerId, int $followedId): array
     {
-        if ($followerId == $followedId) {
-            return ['success' => false, 'message' => 'You cannot unfollow yourself.'];
-        }
+        
         try {
             $result = $this->executeUpdate(
                 "DELETE FROM {$this->table} WHERE follower_id = ? AND followed_id = ?",
                 [$followerId, $followedId]
             );
             if ($result) {
-                return ['success' => true, 'message' => 'Unfollowed successfully.'];
+                // Decrements following_count for follower
+                $this->executeUpdate(
+                    "UPDATE users SET following_count = GREATEST(following_count - 1, 0) WHERE id = ?",
+                    [$followerId]
+                );
+                // Decrements followers_count for followed user
+                $this->executeUpdate(
+                    "UPDATE users SET followers_count = GREATEST(followers_count - 1, 0) WHERE id = ?",
+                    [$followedId]
+                );
+                return ['success' => true, 'action' => 'unfollowing', 'message' => 'Unfollowed successfully.'];
             } else {
-                return ['success' => false, 'message' => 'You are not following this user.'];
+                return ['success' => false, 'action' => 'unfollowing', 'message' => 'Failed to unfollow user.'];
             }
         } catch (PDOException $e) {
             error_log('Unfollow failed: ' . $e->getMessage());
@@ -130,10 +161,7 @@ class Follow extends Model
         }
     }
 
-    /**
-     * Get all follows (no soft delete implemented)
-     * @return array
-     */
+
     public function allActive(): array
     {
         try {

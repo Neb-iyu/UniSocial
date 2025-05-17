@@ -153,20 +153,19 @@ CREATE TABLE mentions (
 CREATE TABLE notifications (
     id INT AUTO_INCREMENT PRIMARY KEY,
     public_uuid CHAR(36) NOT NULL UNIQUE DEFAULT (UUID()),
-    user_uuid CHAR(36) NOT NULL,
-    from_user_uuid CHAR(36) NOT NULL,
+    user_id INT NOT NULL,
+    from_user_id INT NOT NULL,
     type ENUM('like', 'comment', 'follow', 'mention', 'post') NOT NULL,
     reference_type ENUM('post', 'comment', 'user') NOT NULL,
-    reference_uuid CHAR(36) NOT NULL,
+    reference_id INT NOT NULL,
     is_read BOOLEAN DEFAULT FALSE,
-    is_hidden BOOLEAN DEFAULT FALSE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    FOREIGN KEY (user_uuid) REFERENCES users(public_uuid) ON DELETE CASCADE,
-    FOREIGN KEY (from_user_uuid) REFERENCES users(public_uuid) ON DELETE CASCADE,
-    INDEX idx_user_uuid (user_uuid),
-    INDEX idx_from_user_uuid (from_user_uuid),
-    INDEX idx_reference (reference_type, reference_uuid),
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (from_user_id) REFERENCES users(id) ON DELETE CASCADE,
+    INDEX idx_user_id (user_id),
+    INDEX idx_from_user_id (from_user_id),
+    INDEX idx_reference (reference_type, reference_id),
     INDEX idx_public_uuid (public_uuid)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 

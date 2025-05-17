@@ -23,84 +23,6 @@ class User extends Model
     ];
 
 
-    public function findByEmail(string $email): ?array
-    {
-        try {
-            $stmt = $this->db->prepare(
-                "SELECT * FROM {$this->table} 
-                 WHERE email = :email 
-                 AND is_deleted = 0 
-                 LIMIT 1"
-            );
-            $stmt->bindValue(':email', $email, PDO::PARAM_STR);
-            $stmt->execute();
-
-            $result = $stmt->fetch(PDO::FETCH_ASSOC);
-            return $result ?: null;
-        } catch (PDOException $e) {
-            error_log("User lookup failed for email {$email}: " . $e->getMessage());
-            return null;
-        }
-    }
-
-
-    public function softDelete(int $userId): bool
-    {
-        try {
-            $this->db->beginTransaction();
-
-            // Mark user as deleted
-            $stmt = $this->db->prepare(
-                "UPDATE {$this->table} 
-                 SET is_deleted = 1, 
-                     username = CONCAT('deleted_', username),
-                     email = CONCAT('deleted_', email),
-                     updated_at = NOW()
-                 WHERE id = ?"
-            );
-            $stmt->execute([$userId]);
-
-            // Remove follows
-            $this->db->prepare(
-                "DELETE FROM follows 
-                 WHERE follower_id = ? OR followed_id = ?"
-            )->execute([$userId, $userId]);
-
-            // Remove likes
-            $this->db->prepare(
-                "DELETE FROM likes 
-                 WHERE user_id = ?"
-            )->execute([$userId]);
-
-            return $this->db->commit();
-        } catch (PDOException $e) {
-            $this->db->rollBack();
-            error_log("Soft delete failed for user {$userId}: " . $e->getMessage());
-            return false;
-        }
-    }
-
-
-    public function getProfilePictureUrl(int $userId): string
-    {
-        $user = $this->find($userId);
-
-        if (!$user) {
-            return 'uploads/profiles/default.svg';
-        }
-
-        if (empty($user['profile_picture_url'])) {
-            return 'uploads/profiles/default.svg';
-        }
-
-        $filePath = __DIR__ . '/../../public/' . ltrim($user['profile_picture_url'], '/');
-        if (!file_exists($filePath)) {
-            return 'uploads/profiles/default.svg';
-        }
-
-        return $user['profile_picture_url'];
-    }
-
     public function create(array $data): int
     {
         try {
@@ -109,7 +31,7 @@ class User extends Model
             }
 
             // Sets default profile picture if not provided
-            if (empty($data['profile_picture_url'])) {
+            if (empty($data['profile_picture_url']) || is_null($data['profile_picture_url'])) {
                 $data['profile_picture_url'] = 'uploads/profiles/default.svg';
             }
 
@@ -307,6 +229,84 @@ class User extends Model
         }
     }
 
+    public function findByEmail(string $email): ?array
+    {
+        try {
+            $stmt = $this->db->prepare(
+                "SELECT * FROM {$this->table} 
+                 WHERE email = :email 
+                 AND is_deleted = 0 
+                 LIMIT 1"
+            );
+            $stmt->bindValue(':email', $email, PDO::PARAM_STR);
+            $stmt->execute();
+
+            $result = $stmt->fetch(PDO::FETCH_ASSOC);
+            return $result ?: null;
+        } catch (PDOException $e) {
+            error_log("User lookup failed for email {$email}: " . $e->getMessage());
+            return null;
+        }
+    }
+
+
+    public function softDelete(int $userId): bool
+    {
+        try {
+            $this->db->beginTransaction();
+
+            // Mark user as deleted
+            $stmt = $this->db->prepare(
+                "UPDATE {$this->table} 
+                 SET is_deleted = 1, 
+                     username = CONCAT('deleted_', username),
+                     email = CONCAT('deleted_', email),
+                     updated_at = NOW()
+                 WHERE id = ?"
+            );
+            $stmt->execute([$userId]);
+
+            // Remove follows
+            $this->db->prepare(
+                "DELETE FROM follows 
+                 WHERE follower_id = ? OR followed_id = ?"
+            )->execute([$userId, $userId]);
+
+            // Remove likes
+            $this->db->prepare(
+                "DELETE FROM likes 
+                 WHERE user_id = ?"
+            )->execute([$userId]);
+
+            return $this->db->commit();
+        } catch (PDOException $e) {
+            $this->db->rollBack();
+            error_log("Soft delete failed for user {$userId}: " . $e->getMessage());
+            return false;
+        }
+    }
+
+
+    public function getProfilePictureUrl(int $userId): string
+    {
+        $user = $this->find($userId);
+
+        if (!$user) {
+            return 'uploads/profiles/default.svg';
+        }
+
+        if (empty($user['profile_picture_url'])) {
+            return 'uploads/profiles/default.svg';
+        }
+
+        $filePath = __DIR__ . '/../../public/' . ltrim($user['profile_picture_url'], '/');
+        if (!file_exists($filePath)) {
+            return 'uploads/profiles/default.svg';
+        }
+
+        return $user['profile_picture_url'];
+    }
+
 
     public function is_admin(int $userId): bool
     {
@@ -377,6 +377,19 @@ class User extends Model
             return $result ?: null;
         } catch (PDOException $e) {
             error_log("User lookup failed for uuid {$uuid}: " . $e->getMessage());
+            return null;
+        }
+    }
+
+    public function getUuidFromId(int $id): ?string
+    {
+        try {
+            $stmt = $this->db->prepare("SELECT public_uuid FROM {$this->table} WHERE id = ? AND is_deleted = 0 LIMIT 1");
+            $stmt->execute([$id]);
+            $result = $stmt->fetch(PDO::FETCH_ASSOC);
+            return $result['public_uuid'] ?? null;
+        } catch (PDOException $e) {
+            error_log("User lookup failed for id {$id}: " . $e->getMessage());
             return null;
         }
     }

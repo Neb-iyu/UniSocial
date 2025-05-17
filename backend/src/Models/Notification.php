@@ -11,20 +11,20 @@ class Notification extends Model
     protected string $table = 'notifications';
     protected string $primaryKey = 'id';
     protected array $fillable = [
-        'user_uuid',
-        'from_user_uuid',
+        'user_id',
+        'from_user_id',
         'type',
         'reference_type',
-        'reference_uuid',
+        'reference_id',
         'is_read',
         'created_at',
         'updated_at'
     ];
 
-    protected array $uuidFields = [
-        'user_uuid',
-        'from_user_uuid',
-        'reference_uuid'
+    protected array $idFields = [
+        'user_id',
+        'from_user_id',
+        'reference_id'
     ];
 
     protected User $userModel;
@@ -70,13 +70,13 @@ class Notification extends Model
         }
 
         // Verify recipient user exists
-        $recipient = $this->userModel->findByUuid($data['user_uuid'] ?? '');
+        $recipient = $this->userModel->find($data['user_id'] ?? null);
         if (!$recipient) {
             throw new \InvalidArgumentException('Recipient user not found');
         }
 
         // Verify actor user exists
-        $actor = $this->userModel->findByUuid($data['actor_uuid'] ?? '');
+        $actor = $this->userModel->find($data['from_user_id'] ?? null);
         if (!$actor) {
             throw new \InvalidArgumentException('Actor user not found');
         }
@@ -85,7 +85,6 @@ class Notification extends Model
         $data['is_read'] = false;
         $data['created_at'] = date('Y-m-d H:i:s');
 
-        // Delegate to parent
         try {
             return parent::create($data);
         } catch (PDOException $e) {
@@ -107,84 +106,53 @@ class Notification extends Model
     }
 
 
-    public function getUnread(string $userUuid, int $limit = 10): array
+    public function getUnread(int $userId, int $limit = 10): array
     {
         try {
-            $user = $this->userModel->findByUuid($userUuid);
+            $user = $this->userModel->find($userId);
             if (!$user) {
                 throw new \InvalidArgumentException('User not found');
             }
-            $userId = $user['public_uuid']; // Get the internal ID from the user record
 
             $notifications = $this->executeQuery(
                 "SELECT 
                     n.*, 
                     u.username, 
-                    u.profile_picture_url,
-                    u.public_uuid as actor_uuid,
-                    COALESCE(p.public_uuid, c.public_uuid) as reference_uuid
+                    u.profile_picture_url
                  FROM {$this->table} n
-                 JOIN users u ON n.from_user_uuid = u.public_uuid
-                 LEFT JOIN posts p ON n.reference_type = 'post' AND n.reference_uuid = p.public_uuid
-                 LEFT JOIN comments c ON n.reference_type = 'comment' AND n.reference_uuid = c.public_uuid
-                 WHERE n.user_uuid = ? AND n.is_read = 0
+                 JOIN users u ON n.from_user_id = u.id
+                 WHERE n.user_id = ? AND n.is_read = 0
                  ORDER BY n.created_at DESC
                  LIMIT ?",
-                [$userUuid, $limit]
+                [$userId, $limit]
             );
 
-            return array_map([$this, 'formatNotificationResponse'], $notifications);
+            return $notifications;
         } catch (PDOException $e) {
             error_log('Get unread notifications failed: ' . $e->getMessage());
             return [];
         }
     }
 
-
-    /**
-     * Format notification response with UUIDs
-     */
-    private function formatNotificationResponse(array $notification): array
+    public function markAsRead(int $userId, array $notificationIds): bool
     {
-        return [
-            'public_uuid' => $notification['public_uuid'] ?? null,
-            'user_uuid' => $notification['user_uuid'] ?? null,
-            'type' => $notification['type'] ?? null,
-            'is_read' => (bool)($notification['is_read'] ?? false),
-            'is_hidden' => (bool)($notification['is_hidden'] ?? false),
-            'created_at' => $notification['created_at'] ?? null,
-            'updated_at' => $notification['updated_at'] ?? null,
-            'actor' => [
-                'uuid' => $notification['from_user_uuid'] ?? null,
-                'username' => $notification['username'] ?? null,
-                'profile_picture_url' => $notification['profile_picture_url'] ?? null
-            ],
-            'reference' => [
-                'type' => $notification['reference_type'] ?? null,
-                'uuid' => $notification['reference_uuid'] ?? null
-            ]
-        ];
-    }
-
-    public function markAsRead(string $userUuid, array $notificationUuids): bool
-    {
-        if (empty($notificationUuids)) {
+        if (empty($notificationIds)) {
             return false;
         }
 
         $this->db->beginTransaction();
 
         try {
-            $placeholders = str_repeat('?,', count($notificationUuids) - 1) . '?';
-            $params = array_merge([$userUuid], $notificationUuids);
+            $placeholders = implode(',', array_fill(0, count($notificationIds), '?'));
+            $params = array_merge([$userId], $notificationIds);
 
             // Update only the notifications that belong to the user and are not already read
             $sql = "UPDATE {$this->table} n
-                    INNER JOIN users u ON u.public_uuid = ?
+                    INNER JOIN users u ON u.id = ?
                     SET n.is_read = 1,
                         n.updated_at = NOW()
                     WHERE n.public_uuid IN ({$placeholders})
-                    AND n.user_uuid = u.public_uuid
+                    AND n.user_id = u.id
                     AND n.is_read = 0";
 
             $affectedRows = $this->executeUpdate($sql, $params);
@@ -192,7 +160,7 @@ class Notification extends Model
             // If no rows were affected, either the user doesn't exist or notifications were already read
             if ($affectedRows === 0) {
                 // Check if user exists
-                $userExists = $this->userModel->findByUuid($userUuid);
+                $userExists = $this->userModel->find($userId);
                 if (!$userExists) {
                     throw new \InvalidArgumentException('User not found');
                 }
@@ -215,84 +183,84 @@ class Notification extends Model
     }
 
 
-    public function createFollowNotification(string $recipientUuid, string $followerUuid): int
+    public function createFollowNotification(int $recipientId, int $followerId): int
     {
         return $this->create([
-            'user_uuid' => $recipientUuid,
-            'actor_uuid' => $followerUuid,
+            'user_id' => $recipientId,
+            'from_user_id' => $followerId,
             'type' => 'follow',
             'reference_type' => 'user',
-            'reference_uuid' => $followerUuid
+            'reference_id' => $followerId
         ]);
     }
 
 
     public function createLikeNotification(
-        string $recipientUuid,
-        string $likerUuid,
+        int $recipientId,
+        int $likerId,
         string $contentType,
-        string $contentUuid
+        int $contentId
     ): int {
         return $this->create([
-            'user_uuid' => $recipientUuid,
-            'actor_uuid' => $likerUuid,
+            'user_id' => $recipientId,
+            'from_user_id' => $likerId,
             'type' => 'like',
             'reference_type' => $contentType,
-            'reference_uuid' => $contentUuid
+            'reference_id' => $contentId
         ]);
     }
 
     public function createCommentNotification(
-        string $recipientUuid,
-        string $commenterUuid,
-        string $postUuid
+        int $recipientId,
+        int $commenterId,
+        int $postId
     ): int {
         return $this->create([
-            'user_uuid' => $recipientUuid,
-            'actor_uuid' => $commenterUuid,
+            'user_id' => $recipientId,
+            'from_user_id' => $commenterId,
             'type' => 'comment',
             'reference_type' => 'post',
-            'reference_uuid' => $postUuid
+            'reference_id' => $postId
         ]);
     }
 
     public function createMentionNotification(
-        string $recipientUuid,
-        string $mentionerUuid,
+        int $recipientId,
+        int $mentionerId,
         string $contentType,
-        string $contentUuid
+        int $contentId
     ): int {
         return $this->create([
-            'user_uuid' => $recipientUuid,
-            'actor_uuid' => $mentionerUuid,
+            'user_id' => $recipientId,
+            'from_user_id' => $mentionerId,
             'type' => 'mention',
             'reference_type' => $contentType,
-            'reference_uuid' => $contentUuid
+            'reference_id' => $contentId
         ]);
     }
 
     public function createPostNotification(
-        string $recipientUuid,
-        string $posterUuid,
-        string $postUuid
+        int $recipientId,
+        int $posterId,
+        int $postId
     ): int {
         return $this->create([
-            'user_uuid' => $recipientUuid,
-            'actor_uuid' => $posterUuid,
+            'user_id' => $recipientId,
+            'from_user_id' => $posterId,
             'type' => 'post',
             'reference_type' => 'post',
-            'reference_uuid' => $postUuid
+            'reference_id' => $postId
         ]);
     }
 
     public function getNotifications(
-        string $userUuid,
+        int $userId,
         int $limit = 10,
         int $offset = 0
     ): array {
         try {
             // Verify user exists and get their notifications
-            $user = $this->userModel->findByUuid($userUuid);
+            $user = $this->userModel->find($userId);
             if (!$user) {
                 throw new \InvalidArgumentException('User not found');
             }
@@ -301,26 +269,25 @@ class Notification extends Model
             $notifications = $this->executeQuery(
                 "SELECT 
                     n.public_uuid,
-                    n.user_uuid,
-                    n.from_user_uuid,
+                    n.user_id,
+                    n.from_user_id,
                     n.type,
                     n.reference_type,
-                    n.reference_uuid,
+                    n.reference_id,
                     n.is_read,
-                    n.is_hidden,
                     n.created_at,
                     n.updated_at,
                     u.username,
                     u.profile_picture_url
                 FROM {$this->table} n
-                JOIN users u ON n.from_user_uuid = u.public_uuid
-                WHERE n.user_uuid = ?
+                JOIN users u ON n.from_user_id = u.id
+                WHERE n.user_id = ?
                 ORDER BY n.created_at DESC
                 LIMIT ? OFFSET ?",
-                [$userUuid, $limit, $offset]
+                [$userId, $limit, $offset]
             );
 
-            return array_map([$this, 'formatNotificationResponse'], $notifications);
+            return $notifications;
         } catch (PDOException $e) {
             error_log('Get notifications failed: ' . $e->getMessage());
             return [];
@@ -335,7 +302,7 @@ class Notification extends Model
                  WHERE user_id = ?",
                 [$userId]
             );
-        } catch (\PDOException $e) {
+        } catch (PDOException $e) {
             error_log('Delete notifications failed: ' . $e->getMessage());
             return false;
         }
@@ -351,7 +318,7 @@ class Notification extends Model
                 [$userId]
             );
             return $result[0]['count'] ?? 0;
-        } catch (\PDOException $e) {
+        } catch (PDOException $e) {
             error_log('Get notification count failed: ' . $e->getMessage());
             return 0;
         }

@@ -24,7 +24,7 @@ class Post extends Model
             $postId = parent::create($data);
 
             // Notify all followers of the post creator
-            $followModel = new \Src\Models\Follow();
+            $followModel = new Follow();
             $followers = $followModel->getFollowers($data['user_id']); // returns array of ['follower_id' => ...]
 
             foreach ($followers as $follower) {
