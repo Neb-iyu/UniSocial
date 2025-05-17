@@ -20,6 +20,7 @@ class Like extends Model
         if (($postId === null && $commentId === null) || ($postId !== null && $commentId !== null)) {
             return ['success' => false, 'message' => 'Either postId or commentId must be provided, but not both.'];
         }
+        
         $this->db->beginTransaction();
         try {
             // Existence and soft-delete check
@@ -47,7 +48,7 @@ class Like extends Model
                 }
             }
 
-            $query = "SELECT 1 FROM {$this->table} WHERE user_id = ? AND ";
+            $query = "SELECT id FROM {$this->table} WHERE user_id = ? AND ";
             $params = [$userId];
             if ($postId !== null) {
                 $query .= "post_id = ? AND comment_id IS NULL";
@@ -57,10 +58,10 @@ class Like extends Model
                 $params[] = $commentId;
             }
 
-            $exists = $this->executeQuery($query, $params);
+            $existingLike = $this->executeQuery($query, $params);
 
-            if ($exists) {
-                $result = $this->removeLike($userId, $postId, $commentId);
+            if (!empty($existingLike)) {
+                $result = $this->removeLike($existingLike[0]['id'], $postId, $commentId);
                 if ($result !== true) {
                     $this->db->rollBack();
                     return ['success' => false, 'message' => $result ?: 'Failed to unlike.'];
@@ -84,22 +85,33 @@ class Like extends Model
     }
 
     /**
-     * Add a like. Returns true on success, or error message string on failure.
+     * Add a like. Returns like ID on success, or error message string on failure.
      */
     private function addLike(int $userId, ?int $postId, ?int $commentId)
     {
         if (($postId === null && $commentId === null) || ($postId !== null && $commentId !== null)) {
             return 'Either postId or commentId must be provided, but not both.';
         }
+
         try {
-            $this->executeUpdate(
-                "INSERT INTO {$this->table} (user_id, post_id, comment_id) VALUES (?, ?, ?)",
-                [$userId, $postId, $commentId]
-            );
+            // Determine which type of like we're dealing with
+            if ($postId !== null) {
+                $query = "INSERT INTO {$this->table} (user_id, post_id) VALUES (?, ?)";
+                $params = [$userId, $postId];
+                $table = 'posts';
+                $id = $postId;
+            } else {
+                $query = "INSERT INTO {$this->table} (user_id, comment_id) VALUES (?, ?)";
+                $params = [$userId, $commentId];
+                $table = 'comments';
+                $id = $commentId;
+            }
 
-            $table = $postId !== null ? 'posts' : 'comments';
-            $id = $postId ?? $commentId;
+            // Execute the insert and get the new like ID
+            $this->executeUpdate($query, $params);
+            $likeId = $this->db->lastInsertId();
 
+            // Update likes count
             $this->executeUpdate(
                 "UPDATE {$table} SET likes_count = likes_count + 1 WHERE id = ?",
                 [$id]
@@ -113,7 +125,8 @@ class Like extends Model
                         'recipient_id' => $recipientId,
                         'actor_id' => $userId,
                         'content_type' => 'post',
-                        'content_id' => $postId
+                        'content_id' => $postId,
+                        'like_id' => $likeId
                     ]);
                 }
             } else {
@@ -123,10 +136,12 @@ class Like extends Model
                         'recipient_id' => $recipientId,
                         'actor_id' => $userId,
                         'content_type' => 'comment',
-                        'content_id' => $commentId
+                        'content_id' => $commentId,
+                        'like_id' => $likeId
                     ]);
                 }
             }
+
             return true;
         } catch (PDOException $e) {
             error_log('Add like failed: ' . $e->getMessage());
@@ -137,23 +152,14 @@ class Like extends Model
     /**
      * Remove a like. Returns true on success, or error message string on failure.
      */
-    private function removeLike(int $userId, ?int $postId, ?int $commentId)
+    private function removeLike(int $likeId, ?int $postId, ?int $commentId)
     {
-        if (($postId === null && $commentId === null) || ($postId !== null && $commentId !== null)) {
-            return 'Either postId or commentId must be provided, but not both.';
-        }
         try {
-            $query = "DELETE FROM {$this->table} WHERE user_id = ? AND ";
-            $params = [$userId];
-            if ($postId !== null) {
-                $query .= "post_id = ? AND comment_id IS NULL";
-                $params[] = $postId;
-            } else {
-                $query .= "post_id IS NULL AND comment_id = ?";
-                $params[] = $commentId;
-            }
-
-            $this->executeUpdate($query, $params);
+            // Delete by primary key (more efficient)
+            $this->executeUpdate(
+                "DELETE FROM {$this->table} WHERE id = ?",
+                [$likeId]
+            );
 
             $table = $postId !== null ? 'posts' : 'comments';
             $id = $postId ?? $commentId;
@@ -202,7 +208,7 @@ class Like extends Model
                 "SELECT COUNT(*) as count FROM {$this->table} WHERE post_id = ? AND comment_id IS NULL",
                 [$postId]
             );
-            return $result[0]['count'] ?? 0;
+            return (int)($result[0]['count'] ?? 0);
         } catch (PDOException $e) {
             error_log('Count likes for post failed: ' . $e->getMessage());
             return 0;
@@ -216,7 +222,7 @@ class Like extends Model
                 "SELECT COUNT(*) as count FROM {$this->table} WHERE comment_id = ? AND post_id IS NULL",
                 [$commentId]
             );
-            return $result[0]['count'] ?? 0;
+            return (int)($result[0]['count'] ?? 0);
         } catch (PDOException $e) {
             error_log('Count likes for comment failed: ' . $e->getMessage());
             return 0;
@@ -233,5 +239,22 @@ class Like extends Model
     {
         $commentModel = new Comment();
         return $commentModel->getOwnerId($commentId);
+    }
+
+    /**
+     * Get like by ID
+     */
+    public function getLikeById(int $likeId): ?array
+    {
+        try {
+            $result = $this->executeQuery(
+                "SELECT * FROM {$this->table} WHERE id = ?",
+                [$likeId]
+            );
+            return $result[0] ?? null;
+        } catch (PDOException $e) {
+            error_log('Get like by ID failed: ' . $e->getMessage());
+            return null;
+        }
     }
 }

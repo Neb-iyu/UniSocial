@@ -1,8 +1,8 @@
 <?php
-
 namespace Src\Controllers;
 
 use Src\Models\Comment;
+use Src\Models\Post;
 use Src\Models\Like;
 use Src\Core\Response;
 use Src\Utilities\Validator;
@@ -21,8 +21,18 @@ class CommentController extends BaseController
 
     private function filterCommentResponse(array $comment): array
     {
-        unset($comment['id'], $comment['user_id'], $comment['post_id'], $comment['is_deleted']);
-        return $comment;
+        return [
+            'public_uuid' => $comment['public_uuid'] ?? null,
+            'content' => $comment['content'] ?? '',
+            'user_uuid' => $comment['user_uuid'] ?? null,
+            'post_uuid' => $comment['post_uuid'] ?? null,
+            'likes_count' => (int)($comment['likes_count'] ?? 0),
+            'is_edited' => (bool)($comment['is_edited'] ?? false),
+            'is_deleted' => (bool)($comment['is_deleted'] ?? false),
+            'post_deleted' => (bool)($comment['post_deleted'] ?? false),
+            'created_at' => $comment['created_at'] ?? null,
+            'updated_at' => $comment['updated_at'] ?? null
+        ];
     }
 
     // GET /comments
@@ -31,6 +41,9 @@ class CommentController extends BaseController
         $currentUser = $this->requireAuth();
         if (!$currentUser) return;
         $comments = $this->commentModel->all();
+        foreach ($comments as &$comment) {
+            $comment = $this->filterCommentResponse($comment);
+        }
         Response::success($comments, 'Comments fetched successfully');
     }
 
@@ -53,17 +66,38 @@ class CommentController extends BaseController
     {
         $currentUser = $this->requireAuth();
         if (!$currentUser) return;
+        
         $input = json_decode(file_get_contents('php://input'), true);
         $input = Validator::sanitizeInput($input);
+        
         $errors = [];
         if (empty($input['content']) || !is_string($input['content']) || strlen($input['content']) < 1) {
             $errors['content'] = 'Content is required.';
         }
+        if (empty($input['post_uuid'])) {
+            $errors['post_uuid'] = 'Post UUID is required.';
+        }
+        
         if ($errors) {
             Response::validationError($errors);
             return;
         }
+
+        // Look up post ID from UUID
+        $postModel = new Post();
+        $post = $postModel->findByUuid($input['post_uuid']);
+        
+        if (!$post) {
+            Response::notFound('Post not found');
+            return;
+        }
+
+        // Add the current user's ID and post ID to the input
+        $input['user_id'] = $currentUser['id'];
+        $input['post_id'] = $post['id'];
+
         $commentId = $this->commentModel->create($input);
+        
         if ($commentId) {
             $comment = $this->commentModel->find($commentId);
             $comment = $this->filterCommentResponse($comment);
@@ -121,33 +155,5 @@ class CommentController extends BaseController
         } else {
             Response::error('Comment deletion failed', 500);
         }
-    }
-
-    // GET /comments/{uuid}/likes
-    public function getCommentLikes(string $uuid): void
-    {
-        $currentUser = $this->requireAuth();
-        if (!$currentUser) return;
-        $comment = $this->commentModel->findByUuid($uuid);
-        if (!$comment || $comment['is_deleted']) {
-            Response::notFound('Comment not found');
-            return;
-        }
-        $likes = $this->likeModel->getLikesForComment($comment['id']);
-        Response::success($likes, 'Likes fetched successfully');
-    }
-
-    // GET /comments/{uuid}/likes/count
-    public function getCommentLikeCount(string $uuid): void
-    {
-        $currentUser = $this->requireAuth();
-        if (!$currentUser) return;
-        $comment = $this->commentModel->findByUuid($uuid);
-        if (!$comment || $comment['is_deleted']) {
-            Response::notFound('Comment not found');
-            return;
-        }
-        $count = $this->likeModel->countLikesForComment($comment['id']);
-        Response::success($count, 'Like count fetched successfully');
     }
 }

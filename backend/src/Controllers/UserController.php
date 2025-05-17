@@ -269,7 +269,23 @@ class UserController extends BaseController
 
     private function filterUserResponse(array $user): array
     {
-        unset($user['id'], $user['password'], $user['is_deleted']);
-        return $user;
+        $profilePictureUrl = $this->userModel->getProfilePictureUrl($user['id']);
+        
+        return [
+            'public_uuid' => $user['public_uuid'] ?? null,
+            'username' => $user['username'] ?? null,
+            'email' => $user['email'] ?? null,
+            'fullname' => $user['fullname'] ?? null,
+            'bio' => $user['bio'] ?? null,
+            'profile_picture_url' => $profilePictureUrl,
+            'university_id' => $user['university_id'] ?? null,
+            'year_of_study' => isset($user['year_of_study']) ? (int)$user['year_of_study'] : null,
+            'gender' => $user['gender'] ?? null,
+            'followers_count' => (int)($user['followers_count'] ?? 0),
+            'following_count' => (int)($user['following_count'] ?? 0),
+            'post_count' => (int)($user['post_count'] ?? 0),
+            'created_at' => $user['created_at'] ?? null,
+            'is_admin' => !empty($user['is_admin'])
+        ];
     }
 }

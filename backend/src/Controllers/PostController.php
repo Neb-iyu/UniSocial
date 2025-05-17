@@ -21,8 +21,25 @@ class PostController extends BaseController
 
     private function filterPostResponse(array $post): array
     {
-        unset($post['id'], $post['user_id'], $post['is_deleted']);
-        return $post;
+        $response = [
+            'public_uuid' => $post['public_uuid'] ?? null,
+            'content' => $post['content'] ?? '',
+            'media_urls' => json_decode($post['media_urls'] ?? '[]', true) ?: [],
+            'visibility' => $post['visibility'] ?? 'public',
+            'user_uuid' => $post['user_uuid'] ?? null,
+            'likes_count' => (int)($post['likes_count'] ?? 0),
+            'comments_count' => (int)($post['comments_count'] ?? 0),
+            'created_at' => $post['created_at'] ?? null,
+            'updated_at' => $post['updated_at'] ?? null,
+            'is_deleted' => !empty($post['is_deleted']),
+            'deleted_at' => $post['deleted_at'] ?? null
+        ];
+
+        if (!empty($post['is_deleted']) && isset($post['days_remaining'])) {
+            $response['days_remaining'] = (int)$post['days_remaining'];
+        }
+
+        return $response;
     }
 
     // GET /posts/{uuid}
@@ -95,22 +112,70 @@ class PostController extends BaseController
         }
     }
 
+    // GET /posts/trash
+    public function getSoftDeletedPosts(): void
+    {
+        $currentUser = $this->requireAuth();
+        if (!$currentUser) return;
+        
+        $deletedPosts = $this->postModel->getSoftDeletedPostByUser($currentUser['id']);
+        
+        // Filter the response to include only necessary fields
+        $filteredPosts = array_map(function($post) {
+            return $this->filterPostResponse($post);
+        }, $deletedPosts);
+        
+        Response::success($filteredPosts, 'Soft-deleted posts retrieved successfully');
+    }
+    
+    // PATCH /posts/{uuid}/recover
+    public function recoverPost(string $uuid): void
+    {
+        $currentUser = $this->requireAuth();
+        if (!$currentUser) return;
+        
+        $post = $this->postModel->findByUuid($uuid);
+        if (!$post) {
+            Response::notFound('Post not found');
+            return;
+        }
+        
+        if ($post['is_deleted'] === 0) {
+            Response::error('Post is not deleted', 400);
+            return;
+        }
+        
+        if (! $this->requireSelfOrAdmin($currentUser, $post['user_id'])) {
+            return;
+        }
+        
+        $success = $this->postModel->recover($post['id']);
+        
+        if ($success) {
+            Response::success(null, 'Post recovered successfully');
+        } else {
+            Response::error('Failed to recover post', 500);
+        }
+    }
+    
     // DELETE /posts/{uuid}
     public function deletePost(string $uuid): void
     {
         $currentUser = $this->requireAuth();
         if (!$currentUser) return;
+        
         $post = $this->postModel->findByUuid($uuid);
         if (!$post || $post['is_deleted']) {
             Response::notFound('Post not found');
             return;
         }
-        if (! $this->requireSelfOrAdmin($currentUser, $post['user_id'])) return;
-        // Soft delete: set is_deleted=1, deleted_at=NOW()
-        $success = $this->postModel->update($post['id'], [
-            'is_deleted' => 1,
-            'deleted_at' => date('Y-m-d H:i:s')
-        ]);
+        
+        if (! $this->requireSelfOrAdmin($currentUser, $post['user_id'])) {
+            return;
+        }
+        
+        $success = $this->postModel->softDelete($post['id']);
+        
         if ($success) {
             Response::success(null, 'Post deleted');
         } else {
@@ -127,27 +192,4 @@ class PostController extends BaseController
         Response::success($feed, 'Feed fetched successfully');
     }
 
-    // GET /posts/{uuid}/likes
-    public function getLikes(string $uuid): void
-    {
-        $post = $this->postModel->findByUuid($uuid);
-        if (!$post || $post['is_deleted']) {
-            Response::notFound('Post not found');
-            return;
-        }
-        $likes = $this->likeModel->getLikesForPost($post['id']);
-        Response::success($likes, 'Likes fetched successfully');
-    }
-
-    // GET /posts/{uuid}/likes/count
-    public function getLikeCount(string $uuid): void
-    {
-        $post = $this->postModel->findByUuid($uuid);
-        if (!$post || $post['is_deleted']) {
-            Response::notFound('Post not found');
-            return;
-        }
-        $count = $this->likeModel->countLikesForPost($post['id']);
-        Response::success($count, 'Like count fetched successfully');
-    }
 }

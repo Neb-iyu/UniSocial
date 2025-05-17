@@ -14,7 +14,9 @@ class Comment extends Model
     {
         $this->db->beginTransaction();
         try {
-            $id = parent::create($data);
+            $filteredData = array_intersect_key($data, array_flip($this->fillable));
+            
+            $id = parent::create($filteredData);
 
             $this->executeUpdate(
                 "UPDATE posts 
@@ -89,7 +91,14 @@ class Comment extends Model
     public function all(): array
     {
         try {
-            $stmt = $this->db->prepare("SELECT * FROM {$this->table} WHERE is_deleted = 0 ORDER BY created_at DESC");
+            $stmt = $this->db->prepare(
+                "SELECT c.*, u.public_uuid as user_uuid, p.public_uuid as post_uuid 
+                 FROM {$this->table} c
+                 JOIN users u ON c.user_id = u.id
+                 JOIN posts p ON c.post_id = p.id
+                 WHERE c.is_deleted = 0 
+                 ORDER BY c.created_at DESC"
+            );
             $stmt->execute();
             return $stmt->fetchAll(\PDO::FETCH_ASSOC);
         } catch (\PDOException $e) {
@@ -98,11 +107,79 @@ class Comment extends Model
         }
     }
 
+    public function recoverFromPostDeletion(int $postId): bool
+    {
+        $this->db->beginTransaction();
+        try {
+            $sql = "UPDATE {$this->table} 
+                    SET post_deleted = 0, 
+                        updated_at = NOW() 
+                    WHERE post_id = :postId 
+                    AND post_deleted = 1";
+            
+            $stmt = $this->db->prepare($sql);
+            $stmt->bindParam(':postId', $postId, \PDO::PARAM_INT);
+            $success = $stmt->execute();
+            
+            if ($success) {
+                $this->db->commit();
+                return true;
+            }
+            
+            $this->db->rollBack();
+            return false;
+            
+        } catch (\PDOException $e) {
+            $this->db->rollBack();
+            error_log('Recovering comments from post deletion failed: ' . $e->getMessage());
+            return false;
+        }
+    }
+
+    /**
+     * Mark all comments of a post as post_deleted
+     * @param int $postId The ID of the post
+     * @return bool True on success, false on failure
+     */
+    public function markAsPostDeleted(int $postId): bool
+    {
+        $this->db->beginTransaction();
+        try {
+            $sql = "UPDATE {$this->table} 
+                    SET post_deleted = 1, 
+                        updated_at = NOW() 
+                    WHERE post_id = :postId 
+                    AND is_deleted = 0";
+            
+            $stmt = $this->db->prepare($sql);
+            $stmt->bindParam(':postId', $postId, \PDO::PARAM_INT);
+            $success = $stmt->execute();
+            
+            if ($success) {
+                $this->db->commit();
+                return true;
+            }
+            
+            $this->db->rollBack();
+            return false;
+            
+        } catch (\PDOException $e) {
+            $this->db->rollBack();
+            error_log('Marking comments as post_deleted failed: ' . $e->getMessage());
+            return false;
+        }
+    }
+
     public function findByUuid(string $uuid): ?array
     {
         try {
             $stmt = $this->db->prepare(
-                "SELECT * FROM {$this->table} WHERE public_uuid = :uuid AND is_deleted = 0 LIMIT 1"
+                "SELECT c.*, u.public_uuid as user_uuid, p.public_uuid as post_uuid 
+                 FROM {$this->table} c
+                 JOIN users u ON c.user_id = u.id
+                 JOIN posts p ON c.post_id = p.id
+                 WHERE c.public_uuid = :uuid AND c.is_deleted = 0 
+                 LIMIT 1"
             );
             $stmt->bindValue(':uuid', $uuid, \PDO::PARAM_STR);
             $stmt->execute();
