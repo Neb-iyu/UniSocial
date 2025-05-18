@@ -37,7 +37,7 @@ class LikeController extends BaseController
         }
 
         $result = $this->likeModel->likeToggle($currentUser['id'], $post['id'], null);
-        
+
         if ($result['success']) {
             $updatedPost = $this->postModel->find($post['id']);
             Response::success([
@@ -66,7 +66,7 @@ class LikeController extends BaseController
         }
 
         $result = $this->likeModel->likeToggle($currentUser['id'], null, $comment['id']);
-        
+
         if ($result['success']) {
             $updatedComment = $this->commentModel->find($comment['id']);
             Response::success([
@@ -93,7 +93,7 @@ class LikeController extends BaseController
 
         $likes = $this->likeModel->getLikesForPost($post['id']);
         $count = $this->likeModel->countLikesForPost($post['id']);
-        
+
         Response::success([
             'likes' => $likes,
             'count' => $count
@@ -130,7 +130,7 @@ class LikeController extends BaseController
 
         $likes = $this->likeModel->getLikesForComment($comment['id']);
         $count = $this->likeModel->countLikesForComment($comment['id']);
-        
+
         Response::success([
             'likes' => $likes,
             'count' => $count

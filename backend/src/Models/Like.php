@@ -20,7 +20,7 @@ class Like extends Model
         if (($postId === null && $commentId === null) || ($postId !== null && $commentId !== null)) {
             return ['success' => false, 'message' => 'Either postId or commentId must be provided, but not both.'];
         }
-        
+
         $this->db->beginTransaction();
         try {
             // Existence and soft-delete check
@@ -119,22 +119,35 @@ class Like extends Model
 
             // Notify the owner if not self-like
             if ($postId !== null) {
-                $recipientId = $this->getPostOwnerId($postId);
+
+                $postModel = new Post();
+                $recipientId = $postModel->find($postId)['user_id'];
+
+                $userModel = new User();
+                $actorId = $userModel->find($userId)['id'];
+
                 if ($recipientId && $recipientId != $userId) {
                     $this->notify('like', [
                         'recipient_id' => $recipientId,
-                        'actor_id' => $userId,
+                        'actor_id' => $actorId,
                         'content_type' => 'post',
                         'content_id' => $postId,
                         'like_id' => $likeId
                     ]);
                 }
             } else {
-                $recipientId = $this->getCommentOwnerId($commentId);
+                $commentModel = new Comment();
+                $recipientId = $commentModel->find($commentId)['user_id'];
+
+                $userModel = new User();
+                $actorId = $userModel->find($userId)['id'];
+
+                $commentId = $commentModel->find($commentId)['id'];
+
                 if ($recipientId && $recipientId != $userId) {
                     $this->notify('like', [
                         'recipient_id' => $recipientId,
-                        'actor_id' => $userId,
+                        'actor_id' => $actorId,
                         'content_type' => 'comment',
                         'content_id' => $commentId,
                         'like_id' => $likeId
@@ -149,9 +162,6 @@ class Like extends Model
         }
     }
 
-    /**
-     * Remove a like. Returns true on success, or error message string on failure.
-     */
     private function removeLike(int $likeId, ?int $postId, ?int $commentId)
     {
         try {
@@ -229,21 +239,6 @@ class Like extends Model
         }
     }
 
-    public function getPostOwnerId(int $postId): ?int
-    {
-        $postModel = new Post();
-        return $postModel->getOwnerId($postId);
-    }
-
-    public function getCommentOwnerId(int $commentId): ?int
-    {
-        $commentModel = new Comment();
-        return $commentModel->getOwnerId($commentId);
-    }
-
-    /**
-     * Get like by ID
-     */
     public function getLikeById(int $likeId): ?array
     {
         try {

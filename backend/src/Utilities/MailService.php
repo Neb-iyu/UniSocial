@@ -1,4 +1,5 @@
 <?php
+
 namespace Src\Utilities;
 
 use PHPMailer\PHPMailer\PHPMailer;
@@ -9,7 +10,7 @@ class MailService
 {
     private const DEFAULT_CHARSET = 'UTF-8';
     private const DEFAULT_TIMEOUT = 15;
-    
+
     private static $smtpConfig = [
         'host' => 'mail.unifyze.cloudet.co',
         'username' => 'no-reply@unifyze.cloudet.co',
@@ -19,7 +20,7 @@ class MailService
         'from_email' => 'no-reply@unifyze.cloudet.co',
         'from_name' => 'Unifyze'
     ];
-    
+
     /**
      * Send an email with proper error handling and security
      * 
@@ -38,12 +39,11 @@ class MailService
         if (!Validator::email($to)) {
             error_log("Invalid email address format: " . htmlspecialchars($to, ENT_QUOTES, 'UTF-8'));
             return false;
-
-        }   
+        }
         $to = Validator::sanitizeEmail($to);
-        
+
         $mail = new PHPMailer(true);
-        
+
         try {
             // Server settings 
             $mail->isSMTP();
@@ -55,18 +55,18 @@ class MailService
             $mail->Port = self::$smtpConfig['port'];
             $mail->Timeout = self::DEFAULT_TIMEOUT;
             $mail->SMTPKeepAlive = false;
-            
+
             // Enable verbose error output in debug mode
             if (getenv('APP_DEBUG') === 'true') {
                 $mail->SMTPDebug = 2;
-                $mail->Debugoutput = function($str, $level) {
+                $mail->Debugoutput = function ($str, $level) {
                     error_log("SMTP Debug: $str");
                 };
             }
-            
+
             // Set charset
             $mail->CharSet = self::DEFAULT_CHARSET;
-            
+
             // Recipients
             $mail->setFrom(
                 self::$smtpConfig['from_email'],
@@ -101,7 +101,7 @@ class MailService
             case 'reset_code':
                 $name = htmlspecialchars($params['name'] ?? '');
                 $code = htmlspecialchars($params['code'] ?? '');
-                return'
+                return '
             <html>
                 <head>
                 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -143,7 +143,7 @@ class MailService
                     </div>
                 </div>
                 </body>
-            </html>';              
+            </html>';
             default:
                 return '';
         }

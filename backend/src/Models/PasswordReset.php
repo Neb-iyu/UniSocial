@@ -9,14 +9,7 @@ class PasswordReset extends Model
 {
     protected string $table = 'password_resets';
 
-    /**
-     * Create a new password reset code for a user
-     * 
-     * @param int $user_id The user ID
-     * @param string $code The reset code
-     * @param string $expires_at Expiration datetime (Y-m-d H:i:s)
-     * @return bool True on success
-     */
+
     public function createCode(int $user_id, string $code, string $expires_at): bool
     {
         $this->deleteOldCodes($user_id);
@@ -68,7 +61,7 @@ class PasswordReset extends Model
             [$user_id]
         );
     }
- public function isCodeValid(array $resetEntry): bool
+    public function isCodeValid(array $resetEntry): bool
     {
         if (!$resetEntry) return false;
         if (!empty($resetEntry['used_at'])) return false;

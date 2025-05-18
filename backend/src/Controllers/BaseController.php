@@ -49,7 +49,7 @@ abstract class BaseController
         return true;
     }
 
- 
+
     protected function requireSelfOrAdmin(array $user, int $id): bool
     {
         if ($user['id'] != $id && !$this->userModel->is_admin($user['id'])) {

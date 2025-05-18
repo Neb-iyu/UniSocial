@@ -18,16 +18,32 @@ class NotificationController extends BaseController
 
     private function filterNotificationResponse(array $notification): array
     {
+
+        $notification['user_uuid'] = $this->userModel->getUuidFromId($notification['user_id']);
+        $notification['from_user_uuid'] = $this->userModel->getUuidFromId($notification['from_user_id']);
+        $notification['reference_uuid'] = $this->userModel->getUuidFromId($notification['reference_id']);
+        $notification['profile_picture_url'] = $this->userModel->getProfilePictureUrl($notification['from_user_id']);
+
+        unset($notification['user_id']);
+        unset($notification['from_user_id']);
+        unset($notification['reference_id']);
+
         return [
             'public_uuid' => $notification['public_uuid'] ?? null,
+            'user_uuid' => $notification['user_uuid'] ?? null,
             'from_user_uuid' => $notification['from_user_uuid'] ?? null,
             'type' => $notification['type'] ?? null,
-            'reference_type' => $notification['reference_type'] ?? null,
-            'reference_id' => $notification['reference_id'] ?? null,
             'is_read' => (bool)($notification['is_read'] ?? false),
-            'is_hidden' => (bool)($notification['is_hidden'] ?? false),
             'created_at' => $notification['created_at'] ?? null,
-            'updated_at' => $notification['updated_at'] ?? null
+            'updated_at' => $notification['updated_at'] ?? null,
+            'actor' => [
+                'username' => $notification['username'] ?? null,
+                'profile_picture_url' => $notification['profile_picture_url'] ?? null
+            ],
+            'reference' => [
+                'type' => $notification['reference_type'] ?? null,
+                'uuid' => $notification['reference_uuid'] ?? null
+            ]
         ];
     }
 
@@ -47,7 +63,7 @@ class NotificationController extends BaseController
         $currentUser = $this->requireAuth();
         if (!$currentUser) return;
         $notification = $this->notificationModel->findByUuid($uuid);
-        if ($notification && !$notification['is_deleted'] && $notification['user_id'] == $currentUser['id']) {
+        if ($notification && $this->requireSelfOrAdmin($currentUser, $notification['user_id'])) {
             $filteredNotification = $this->filterNotificationResponse($notification);
             Response::success($filteredNotification, 'Notification found');
         } else {
@@ -55,21 +71,6 @@ class NotificationController extends BaseController
         }
     }
 
-    // POST /notifications
-    public function createNotification(): void
-    {
-        $currentUser = $this->requireAuth();
-        if (!$currentUser) return;
-        $input = json_decode(file_get_contents('php://input'), true);
-        $notificationId = $this->notificationModel->create($input);
-        if ($notificationId) {
-            $notification = $this->notificationModel->find($notificationId);
-            $filteredNotification = $this->filterNotificationResponse($notification);
-            Response::success($filteredNotification, 'Notification created', 201);
-        } else {
-            Response::error('Notification creation failed', 500);
-        }
-    }
 
     // PATCH /notifications/{uuid}
     public function updateNotification(string $uuid): void
@@ -81,7 +82,7 @@ class NotificationController extends BaseController
             Response::notFound('Notification not found');
             return;
         }
-        if (isset($notification['user_id']) && !$this->requireSelfOrAdmin($currentUser, $notification['user_id'])) return;
+        if (isset($notification['user_uuid']) && !$this->requireSelfOrAdmin($currentUser, $notification['user_uuid'])) return;
         $input = json_decode(file_get_contents('php://input'), true);
         $success = $this->notificationModel->Update($notification['id'], $input);
         if ($success) {

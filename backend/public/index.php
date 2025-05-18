@@ -88,6 +88,6 @@ $router->addRoute('POST', '/roles/remove', 'RoleController@removeRole');
 
 // Follow routes
 $router->addRoute('POST', '/users/{uuid}/follow', 'FollowController@follow');
-$router->addRoute('DELETE', '/users/{uuid}/follow', 'FollowController@unfollow');
+
 
 $router->dispatch();

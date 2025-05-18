@@ -1,4 +1,5 @@
 <?php
+
 namespace Src\Controllers;
 
 use Src\Models\Comment;
@@ -10,13 +11,11 @@ use Src\Utilities\Validator;
 class CommentController extends BaseController
 {
     private Comment $commentModel;
-    private Like $likeModel;
 
     public function __construct()
     {
         parent::__construct();
         $this->commentModel = new Comment();
-        $this->likeModel = new Like();
     }
 
     private function filterCommentResponse(array $comment): array
@@ -66,10 +65,10 @@ class CommentController extends BaseController
     {
         $currentUser = $this->requireAuth();
         if (!$currentUser) return;
-        
+
         $input = json_decode(file_get_contents('php://input'), true);
         $input = Validator::sanitizeInput($input);
-        
+
         $errors = [];
         if (empty($input['content']) || !is_string($input['content']) || strlen($input['content']) < 1) {
             $errors['content'] = 'Content is required.';
@@ -77,7 +76,7 @@ class CommentController extends BaseController
         if (empty($input['post_uuid'])) {
             $errors['post_uuid'] = 'Post UUID is required.';
         }
-        
+
         if ($errors) {
             Response::validationError($errors);
             return;
@@ -86,7 +85,7 @@ class CommentController extends BaseController
         // Look up post ID from UUID
         $postModel = new Post();
         $post = $postModel->findByUuid($input['post_uuid']);
-        
+
         if (!$post) {
             Response::notFound('Post not found');
             return;
@@ -97,7 +96,7 @@ class CommentController extends BaseController
         $input['post_id'] = $post['id'];
 
         $commentId = $this->commentModel->create($input);
-        
+
         if ($commentId) {
             $comment = $this->commentModel->find($commentId);
             $comment = $this->filterCommentResponse($comment);

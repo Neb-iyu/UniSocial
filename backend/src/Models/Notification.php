@@ -4,6 +4,7 @@ namespace Src\Models;
 
 use Src\Core\Model;
 use PDOException;
+use Src\Models\User;
 
 class Notification extends Model
 {
@@ -14,8 +15,25 @@ class Notification extends Model
         'from_user_id',
         'type',
         'reference_type',
+        'reference_id',
+        'is_read',
+        'created_at',
+        'updated_at'
+    ];
+
+    protected array $idFields = [
+        'user_id',
+        'from_user_id',
         'reference_id'
     ];
+
+    protected User $userModel;
+
+    public function __construct()
+    {
+        parent::__construct();
+        $this->userModel = new User();
+    }
 
 
     public const TYPE_LIKE = 'like';
@@ -30,7 +48,6 @@ class Notification extends Model
 
     public function create(array $data): int
     {
-
         $validTypes = [
             self::TYPE_LIKE,
             self::TYPE_COMMENT,
@@ -52,14 +69,25 @@ class Notification extends Model
             throw new \InvalidArgumentException("Invalid reference type");
         }
 
-        // Set default read status
+        // Verify recipient user exists
+        $recipient = $this->userModel->find($data['user_id'] ?? null);
+        if (!$recipient) {
+            throw new \InvalidArgumentException('Recipient user not found');
+        }
+
+        // Verify actor user exists
+        $actor = $this->userModel->find($data['from_user_id'] ?? null);
+        if (!$actor) {
+            throw new \InvalidArgumentException('Actor user not found');
+        }
+
+        // Set default read status and timestamps
         $data['is_read'] = false;
         $data['created_at'] = date('Y-m-d H:i:s');
 
-        // Delegate to parent
         try {
             return parent::create($data);
-        } catch (\PDOException $e) {
+        } catch (PDOException $e) {
             error_log('Notification create failed: ' . $e->getMessage());
             throw $e;
         }
@@ -81,8 +109,16 @@ class Notification extends Model
     public function getUnread(int $userId, int $limit = 10): array
     {
         try {
-            return $this->executeQuery(
-                "SELECT n.*, u.username, u.profile_picture_url
+            $user = $this->userModel->find($userId);
+            if (!$user) {
+                throw new \InvalidArgumentException('User not found');
+            }
+
+            $notifications = $this->executeQuery(
+                "SELECT 
+                    n.*, 
+                    u.username, 
+                    u.profile_picture_url
                  FROM {$this->table} n
                  JOIN users u ON n.from_user_id = u.id
                  WHERE n.user_id = ? AND n.is_read = 0
@@ -90,30 +126,58 @@ class Notification extends Model
                  LIMIT ?",
                 [$userId, $limit]
             );
-        } catch (\PDOException $e) {
+
+            return $notifications;
+        } catch (PDOException $e) {
             error_log('Get unread notifications failed: ' . $e->getMessage());
             return [];
         }
     }
-
 
     public function markAsRead(int $userId, array $notificationIds): bool
     {
         if (empty($notificationIds)) {
             return false;
         }
-        $placeholders = implode(',', array_fill(0, count($notificationIds), '?'));
+
+        $this->db->beginTransaction();
+
         try {
-            return $this->executeUpdate(
-                "UPDATE {$this->table} 
-                 SET is_read = 1, 
-                     updated_at = NOW()
-                 WHERE user_id = ? 
-                 AND id IN ($placeholders)",
-                array_merge([$userId], $notificationIds)
-            );
-        } catch (\PDOException $e) {
+            $placeholders = implode(',', array_fill(0, count($notificationIds), '?'));
+            $params = array_merge([$userId], $notificationIds);
+
+            // Update only the notifications that belong to the user and are not already read
+            $sql = "UPDATE {$this->table} n
+                    INNER JOIN users u ON u.id = ?
+                    SET n.is_read = 1,
+                        n.updated_at = NOW()
+                    WHERE n.public_uuid IN ({$placeholders})
+                    AND n.user_id = u.id
+                    AND n.is_read = 0";
+
+            $affectedRows = $this->executeUpdate($sql, $params);
+
+            // If no rows were affected, either the user doesn't exist or notifications were already read
+            if ($affectedRows === 0) {
+                // Check if user exists
+                $userExists = $this->userModel->find($userId);
+                if (!$userExists) {
+                    throw new \InvalidArgumentException('User not found');
+                }
+                // If user exists but no rows affected, all notifications were already read
+                $this->db->commit();
+                return true;
+            }
+
+            $this->db->commit();
+            return true;
+        } catch (PDOException $e) {
+            $this->db->rollBack();
             error_log('Mark notifications as read failed: ' . $e->getMessage());
+            return false;
+        } catch (\Exception $e) {
+            $this->db->rollBack();
+            error_log('Error in markAsRead: ' . $e->getMessage());
             return false;
         }
     }
@@ -195,16 +259,36 @@ class Notification extends Model
         int $offset = 0
     ): array {
         try {
-            return $this->executeQuery(
-                "SELECT n.*, u.username, u.profile_picture_url
-                 FROM {$this->table} n
-                 JOIN users u ON n.from_user_id = u.id
-                 WHERE n.user_id = ?
-                 ORDER BY n.created_at DESC
-                 LIMIT ? OFFSET ?",
+            // Verify user exists and get their notifications
+            $user = $this->userModel->find($userId);
+            if (!$user) {
+                throw new \InvalidArgumentException('User not found');
+            }
+
+            // notifications with user details in a single query
+            $notifications = $this->executeQuery(
+                "SELECT 
+                    n.public_uuid,
+                    n.user_id,
+                    n.from_user_id,
+                    n.type,
+                    n.reference_type,
+                    n.reference_id,
+                    n.is_read,
+                    n.created_at,
+                    n.updated_at,
+                    u.username,
+                    u.profile_picture_url
+                FROM {$this->table} n
+                JOIN users u ON n.from_user_id = u.id
+                WHERE n.user_id = ?
+                ORDER BY n.created_at DESC
+                LIMIT ? OFFSET ?",
                 [$userId, $limit, $offset]
             );
-        } catch (\PDOException $e) {
+
+            return $notifications;
+        } catch (PDOException $e) {
             error_log('Get notifications failed: ' . $e->getMessage());
             return [];
         }
@@ -218,7 +302,7 @@ class Notification extends Model
                  WHERE user_id = ?",
                 [$userId]
             );
-        } catch (\PDOException $e) {
+        } catch (PDOException $e) {
             error_log('Delete notifications failed: ' . $e->getMessage());
             return false;
         }
@@ -234,7 +318,7 @@ class Notification extends Model
                 [$userId]
             );
             return $result[0]['count'] ?? 0;
-        } catch (\PDOException $e) {
+        } catch (PDOException $e) {
             error_log('Get notification count failed: ' . $e->getMessage());
             return 0;
         }

@@ -12,107 +12,10 @@ use Src\Utilities\Validator;
 
 class AuthController extends BaseController
 {
-    // POST /password-reset/request
-    public function sendResetCode(): void
-    {
-        $input = json_decode(file_get_contents('php://input'), true);
-        $email = $input['email'] ?? '';
-        $email = Validator::sanitizeInput(['email' => $email])['email'];
 
-        if (empty($email) || !Validator::email($email)) {
-            Response::validationError(['email' => 'Valid email is required']);
-            return;
-        }
-
-        $user = $this->userModel->findByEmail($email);
-        if (!$user) {
-            Response::error('No user found with this email', 404);
-            return;
-        }
-
-        // Generate code (6-digit code)
-        $code = rand(100000, 999999);
-        $expiresAt = date('Y-m-d H:i:s', strtotime('+15 minutes'));
-
-        // Store code
-        $passwordResetModel = new PasswordReset();
-        $passwordResetModel->createCode($user['id'], $code, $expiresAt);
-
-        // Send email
-        $subject = 'Your Unifyze Code';
-        $sent = MailService::sendEmail(
-            $user['email'],
-            $subject,
-            '', 
-            $user['fullname'] ?? '',
-            ['code' => $code],
-            'reset_code'
-        );
-
-        if ($sent) {
-            Response::success(['message' => 'Reset code sent to your email.']);
-        } else {
-            Response::error('Failed to send email. Please try again later.', 500);
-        }
-    }
-
-    // POST /password-reset/verify
-    public function verifyResetCode(): void
-    {
-        $input = json_decode(file_get_contents('php://input'), true);
-        $code = $input['code'] ?? '';
-        $code = Validator::sanitizeInput(['code' => $code])['code'];
-
-        if (empty($code)) {
-            Response::validationError(['code' => 'Code is required']);
-            return;
-        }
-
-        $passwordResetModel = new PasswordReset();
-        $resetEntry = $passwordResetModel->getByCode($code);
-        if (!$passwordResetModel->isCodeValid($resetEntry)) {
-            Response::error('Invalid or expired code.', 400);
-            return;
-        }
-
-        // Mark code as used (optional: defer until password is actually reset)
-        $passwordResetModel->markCodeAsUsed($resetEntry['id']);
-        Response::success(['user_id' => $resetEntry['user_id'], 'message' => 'Code verified. You may now reset your password.']);
-    }
     public function __construct()
     {
         parent::__construct();
-    }
-
-
-    private function filterUserResponse(array $user, bool $minimal = false): array
-    {
-        // sensitive fields
-        unset($user['password'], $user['is_deleted'], $user['deleted_at']);
-        
-
-        $profilePictureUrl = $this->userModel->getProfilePictureUrl($user['id']);
-        
-        if ($minimal) {
-            // Return only essential fields for login/authentication
-            return [
-                'id' => $user['id'],
-                'public_uuid' => $user['public_uuid'],
-                'username' => $user['username'],
-                'email' => $user['email'],
-                'fullname' => $user['fullname'] ?? null,
-                'profile_picture_url' => $profilePictureUrl
-            ];
-        }
-        
-        // For other responses, include all non-sensitive fields
-        $user['profile_picture_url'] = $profilePictureUrl;
-        $user['bio'] = $user['bio'] ?? null;
-        $user['university_id'] = $user['university_id'] ?? null;
-        $user['year_of_study'] = $user['year_of_study'] ?? null;
-        $user['gender'] = $user['gender'] ?? null;
-        
-        return $user;
     }
 
     // POST /register
@@ -150,10 +53,10 @@ class AuthController extends BaseController
             $user = $this->userModel->find($userId);
 
             $filteredUser = $this->filterUserResponse($user);
-            
+
             // JWT token for immediate login
             $jwt = $this->auth->generateToken($user);
-            
+
             Response::success([
                 'user' => $filteredUser,
                 'token' => $jwt
@@ -199,5 +102,102 @@ class AuthController extends BaseController
         if (!$user) return;
         $filteredUser = $this->filterUserResponse($user);
         Response::success($filteredUser, 'Authenticated user');
+    }
+
+    // POST /password-reset/request
+    public function sendResetCode(): void
+    {
+        $input = json_decode(file_get_contents('php://input'), true);
+        $email = $input['email'] ?? '';
+        $email = Validator::sanitizeInput(['email' => $email])['email'];
+
+        if (empty($email) || !Validator::email($email)) {
+            Response::validationError(['email' => 'Valid email is required']);
+            return;
+        }
+
+        $user = $this->userModel->findByEmail($email);
+        if (!$user) {
+            Response::error('No user found with this email', 404);
+            return;
+        }
+
+        // Generate code (6-digit code)
+        $code = rand(100000, 999999);
+        $expiresAt = date('Y-m-d H:i:s', strtotime('+15 minutes'));
+
+        // Store code
+        $passwordResetModel = new PasswordReset();
+        $passwordResetModel->createCode($user['id'], $code, $expiresAt);
+
+        // Send email
+        $subject = 'Your Unifyze Code';
+        $sent = MailService::sendEmail(
+            $user['email'],
+            $subject,
+            '',
+            $user['fullname'] ?? '',
+            ['code' => $code],
+            'reset_code'
+        );
+
+        if ($sent) {
+            Response::success(['message' => 'Reset code sent to your email.']);
+        } else {
+            Response::error('Failed to send email. Please try again later.', 500);
+        }
+    }
+
+    // POST /password-reset/verify
+    public function verifyResetCode(): void
+    {
+        $input = json_decode(file_get_contents('php://input'), true);
+        $code = $input['code'] ?? '';
+        $code = Validator::sanitizeInt(['code' => $code])['code'];
+        if (!$code) {
+            Response::validationError(['code' => 'Code is required']);
+            return;
+        }
+
+        $passwordResetModel = new PasswordReset();
+        $resetEntry = $passwordResetModel->getByCode($code);
+        if (!$passwordResetModel->isCodeValid($resetEntry)) {
+            Response::error('Invalid or expired code.', 400);
+            return;
+        }
+
+        // Mark code as used (optional: defer until password is actually reset)
+        $passwordResetModel->markCodeAsUsed($resetEntry['id']);
+        Response::success(['user_id' => $resetEntry['user_id'], 'message' => 'Code verified. You may now reset your password.']);
+    }
+
+    private function filterUserResponse(array $user, bool $minimal = false): array
+    {
+        // sensitive fields
+        unset($user['password'], $user['is_deleted'], $user['deleted_at'], $user['created_at'], $user['updated_at']);
+
+
+        $profilePictureUrl = $this->userModel->getProfilePictureUrl($user['id']);
+
+        if ($minimal) {
+            // Return only essential fields for login/authentication
+            return [
+                'public_uuid' => $user['public_uuid'],
+                'username' => $user['username'],
+                'email' => $user['email'],
+                'fullname' => $user['fullname'] ?? null,
+                'profile_picture_url' => $profilePictureUrl
+            ];
+        }
+
+        // For other responses, include all non-sensitive fields
+        unset($user['id']);
+        $user['profile_picture_url'] = $profilePictureUrl;
+        $user['bio'] = $user['bio'] ?? null;
+        $user['university_id'] = $user['university_id'] ?? null;
+        $user['year_of_study'] = $user['year_of_study'] ?? null;
+        $user['gender'] = $user['gender'] ?? null;
+
+        return $user;
     }
 }

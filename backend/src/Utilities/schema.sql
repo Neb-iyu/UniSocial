@@ -134,6 +134,7 @@ CREATE TABLE follows (
 -- Mentions Table
 CREATE TABLE mentions (
     id INT AUTO_INCREMENT PRIMARY KEY,
+    public_uuid CHAR(36) NOT NULL UNIQUE DEFAULT (UUID()),
     post_id INT,
     comment_id INT,
     mentioned_user_id INT NOT NULL,
@@ -151,19 +152,21 @@ CREATE TABLE mentions (
 -- Notifications Table
 CREATE TABLE notifications (
     id INT AUTO_INCREMENT PRIMARY KEY,
+    public_uuid CHAR(36) NOT NULL UNIQUE DEFAULT (UUID()),
     user_id INT NOT NULL,
     from_user_id INT NOT NULL,
     type ENUM('like', 'comment', 'follow', 'mention', 'post') NOT NULL,
     reference_type ENUM('post', 'comment', 'user') NOT NULL,
     reference_id INT NOT NULL,
     is_read BOOLEAN DEFAULT FALSE,
-    is_hidden BOOLEAN DEFAULT FALSE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
     FOREIGN KEY (from_user_id) REFERENCES users(id) ON DELETE CASCADE,
-    INDEX idx_user (user_id),
-    INDEX idx_reference (reference_type, reference_id)
+    INDEX idx_user_id (user_id),
+    INDEX idx_from_user_id (from_user_id),
+    INDEX idx_reference (reference_type, reference_id),
+    INDEX idx_public_uuid (public_uuid)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Password Resets Table
