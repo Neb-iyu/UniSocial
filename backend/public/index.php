@@ -1,6 +1,27 @@
 <?php
 
-// Ensure error.log is created in the root directory
+header("Access-Control-Allow-Origin: http://localhost:3000");
+header("Access-Control-Allow-Methods: GET, POST, PATCH, PUT, DELETE, OPTIONS");
+header("Access-Control-Allow-Headers: Content-Type, Authorization");
+header("Access-Control-Allow-Credentials: true");
+
+// Handle preflight (OPTIONS) requests
+if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+    http_response_code(200);
+    exit();
+}
+
+
+// Prevent built-in PHP server from serving static files directly
+if (php_sapi_name() === 'cli-server') {
+    $url = parse_url($_SERVER["REQUEST_URI"], PHP_URL_PATH);
+    $file = __DIR__ . $url;
+    if (is_file($file)) {
+        return false;
+    }
+}
+
+// Logging setup
 ini_set('error_log', __DIR__ . '/log');
 ini_set('display_errors', '0');
 ini_set('log_errors', '1');
@@ -88,6 +109,5 @@ $router->addRoute('POST', '/roles/remove', 'RoleController@removeRole');
 
 // Follow routes
 $router->addRoute('POST', '/users/{uuid}/follow', 'FollowController@follow');
-
 
 $router->dispatch();

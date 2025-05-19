@@ -56,3 +56,18 @@ Stack trace:
 [17-May-2025 22:03:18 Europe/Berlin] PHP Warning:  Trying to access array offset on value of type bool in C:\xampp\htdocs\unifyze\backend\src\Controllers\AuthController.php on line 156
 [17-May-2025 22:03:31 Europe/Berlin] PHP Warning:  Trying to access array offset on value of type bool in C:\xampp\htdocs\unifyze\backend\src\Controllers\AuthController.php on line 156
 [17-May-2025 22:03:37 Europe/Berlin] PHP Warning:  Trying to access array offset on value of type bool in C:\xampp\htdocs\unifyze\backend\src\Controllers\AuthController.php on line 156
+[19-May-2025 12:25:14 UTC] PHP Fatal error:  Uncaught RuntimeException: Database connection failed: SQLSTATE[HY000] [1049] Unknown database 'unifyze' in /home/ludis/Documents/3rd year/ip2/project/UniSocial/backend/src/Core/Database.php:37
+Stack trace:
+#0 /home/ludis/Documents/3rd year/ip2/project/UniSocial/backend/src/Core/Database.php(16): Src\Core\Database->createConnection()
+#1 /home/ludis/Documents/3rd year/ip2/project/UniSocial/backend/src/Core/Database.php(22): Src\Core\Database->__construct()
+#2 /home/ludis/Documents/3rd year/ip2/project/UniSocial/backend/src/Core/Model.php(18): Src\Core\Database::getInstance()
+#3 /home/ludis/Documents/3rd year/ip2/project/UniSocial/backend/src/Controllers/BaseController.php(17): Src\Core\Model->__construct()
+#4 /home/ludis/Documents/3rd year/ip2/project/UniSocial/backend/src/Controllers/AuthController.php(18): Src\Controllers\BaseController->__construct()
+#5 /home/ludis/Documents/3rd year/ip2/project/UniSocial/backend/src/Core/Router.php(60): Src\Controllers\AuthController->__construct()
+#6 /home/ludis/Documents/3rd year/ip2/project/UniSocial/backend/src/Core/Router.php(46): Src\Core\Router->executeHandler()
+#7 /home/ludis/Documents/3rd year/ip2/project/UniSocial/backend/public/index.php(113): Src\Core\Router->dispatch()
+#8 {main}
+  thrown in /home/ludis/Documents/3rd year/ip2/project/UniSocial/backend/src/Core/Database.php on line 37
+[19-May-2025 12:25:58 UTC] Opportunistic cleanup: 0 posts permanently deleted.
+[19-May-2025 12:27:00 UTC] Get notifications failed: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'n.public_uuid' in 'SELECT'
+[19-May-2025 12:27:01 UTC] Get notifications failed: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'n.public_uuid' in 'SELECT'
