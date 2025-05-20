@@ -8,35 +8,38 @@ const publicRoutes = ["/", "/login", "/register", "/forgot-password", "/reset-pa
 const adminRoutes = ["/admin"]
 
 export function middleware(request: NextRequest) {
-  const { pathname } = request.nextUrl
-  const token = request.cookies.get("auth_token")?.value
-  const userRole = request.cookies.get("user_role")?.value
+  const { pathname } = request.nextUrl;
+  const token = request.cookies.get("auth_token")?.value;
+  console.log("Middleware: Pathname =", pathname, "Token =", token);
 
-  // Check if the path is a public route
-  const isPublicRoute = publicRoutes.some((route) => pathname === route || pathname.startsWith(`${route}/`))
+  const isPublicRoute = publicRoutes.some(
+    (route) => pathname === route || pathname.startsWith(`${route}/`)
+  );
 
-  // Check if the path is an admin route
-  const isAdminRoute = adminRoutes.some((route) => pathname === route || pathname.startsWith(`${route}/`))
-
-  // If it's a public route, allow access
   if (isPublicRoute) {
-    return NextResponse.next()
+    console.log("Middleware: Allowing public route");
+    return NextResponse.next();
   }
 
-  // If no token exists and it's not a public route, redirect to login
   if (!token) {
-    const url = new URL("/login", request.url)
-    url.searchParams.set("callbackUrl", encodeURI(request.url))
-    return NextResponse.redirect(url)
+    console.log("Middleware: No token, redirecting to /login");
+    const url = new URL("/login", request.url);
+    url.searchParams.set("callbackUrl", encodeURI(request.url));
+    return NextResponse.redirect(url);
   }
 
-  // If it's an admin route and user is not an admin, redirect to home
+  const isAdminRoute = adminRoutes.some(
+    (route) => pathname === route || pathname.startsWith(`${route}/`)
+  );
+  const userRole = request.cookies.get("user_role")?.value;
+
   if (isAdminRoute && userRole !== "admin" && userRole !== "superadmin") {
-    return NextResponse.redirect(new URL("/", request.url))
+    console.log("Middleware: Non-admin user, redirecting to /");
+    return NextResponse.redirect(new URL("/", request.url));
   }
 
-  // Allow access to authenticated routes
-  return NextResponse.next()
+  console.log("Middleware: Allowing authenticated route");
+  return NextResponse.next();
 }
 
 export const config = {

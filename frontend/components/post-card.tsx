@@ -219,7 +219,7 @@ export default function PostCard({ post, onPostDeleted }: PostCardProps) {
                   href={`/profile/${post.user?.username || "user"}`}
                   className="font-medium hover:underline text-foreground/90"
                 >
-                  {post.user?.fullname || post.user?.username || "Unknown User"}
+                  {post.user?.fullname || post?.username || "Unknown User"}
                 </Link>
                 <p className="text-xs text-muted-foreground">
                   {formatDate(post.created_at)}

@@ -19,7 +19,7 @@ interface ApiError {
 }
 
 interface LoginCredentials {
-  email: string;
+  login: string;
   password: string;
 }
 
@@ -39,7 +39,6 @@ interface ProfileUpdateData {
 
 interface CreatePostData {
   content: string;
-  media_files?: File[];
 }
 
 interface CreateCommentData {
@@ -61,7 +60,7 @@ class ApiService {
   private token: string | null = null;
 
   constructor() {
-    const baseURL = "http://localhost:8000";
+    const baseURL = "https://unifyze.cloudet.co";
 
     if (typeof window !== "undefined") {
       this.token = localStorage.getItem("auth_token");
@@ -73,7 +72,7 @@ class ApiService {
         "Content-Type": "application/json",
         Accept: "application/json",
       },
-      withCredentials: true,
+      withCredentials: false,
       timeout: 10000,
     });
 
@@ -141,6 +140,7 @@ class ApiService {
 
   async login(credentials: LoginCredentials) {
     const response = await this.api.post("/login", credentials);
+    console.log(response);
     if (response.data?.token) {
       this.setToken(response.data.token);
     }
@@ -237,30 +237,8 @@ class ApiService {
     return this.api.get(`/users/${uuid}/posts`, { params });
   }
 
-  async createPost(data: CreatePostData | FormData) {
-    // Handle both FormData and regular object
-    if (data instanceof FormData) {
-      return this.api.post("/posts", data, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
-    }
-
-    const formData = new FormData();
-    formData.append("content", data.content);
-
-    if (data.media_files?.length) {
-      data.media_files.forEach((file) => {
-        formData.append("media_files[]", file); // Changed to match backend expectation
-      });
-    }
-
-    return this.api.post("/posts", formData, {
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
-    });
+  async createPost(data: CreatePostData) {
+    return this.api.post("/posts", data);
   }
 
   async updatePost(uuid: string, content: string) {
@@ -272,7 +250,7 @@ class ApiService {
   }
 
   async togglePostLike(uuid: string) {
-    const cur =  this.api.post(`/posts/${uuid}/like`);
+    const cur = this.api.post(`/posts/${uuid}/like`);
     console.log(cur);
     return cur;
   }

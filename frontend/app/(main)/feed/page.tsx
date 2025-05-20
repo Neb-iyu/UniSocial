@@ -33,6 +33,7 @@ export default function FeedPage() {
         const posts = response.data as Post[];
         setPosts(posts);
         setHasMore(response.data.length === 10);
+        console.log(posts)
       } catch (error: any) {
         console.error("Failed to fetch posts:", error);
         toast({

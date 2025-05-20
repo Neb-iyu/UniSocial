@@ -11,7 +11,7 @@ interface AuthContextType {
   token: string | null;
   isLoading: boolean;
   isAuthenticated: boolean;
-  login: (credentials: { email: string; password: string }) => Promise<void>;
+  login: (credentials: { login: string; password: string }) => Promise<void>;
   register: (userData: RegisterData) => Promise<void>;
   completeRegistration: (profileData: ProfileData) => Promise<void>;
   logout: () => void;
@@ -60,7 +60,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     try {
       const response = await apiService.getCurrentUser();
       const userData = response.data as User;
-      if (!userData || typeof userData !== "object" || !("username" in userData)) {
+      if (
+        !userData ||
+        typeof userData !== "object" ||
+        !("username" in userData)
+      ) {
         throw new Error("Invalid user data received");
       }
       if (userData && typeof userData === "object" && "username" in userData) {
@@ -90,14 +94,28 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
-  const login = async (credentials: { email: string; password: string }) => {
+  // auth-context.tsx
+  const login = async (credentials: { login: string; password: string }) => {
     setIsLoading(true);
     try {
       const response = await apiService.login(credentials);
-      const { token: newToken, user: userData } = response.data as { token: string; user: User };
+      const {
+        token: newToken,
+        user: userData,
+        role,
+      } = response.data as { token: string; user: User; role?: string };
 
-      // Save token to localStorage and state
+      // Save token and role to localStorage and cookies
       localStorage.setItem("auth_token", newToken);
+      document.cookie = `auth_token=${newToken}; path=/; max-age=${
+        60 * 60 * 24 * 7
+      }`;
+      if (role) {
+        localStorage.setItem("user_role", role);
+        document.cookie = `user_role=${role}; path=/; max-age=${
+          60 * 60 * 24 * 7
+        }`;
+      }
       setToken(newToken);
       setUser(userData);
       apiService.setToken(newToken);
@@ -191,7 +209,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
       // Register with all data
       const response = await apiService.register(data);
-      const { token: newToken, user: newUser } = response.data as { token: string; user: User };
+      const { token: newToken, user: newUser } = response.data as {
+        token: string;
+        user: User;
+      };
 
       // Save token and user data
       localStorage.setItem("auth_token", newToken);
