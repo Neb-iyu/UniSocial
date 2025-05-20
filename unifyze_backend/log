@@ -1,0 +1,396 @@
+REQUEST_URI: /users/934c11a2-34c3-11f0-9695-6a82d4f500cb/follow | METHOD: POST
+REQUEST_URI: /users/934c11a2-34c3-11f0-9695-6a82d4f500cb/follow | METHOD: POST
+REQUEST_URI: /users/934c11a2-34c3-11f0-9695-6a82d4f500cb/follow | METHOD: POST
+REQUEST_URI: /users/934c11a2-34c3-11f0-9695-6a82d4f500cb/following | METHOD: POST
+REQUEST_URI: /users/934c11a2-34c3-11f0-9695-6a82d4f500cb/following | METHOD: GET
+REQUEST_URI: /me | METHOD: GET
+REQUEST_URI: /me | METHOD: GET
+REQUEST_URI: /users/934c11a2-34c3-11f0-9695-6a82d4f500cb/following | METHOD: GET
+REQUEST_URI: /users/934c11a2-34c3-11f0-9695-6a82d4f500cb/followers | METHOD: GET
+REQUEST_URI: /users/934c11a2-34c3-11f0-9695-6a82d4f500cb/follow | METHOD: GET
+REQUEST_URI: /users/934c11a2-34c3-11f0-9695-6a82d4f500cb/follow | METHOD: POST
+REQUEST_URI: /users/5f5af3cb-33cf-11f0-9695-6a82d4f500cb/follow | METHOD: POST
+REQUEST_URI: /users/5f5af3cb-33cf-11f0-9695-6a82d4f500cb/followers | METHOD: POST
+REQUEST_URI: /users/5f5af3cb-33cf-11f0-9695-6a82d4f500cb/followers | METHOD: GET
+REQUEST_URI: /users/5f5af3cb-33cf-11f0-9695-6a82d4f500cb/follow | METHOD: POST
+REQUEST_URI: /users/934c11a2-34c3-11f0-9695-6a82d4f500cb/follow | METHOD: POST
+REQUEST_URI: /users/934c11a2-34c3-11f0-9695-6a82d4f500cb/follow | METHOD: POST
+REQUEST_URI: /users/934c11a2-34c3-11f0-9695-6a82d4f500cb/followers | METHOD: GET
+REQUEST_URI: /users/934c11a2-34c3-11f0-9695-6a82d4f500cb/followers | METHOD: GET
+REQUEST_URI: /users/934c11a2-34c3-11f0-9695-6a82d4f500cb/followers | METHOD: GET
+REQUEST_URI: /users/5f5af3cb-33cf-11f0-9695-6a82d4f500cb/followers | METHOD: GET
+REQUEST_URI: /users/5f5af3cb-33cf-11f0-9695-6a82d4f500cb/followers | METHOD: GET
+REQUEST_URI: /users/5f5af3cb-33cf-11f0-9695-6a82d4f500cb/followers | METHOD: GET
+REQUEST_URI: /users/934c11a2-34c3-11f0-9695-6a82d4f500cb/followers | METHOD: GET
+REQUEST_URI: /users/934c11a2-34c3-11f0-9695-6a82d4f500cb/followers | METHOD: GET
+REQUEST_URI: /users/5f5af3cb-33cf-11f0-9695-6a82d4f500cb/followers | METHOD: GET
+REQUEST_URI: /users/5f5af3cb-33cf-11f0-9695-6a82d4f500cb/followers | METHOD: GET
+REQUEST_URI: /users/5f5af3cb-33cf-11f0-9695-6a82d4f500cb/following | METHOD: GET
+REQUEST_URI: /users/5f5af3cb-33cf-11f0-9695-6a82d4f500cb/following | METHOD: GET
+REQUEST_URI: /users/5f5af3cb-33cf-11f0-9695-6a82d4f500cb/following | METHOD: GET
+REQUEST_URI: /users/5f5af3cb-33cf-11f0-9695-6a82d4f500cb/following | METHOD: GET
+REQUEST_URI: /users/5f5af3cb-33cf-11f0-9695-6a82d4f500cb/following | METHOD: GET
+REQUEST_URI: /users/5f5af3cb-33cf-11f0-9695-6a82d4f500cb/followers | METHOD: GET
+REQUEST_URI: /users/5f5af3cb-33cf-11f0-9695-6a82d4f500cb/followers | METHOD: GET
+REQUEST_URI: /users/5f5af3cb-33cf-11f0-9695-6a82d4f500cb/followering | METHOD: GET
+REQUEST_URI: /users/5f5af3cb-33cf-11f0-9695-6a82d4f500cb/following | METHOD: GET
+REQUEST_URI: /me | METHOD: GET
+REQUEST_URI: /users/5f5af3cb-33cf-11f0-9695-6a82d4f500cb/following | METHOD: GET
+REQUEST_URI: /register | METHOD: POST
+REQUEST_URI: /users/aaa9829b-34ca-11f0-9695-6a82d4f500cb/following | METHOD: GET
+REQUEST_URI: /users/aaa9829b-34ca-11f0-9695-6a82d4f500cb/follow | METHOD: GET
+REQUEST_URI: /users/aaa9829b-34ca-11f0-9695-6a82d4f500cb/follow | METHOD: POST
+REQUEST_URI: /users/aaa9829b-34ca-11f0-9695-6a82d4f500cb/follow | METHOD: POST
+[19-May-2025 16:05:09 UTC] PHP Warning:  Attempt to read property "followModel" on array in /home9/unifyzec/public_html/src/Controllers/FollowController.php on line 40
+[19-May-2025 16:05:09 UTC] PHP Fatal error:  Uncaught Error: Call to a member function getFollowingCount() on null in /home9/unifyzec/public_html/src/Controllers/FollowController.php:40
+Stack trace:
+#0 [internal function]: Src\Controllers\FollowController->follow()
+#1 /home9/unifyzec/public_html/src/Core/Router.php(61): call_user_func_array()
+#2 /home9/unifyzec/public_html/src/Core/Router.php(46): Src\Core\Router->executeHandler()
+#3 /home9/unifyzec/public_html/index.php(105): Src\Core\Router->dispatch()
+#4 {main}
+  thrown in /home9/unifyzec/public_html/src/Controllers/FollowController.php on line 40
+REQUEST_URI: /users/aaa9829b-34ca-11f0-9695-6a82d4f500cb/follow | METHOD: POST
+REQUEST_URI: /users/aaa9829b-34ca-11f0-9695-6a82d4f500cb/follow | METHOD: POST
+REQUEST_URI: /users/aaa9829b-34ca-11f0-9695-6a82d4f500cb/followers | METHOD: POST
+REQUEST_URI: /users/aaa9829b-34ca-11f0-9695-6a82d4f500cb/followers | METHOD: GET
+REQUEST_URI: /users/aaa9829b-34ca-11f0-9695-6a82d4f500cb/followering | METHOD: GET
+REQUEST_URI: /users/aaa9829b-34ca-11f0-9695-6a82d4f500cb/following | METHOD: GET
+REQUEST_URI: /users/aaa9829b-34ca-11f0-9695-6a82d4f500cb/following | METHOD: GET
+REQUEST_URI: /users/aaa9829b-34ca-11f0-9695-6a82d4f500cb/following | METHOD: GET
+REQUEST_URI: /users/aaa9829b-34ca-11f0-9695-6a82d4f500cb/follow | METHOD: POST
+REQUEST_URI: /users/aaa9829b-34ca-11f0-9695-6a82d4f500cb/following | METHOD: POST
+REQUEST_URI: /users/aaa9829b-34ca-11f0-9695-6a82d4f500cb/following | METHOD: GET
+REQUEST_URI: /users/aaa9829b-34ca-11f0-9695-6a82d4f500cb/following | METHOD: GET
+REQUEST_URI: /users/aaa9829b-34ca-11f0-9695-6a82d4f500cb/followers | METHOD: GET
+REQUEST_URI: /notifications | METHOD: GET
+REQUEST_URI: /mentions | METHOD: POST
+[19-May-2025 16:11:25 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'post_uuid' in 'INSERT INTO' in /home9/unifyzec/public_html/src/Core/Model.php:37
+Stack trace:
+#0 /home9/unifyzec/public_html/src/Core/Model.php(37): PDO->prepare()
+#1 /home9/unifyzec/public_html/src/Controllers/MentionController.php(54): Src\Core\Model->create()
+#2 [internal function]: Src\Controllers\MentionController->createMention()
+#3 /home9/unifyzec/public_html/src/Core/Router.php(61): call_user_func_array()
+#4 /home9/unifyzec/public_html/src/Core/Router.php(46): Src\Core\Router->executeHandler()
+#5 /home9/unifyzec/public_html/index.php(105): Src\Core\Router->dispatch()
+#6 {main}
+  thrown in /home9/unifyzec/public_html/src/Core/Model.php on line 37
+REQUEST_URI: / | METHOD: GET
+REQUEST_URI: / | METHOD: GET
+REQUEST_URI: / | METHOD: GET
+REQUEST_URI: / | METHOD: GET
+REQUEST_URI: /users/aaa9829b-34ca-11f0-9695-6a82d4f500cb/following | METHOD: GET
+REQUEST_URI: / | METHOD: GET
+REQUEST_URI: /posts | METHOD: POST
+[19-May-2025 19:43:31 UTC] PHP Warning:  Undefined array key "follower_id" in /home9/unifyzec/public_html/src/Models/Post.php on line 31
+[19-May-2025 19:43:31 UTC] PHP Warning:  Undefined array key "follower_id" in /home9/unifyzec/public_html/src/Models/Post.php on line 34
+[19-May-2025 19:43:31 UTC] PHP Fatal error:  Uncaught InvalidArgumentException: recipient_id is required in /home9/unifyzec/public_html/src/Core/Model.php:163
+Stack trace:
+#0 /home9/unifyzec/public_html/src/Models/Post.php(33): Src\Core\Model->notify()
+#1 /home9/unifyzec/public_html/src/Controllers/PostController.php(74): Src\Models\Post->create()
+#2 [internal function]: Src\Controllers\PostController->createPost()
+#3 /home9/unifyzec/public_html/src/Core/Router.php(61): call_user_func_array()
+#4 /home9/unifyzec/public_html/src/Core/Router.php(46): Src\Core\Router->executeHandler()
+#5 /home9/unifyzec/public_html/index.php(105): Src\Core\Router->dispatch()
+#6 {main}
+  thrown in /home9/unifyzec/public_html/src/Core/Model.php on line 163
+REQUEST_URI: /posts | METHOD: POST
+[19-May-2025 19:48:05 UTC] PHP Warning:  Undefined array key "follower_id" in /home9/unifyzec/public_html/src/Models/Post.php on line 31
+[19-May-2025 19:48:05 UTC] PHP Warning:  Undefined array key "follower_id" in /home9/unifyzec/public_html/src/Models/Post.php on line 34
+[19-May-2025 19:48:05 UTC] PHP Fatal error:  Uncaught InvalidArgumentException: recipient_id is required in /home9/unifyzec/public_html/src/Core/Model.php:163
+Stack trace:
+#0 /home9/unifyzec/public_html/src/Models/Post.php(33): Src\Core\Model->notify()
+#1 /home9/unifyzec/public_html/src/Controllers/PostController.php(74): Src\Models\Post->create()
+#2 [internal function]: Src\Controllers\PostController->createPost()
+#3 /home9/unifyzec/public_html/src/Core/Router.php(61): call_user_func_array()
+#4 /home9/unifyzec/public_html/src/Core/Router.php(46): Src\Core\Router->executeHandler()
+#5 /home9/unifyzec/public_html/index.php(105): Src\Core\Router->dispatch()
+#6 {main}
+  thrown in /home9/unifyzec/public_html/src/Core/Model.php on line 163
+REQUEST_URI: /register | METHOD: POST
+REQUEST_URI: /register | METHOD: POST
+REQUEST_URI: /profiles/default.svg | METHOD: GET
+REQUEST_URI: /posts | METHOD: POST
+[19-May-2025 20:02:13 UTC] PHP Warning:  Undefined array key "follower_id" in /home9/unifyzec/public_html/src/Models/Post.php on line 31
+[19-May-2025 20:02:13 UTC] PHP Warning:  Undefined array key "follower_id" in /home9/unifyzec/public_html/src/Models/Post.php on line 34
+[19-May-2025 20:02:13 UTC] PHP Fatal error:  Uncaught InvalidArgumentException: recipient_id is required in /home9/unifyzec/public_html/src/Core/Model.php:163
+Stack trace:
+#0 /home9/unifyzec/public_html/src/Models/Post.php(33): Src\Core\Model->notify()
+#1 /home9/unifyzec/public_html/src/Controllers/PostController.php(74): Src\Models\Post->create()
+#2 [internal function]: Src\Controllers\PostController->createPost()
+#3 /home9/unifyzec/public_html/src/Core/Router.php(61): call_user_func_array()
+#4 /home9/unifyzec/public_html/src/Core/Router.php(46): Src\Core\Router->executeHandler()
+#5 /home9/unifyzec/public_html/index.php(105): Src\Core\Router->dispatch()
+#6 {main}
+  thrown in /home9/unifyzec/public_html/src/Core/Model.php on line 163
+REQUEST_URI: /posts | METHOD: POST
+REQUEST_URI: /posts/6d4846fb-34ec-11f0-9695-6a82d4f500cb | METHOD: GET
+REQUEST_URI: /posts/6d4846fb-34ec-11f0-9695-6a82d4f500cb | METHOD: PATCH
+[19-May-2025 20:05:08 UTC] Post update failed: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'undated_at' in 'SET'
+REQUEST_URI: /posts/6d4846fb-34ec-11f0-9695-6a82d4f500cb | METHOD: PATCH
+[19-May-2025 20:05:17 UTC] PHP Fatal error:  Uncaught TypeError: Cannot access offset of type string on string in /home9/unifyzec/public_html/src/Controllers/PostController.php:97
+Stack trace:
+#0 [internal function]: Src\Controllers\PostController->updatePost()
+#1 /home9/unifyzec/public_html/src/Core/Router.php(61): call_user_func_array()
+#2 /home9/unifyzec/public_html/src/Core/Router.php(46): Src\Core\Router->executeHandler()
+#3 /home9/unifyzec/public_html/index.php(105): Src\Core\Router->dispatch()
+#4 {main}
+  thrown in /home9/unifyzec/public_html/src/Controllers/PostController.php on line 97
+REQUEST_URI: /posts/6d4846fb-34ec-11f0-9695-6a82d4f500cb | METHOD: PATCH
+REQUEST_URI: /posts/6d4846fb-34ec-11f0-9695-6a82d4f500cb | METHOD: PATCH
+REQUEST_URI: /posts/6d4846fb-34ec-11f0-9695-6a82d4f500cb | METHOD: PATCH
+[19-May-2025 20:06:30 UTC] Post update failed: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'visibilty' in 'SET'
+REQUEST_URI: /posts/6d4846fb-34ec-11f0-9695-6a82d4f500cb | METHOD: PATCH
+[19-May-2025 20:06:37 UTC] Post update failed: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'visibilty' in 'SET'
+REQUEST_URI: /posts/6d4846fb-34ec-11f0-9695-6a82d4f500cb | METHOD: PATCH
+[19-May-2025 20:06:44 UTC] Post update failed: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'visibilty' in 'SET'
+REQUEST_URI: /posts/6d4846fb-34ec-11f0-9695-6a82d4f500cb | METHOD: PATCH
+[19-May-2025 20:06:53 UTC] Post update failed: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'visibilty' in 'SET'
+REQUEST_URI: /posts/6d4846fb-34ec-11f0-9695-6a82d4f500cb | METHOD: PATCH
+[19-May-2025 20:07:06 UTC] Post update failed: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'visibilty' in 'SET'
+REQUEST_URI: /posts/6d4846fb-34ec-11f0-9695-6a82d4f500cb | METHOD: PATCH
+[19-May-2025 20:07:13 UTC] Post update failed: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'visibilty' in 'SET'
+REQUEST_URI: /posts/6d4846fb-34ec-11f0-9695-6a82d4f500cb | METHOD: PATCH
+[19-May-2025 20:07:21 UTC] Post update failed: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'visibilty' in 'SET'
+REQUEST_URI: /posts/6d4846fb-34ec-11f0-9695-6a82d4f500cb | METHOD: PATCH
+REQUEST_URI: /feed | METHOD: GET
+REQUEST_URI: /posts/6d4846fb-34ec-11f0-9695-6a82d4f500cb | METHOD: PATCH
+REQUEST_URI: /posts/6d4846fb-34ec-11f0-9695-6a82d4f500cb | METHOD: PATCH
+[19-May-2025 20:08:29 UTC] PHP Fatal error:  Uncaught TypeError: Cannot access offset of type string on string in /home9/unifyzec/public_html/src/Controllers/PostController.php:97
+Stack trace:
+#0 [internal function]: Src\Controllers\PostController->updatePost()
+#1 /home9/unifyzec/public_html/src/Core/Router.php(61): call_user_func_array()
+#2 /home9/unifyzec/public_html/src/Core/Router.php(46): Src\Core\Router->executeHandler()
+#3 /home9/unifyzec/public_html/index.php(105): Src\Core\Router->dispatch()
+#4 {main}
+  thrown in /home9/unifyzec/public_html/src/Controllers/PostController.php on line 97
+REQUEST_URI: /posts/6d4846fb-34ec-11f0-9695-6a82d4f500cb | METHOD: PATCH
+REQUEST_URI: /posts/6d4846fb-34ec-11f0-9695-6a82d4f500cb | METHOD: PATCH
+REQUEST_URI: /feed | METHOD: GET
+REQUEST_URI: /feed | METHOD: GET
+REQUEST_URI: /posts | METHOD: POST
+REQUEST_URI: /feed | METHOD: GET
+REQUEST_URI: /comments | METHOD: POST
+REQUEST_URI: /comments | METHOD: POST
+REQUEST_URI: /comments | METHOD: GET
+REQUEST_URI: /.well-known/cf-custom-hostname-challenge/ca210335-1d9b-43fe-a5f8-49711bb48a81 | METHOD: GET
+REQUEST_URI: /.well-known/cf-custom-hostname-challenge/ca210335-1d9b-43fe-a5f8-49711bb48a81 | METHOD: GET
+REQUEST_URI: /.well-known/cf-custom-hostname-challenge/ca210335-1d9b-43fe-a5f8-49711bb48a81 | METHOD: GET
+REQUEST_URI: /posts | METHOD: POST
+REQUEST_URI: /comments | METHOD: POST
+REQUEST_URI: /comments | METHOD: POST
+REQUEST_URI: /comments | METHOD: POST
+REQUEST_URI: /posts/de0af4a2-34f7-11f0-9695-6a82d4f500cb/comments | METHOD: GET
+[19-May-2025 21:27:22 UTC] PHP Warning:  Undefined variable $userModel in /home9/unifyzec/public_html/src/Controllers/CommentController.php on line 57
+[19-May-2025 21:27:22 UTC] PHP Fatal error:  Uncaught Error: Call to a member function find() on null in /home9/unifyzec/public_html/src/Controllers/CommentController.php:57
+Stack trace:
+#0 [internal function]: Src\Controllers\CommentController->getCommentsByPostUuid()
+#1 /home9/unifyzec/public_html/src/Core/Router.php(61): call_user_func_array()
+#2 /home9/unifyzec/public_html/src/Core/Router.php(46): Src\Core\Router->executeHandler()
+#3 /home9/unifyzec/public_html/index.php(105): Src\Core\Router->dispatch()
+#4 {main}
+  thrown in /home9/unifyzec/public_html/src/Controllers/CommentController.php on line 57
+REQUEST_URI: /posts/de0af4a2-34f7-11f0-9695-6a82d4f500cb/comments | METHOD: GET
+[19-May-2025 21:27:32 UTC] PHP Warning:  Undefined variable $userModel in /home9/unifyzec/public_html/src/Controllers/CommentController.php on line 57
+[19-May-2025 21:27:32 UTC] PHP Fatal error:  Uncaught Error: Call to a member function find() on null in /home9/unifyzec/public_html/src/Controllers/CommentController.php:57
+Stack trace:
+#0 [internal function]: Src\Controllers\CommentController->getCommentsByPostUuid()
+#1 /home9/unifyzec/public_html/src/Core/Router.php(61): call_user_func_array()
+#2 /home9/unifyzec/public_html/src/Core/Router.php(46): Src\Core\Router->executeHandler()
+#3 /home9/unifyzec/public_html/index.php(105): Src\Core\Router->dispatch()
+#4 {main}
+  thrown in /home9/unifyzec/public_html/src/Controllers/CommentController.php on line 57
+REQUEST_URI: /posts/de0af4a2-34f7-11f0-9695-6a82d4f500cb/comments | METHOD: GET
+[19-May-2025 21:30:58 UTC] PHP Parse error:  syntax error, unexpected token ";", expecting ")" in /home9/unifyzec/public_html/src/Controllers/CommentController.php on line 57
+REQUEST_URI: /posts/de0af4a2-34f7-11f0-9695-6a82d4f500cb/comments | METHOD: GET
+[19-May-2025 21:32:27 UTC] PHP Warning:  Undefined variable $userModel in /home9/unifyzec/public_html/src/Controllers/CommentController.php on line 57
+[19-May-2025 21:32:27 UTC] PHP Fatal error:  Uncaught Error: Call to a member function find() on null in /home9/unifyzec/public_html/src/Controllers/CommentController.php:57
+Stack trace:
+#0 [internal function]: Src\Controllers\CommentController->getCommentsByPostUuid()
+#1 /home9/unifyzec/public_html/src/Core/Router.php(61): call_user_func_array()
+#2 /home9/unifyzec/public_html/src/Core/Router.php(46): Src\Core\Router->executeHandler()
+#3 /home9/unifyzec/public_html/index.php(105): Src\Core\Router->dispatch()
+#4 {main}
+  thrown in /home9/unifyzec/public_html/src/Controllers/CommentController.php on line 57
+REQUEST_URI: /posts/de0af4a2-34f7-11f0-9695-6a82d4f500cb/comments | METHOD: GET
+[19-May-2025 21:32:35 UTC] PHP Warning:  Undefined variable $userModel in /home9/unifyzec/public_html/src/Controllers/CommentController.php on line 57
+[19-May-2025 21:32:35 UTC] PHP Fatal error:  Uncaught Error: Call to a member function find() on null in /home9/unifyzec/public_html/src/Controllers/CommentController.php:57
+Stack trace:
+#0 [internal function]: Src\Controllers\CommentController->getCommentsByPostUuid()
+#1 /home9/unifyzec/public_html/src/Core/Router.php(61): call_user_func_array()
+#2 /home9/unifyzec/public_html/src/Core/Router.php(46): Src\Core\Router->executeHandler()
+#3 /home9/unifyzec/public_html/index.php(105): Src\Core\Router->dispatch()
+#4 {main}
+  thrown in /home9/unifyzec/public_html/src/Controllers/CommentController.php on line 57
+REQUEST_URI: /posts/de0af4a2-34f7-11f0-9695-6a82d4f500cb/comments | METHOD: GET
+[19-May-2025 21:33:58 UTC] PHP Fatal error:  Uncaught Error: Call to a member function find() on array in /home9/unifyzec/public_html/src/Controllers/CommentController.php:57
+Stack trace:
+#0 [internal function]: Src\Controllers\CommentController->getCommentsByPostUuid()
+#1 /home9/unifyzec/public_html/src/Core/Router.php(61): call_user_func_array()
+#2 /home9/unifyzec/public_html/src/Core/Router.php(46): Src\Core\Router->executeHandler()
+#3 /home9/unifyzec/public_html/index.php(105): Src\Core\Router->dispatch()
+#4 {main}
+  thrown in /home9/unifyzec/public_html/src/Controllers/CommentController.php on line 57
+REQUEST_URI: /posts/de0af4a2-34f7-11f0-9695-6a82d4f500cb/comments | METHOD: GET
+REQUEST_URI: /.well-known/acme-challenge/b74fc00b-ded5-49ed-83ab-1f71b4427bf8 | METHOD: GET
+REQUEST_URI: /.well-known/acme-challenge/1f5ab77e-2f27-4971-b5b7-8487658c65d8 | METHOD: GET
+REQUEST_URI: /.well-known/acme-challenge/18c8a1cd-c66d-49b0-9ee3-a0192c506762 | METHOD: GET
+REQUEST_URI: /.well-known/acme-challenge/561a538f-3d43-4ea9-8f52-18682cfc75bc | METHOD: GET
+REQUEST_URI: /.well-known/acme-challenge/ab188c18-7721-411a-b066-9d8affd412f8 | METHOD: GET
+REQUEST_URI: /.well-known/acme-challenge/647a045b-e14c-413d-8152-a87c72494258 | METHOD: GET
+REQUEST_URI: /.well-known/acme-challenge/7623a4ef-6512-4a83-9d83-460a3fbee77f | METHOD: GET
+REQUEST_URI: /.well-known/acme-challenge/aabfd128-a710-47d9-9c99-548f587a360c | METHOD: GET
+REQUEST_URI: /comments/f68b8cc3-34f7-11f0-9695-6a82d4f500cb | METHOD: GET
+REQUEST_URI: /comments/f68b8cc3-34f7-11f0-9695-6a82d4f500cb | METHOD: PATCH
+REQUEST_URI: /comments/f68b8cc3-34f7-11f0-9695-6a82d4f500cb | METHOD: DELETE
+REQUEST_URI: /.well-known/acme-challenge/887da947-383a-4725-88f0-a12b2ef0bf04 | METHOD: GET
+REQUEST_URI: /comments | METHOD: POST
+REQUEST_URI: /comments/a0cf40d3-34fc-11f0-9695-6a82d4f500cb/like | METHOD: POST
+REQUEST_URI: /comments/a0cf40d3-34fc-11f0-9695-6a82d4f500cb/like | METHOD: POST
+REQUEST_URI: /comments/a0cf40d3-34fc-11f0-9695-6a82d4f500cb/like | METHOD: POST
+REQUEST_URI: /comments/a0cf40d3-34fc-11f0-9695-6a82d4f500cb/like | METHOD: POST
+REQUEST_URI: /comments/a0cf40d3-34fc-11f0-9695-6a82d4f500cb/like | METHOD: POST
+REQUEST_URI: /comments/a0cf40d3-34fc-11f0-9695-6a82d4f500cb/like | METHOD: POST
+REQUEST_URI: /comments/a0cf40d3-34fc-11f0-9695-6a82d4f500cb/like | METHOD: POST
+REQUEST_URI: /comments/f68b8cc3-34f7-11f0-9695-6a82d4f500cb | METHOD: GET
+REQUEST_URI: /.well-known/acme-challenge/6ce3d01d-75ac-4c2d-ad88-2e2639fb6650 | METHOD: GET
+REQUEST_URI: /comments/a0cf40d3-34fc-11f0-9695-6a82d4f500cb | METHOD: GET
+REQUEST_URI: /comments/a0cf40d3-34fc-11f0-9695-6a82d4f500cb/like | METHOD: POST
+REQUEST_URI: /comments/a0cf40d3-34fc-11f0-9695-6a82d4f500cb | METHOD: GET
+REQUEST_URI: /comments/a0cf40d3-34fc-11f0-9695-6a82d4f500cb/count | METHOD: GET
+REQUEST_URI: /.well-known/acme-challenge/bb0e7cf1-50c9-48a8-b5df-c16f1a97cabe | METHOD: GET
+REQUEST_URI: /comments/a0cf40d3-34fc-11f0-9695-6a82d4f500cb/likes | METHOD: GET
+REQUEST_URI: /comments/a0cf40d3-34fc-11f0-9695-6a82d4f500cb/like | METHOD: GET
+REQUEST_URI: /comments/a0cf40d3-34fc-11f0-9695-6a82d4f500cb/likes/count | METHOD: GET
+REQUEST_URI: /comments/a0cf40d3-34fc-11f0-9695-6a82d4f500cb/like | METHOD: POST
+REQUEST_URI: /comments/a0cf40d3-34fc-11f0-9695-6a82d4f500cb/likes/count | METHOD: GET
+REQUEST_URI: /.well-known/acme-challenge/865f6c2a-1179-455b-8a51-b5cea7d0c751 | METHOD: GET
+REQUEST_URI: /comments/a0cf40d3-34fc-11f0-9695-6a82d4f500cb/likes | METHOD: GET
+REQUEST_URI: /.well-known/acme-challenge/e1f8d276-f475-44c7-8d88-0040b5e7371c | METHOD: GET
+REQUEST_URI: /.well-known/acme-challenge/8869b70d-315c-4b19-a570-e0baa574ce5b | METHOD: GET
+REQUEST_URI: /.well-known/acme-challenge/22523cc0-f32a-4123-a057-ada09b7226a4 | METHOD: GET
+REQUEST_URI: /.well-known/acme-challenge/04e4b806-e0a2-486f-8726-45566ff003e6 | METHOD: GET
+REQUEST_URI: /.well-known/acme-challenge/9a57142e-2e26-4851-a905-a8c890f10674 | METHOD: GET
+REQUEST_URI: /.well-known/acme-challenge/c82269ee-0015-45f2-8033-f5c208daea7c | METHOD: GET
+REQUEST_URI: /.well-known/acme-challenge/94cb572b-4528-488e-9360-1b17746a376d | METHOD: GET
+REQUEST_URI: /.well-known/acme-challenge/bf18996e-7d25-443d-a1ab-b0eaa6669036 | METHOD: GET
+REQUEST_URI: /.well-known/acme-challenge/77e86aad-7a7e-4846-86ef-1bfcee8ed698 | METHOD: GET
+REQUEST_URI: /.well-known/acme-challenge/5d81c7b0-ede6-45c2-958a-8b3c60a36059 | METHOD: GET
+REQUEST_URI: /comments/a0cf40d3-34fc-11f0-9695-6a82d4f500cb/likes | METHOD: GET
+REQUEST_URI: /.well-known/acme-challenge/de4fea7d-4705-4945-acd5-aa20f63571c8 | METHOD: GET
+REQUEST_URI: /.well-known/acme-challenge/e7298b33-2d7e-4c9d-8156-7853c41cd039 | METHOD: GET
+REQUEST_URI: /comments/a0cf40d3-34fc-11f0-9695-6a82d4f500cb/likes | METHOD: GET
+REQUEST_URI: /.well-known/acme-challenge/b065669a-4b92-41e7-9a1e-d1a53404277c | METHOD: GET
+REQUEST_URI: /.well-known/acme-challenge/cc8d246b-c93e-4982-9a97-ca46aa60b340 | METHOD: GET
+REQUEST_URI: /.well-known/acme-challenge/5042159b-bee5-44a3-a3b3-e8a812b9f081 | METHOD: GET
+REQUEST_URI: /.well-known/acme-challenge/f46d3c0d-4d69-4ba5-b785-9ddd92e9d12d | METHOD: GET
+REQUEST_URI: /register | METHOD: POST
+REQUEST_URI: /register | METHOD: POST
+REQUEST_URI: /.well-known/acme-challenge/ff890e4a-4128-4c91-927a-754d3e17f0b7 | METHOD: GET
+REQUEST_URI: /comments/a0cf40d3-34fc-11f0-9695-6a82d4f500cb/like | METHOD: POST
+REQUEST_URI: /comments/a0cf40d3-34fc-11f0-9695-6a82d4f500cb/likes | METHOD: POST
+REQUEST_URI: /.well-known/acme-challenge/2d0eacbd-6721-42e0-ac8a-fe225df56fab | METHOD: GET
+REQUEST_URI: /comments/a0cf40d3-34fc-11f0-9695-6a82d4f500cb/likes | METHOD: POST
+REQUEST_URI: /comments/a0cf40d3-34fc-11f0-9695-6a82d4f500cb/likes | METHOD: POST
+REQUEST_URI: /.well-known/acme-challenge/73d3b5d3-2c74-4c58-a559-dbb18873b135 | METHOD: GET
+REQUEST_URI: /comments/a0cf40d3-34fc-11f0-9695-6a82d4f500cb/likes | METHOD: GET
+REQUEST_URI: /.well-known/acme-challenge/0b212a0b-a76e-464a-bc47-d423db38a551 | METHOD: GET
+REQUEST_URI: /.well-known/acme-challenge/de6ded00-a1f9-4baa-9e06-6a54754b944d | METHOD: GET
+REQUEST_URI: /.well-known/acme-challenge/5468c579-7d58-4d66-a266-b301c238d57d | METHOD: GET
+REQUEST_URI: /.well-known/acme-challenge/a5261611-61ea-460f-8f42-c106a743aaf2 | METHOD: GET
+REQUEST_URI: /.well-known/acme-challenge/df24439d-aca1-41db-a8b6-671d631e3492 | METHOD: GET
+REQUEST_URI: /.well-known/acme-challenge/2d3f97b0-2c64-4640-8484-8f849e8cb6ac | METHOD: GET
+REQUEST_URI: /.well-known/acme-challenge/ee64fb72-fc47-4d68-9d43-8c4f79ac2dd9 | METHOD: GET
+REQUEST_URI: /.well-known/acme-challenge/e054fbd1-8652-43ca-8560-d82e5bc20e98 | METHOD: GET
+REQUEST_URI: /.well-known/acme-challenge/ae0ab068-10f7-4efb-ad3e-f0c5bed9e6d8 | METHOD: GET
+REQUEST_URI: /comments/a0cf40d3-34fc-11f0-9695-6a82d4f500cb/likes | METHOD: GET
+REQUEST_URI: /.well-known/acme-challenge/a437e3d9-3060-4a59-9fed-00da7d0aa9fc | METHOD: GET
+REQUEST_URI: /.well-known/acme-challenge/8f04b434-4730-49a5-9930-3f8d1ef8adf0 | METHOD: GET
+REQUEST_URI: /.well-known/acme-challenge/8becd107-8df0-4a97-a438-09fbd3075490 | METHOD: GET
+REQUEST_URI: /comments/a0cf40d3-34fc-11f0-9695-6a82d4f500cb/likes | METHOD: GET
+REQUEST_URI: /.well-known/acme-challenge/594b6296-47fd-4087-9011-3e2e3a91f67a | METHOD: GET
+REQUEST_URI: /.well-known/acme-challenge/027c149e-6e99-4c29-a415-6ceede645e10 | METHOD: GET
+REQUEST_URI: /posts | METHOD: POST
+REQUEST_URI: /notifications | METHOD: GET
+REQUEST_URI: /.well-known/acme-challenge/20488c75-6607-44d5-929f-ed82865c6331 | METHOD: GET
+REQUEST_URI: /.well-known/acme-challenge/f61be4c5-b5f6-4f5a-bf33-888966a8cd35 | METHOD: GET
+REQUEST_URI: /.well-known/acme-challenge/1fa4b753-78c8-4708-b3f9-1535a52641b3 | METHOD: GET
+REQUEST_URI: /login | METHOD: POST
+REQUEST_URI: /.well-known/acme-challenge/376846f9-b7d9-4308-b713-ef2ded6f6c09 | METHOD: GET
+REQUEST_URI: /posts | METHOD: POST
+[19-May-2025 22:41:40 UTC] Add mention failed: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'updated_at' in 'INSERT INTO'
+[19-May-2025 22:41:40 UTC] Error processing mentions: Failed to add mention for user 10
+REQUEST_URI: /notifications | METHOD: GET
+REQUEST_URI: /.well-known/acme-challenge/1a25b030-9828-4f5d-9ed0-775714a639a6 | METHOD: GET
+REQUEST_URI: /.well-known/acme-challenge/6c8b4de7-f620-418d-af57-3511c1c25d3b | METHOD: GET
+REQUEST_URI: /.well-known/acme-challenge/3f407f73-ccb2-48d0-ba7d-eee3cd078af9 | METHOD: GET
+REQUEST_URI: /.well-known/acme-challenge/5eee1e45-cbe0-4cd0-947c-e4e7e3f56856 | METHOD: GET
+REQUEST_URI: /.well-known/acme-challenge/1f5517ba-c8e7-4bd0-8935-fbbb2d4632bd | METHOD: GET
+REQUEST_URI: /.well-known/acme-challenge/ae823f9e-d6db-4dbb-ae16-2abdaaf771f1 | METHOD: GET
+REQUEST_URI: /.well-known/acme-challenge/7a971cce-d407-4962-bc53-65a780317d21 | METHOD: GET
+REQUEST_URI: /login | METHOD: POST
+REQUEST_URI: /users/52ff7075-34ea-11f0-9695-6a82d4f500cb/mentions | METHOD: GET
+REQUEST_URI: /.well-known/acme-challenge/206ceb4a-d85c-4c26-b51c-e9bf2990bc01 | METHOD: GET
+REQUEST_URI: /.well-known/acme-challenge/f98a565f-8e0c-4ad1-b229-52ce3643533e | METHOD: GET
+REQUEST_URI: /.well-known/acme-challenge/a14b2578-9644-48f2-877d-4883cbf643a8 | METHOD: GET
+REQUEST_URI: /.well-known/acme-challenge/ecfcf350-8fdb-4a01-a1e7-b2ad177206b4 | METHOD: GET
+REQUEST_URI: /users/52ff7075-34ea-11f0-9695-6a82d4f500cb/mentions | METHOD: GET
+REQUEST_URI: /posts | METHOD: POST
+REQUEST_URI: /login | METHOD: POST
+REQUEST_URI: /users/5f5af3cb-33cf-11f0-9695-6a82d4f500cb/mentions | METHOD: GET
+REQUEST_URI: /users/5f5af3cb-33cf-11f0-9695-6a82d4f500cb/mentions | METHOD: GET
+REQUEST_URI: /users/5f5af3cb-33cf-11f0-9695-6a82d4f500cb/mentions | METHOD: GET
+REQUEST_URI: /users/5f5af3cb-33cf-11f0-9695-6a82d4f500cb/mentions | METHOD: GET
+REQUEST_URI: /users/5f5af3cb-33cf-11f0-9695-6a82d4f500cb/mention | METHOD: GET
+REQUEST_URI: /users/5f5af3cb-33cf-11f0-9695-6a82d4f500cb/mentions | METHOD: GET
+REQUEST_URI: /users/5f5af3cb-33cf-11f0-9695-6a82d4f500cb/mentions | METHOD: GET
+[19-May-2025 23:23:38 UTC] Get mentions for user failed: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'is_deleted' in 'WHERE'
+REQUEST_URI: /users/5f5af3cb-33cf-11f0-9695-6a82d4f500cb/mentions | METHOD: GET
+[19-May-2025 23:25:41 UTC] Get mentions for user failed: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'is_deleted' in 'WHERE'
+REQUEST_URI: /users/5f5af3cb-33cf-11f0-9695-6a82d4f500cb/mentions | METHOD: GET
+[19-May-2025 23:25:43 UTC] Get mentions for user failed: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'is_deleted' in 'WHERE'
+REQUEST_URI: /users/5f5af3cb-33cf-11f0-9695-6a82d4f500cb/mentions | METHOD: GET
+[19-May-2025 23:26:17 UTC] Get mentions for user failed: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'is_deleted' in 'WHERE'
+REQUEST_URI: /users/5f5af3cb-33cf-11f0-9695-6a82d4f500cb/mentions | METHOD: GET
+[19-May-2025 23:26:34 UTC] Get mentions for user failed: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'is_deleted' in 'WHERE'
+REQUEST_URI: /users/5f5af3cb-33cf-11f0-9695-6a82d4f500cb/mentions | METHOD: GET
+REQUEST_URI: /notifications | METHOD: GET
+REQUEST_URI: /me | METHOD: GET
+REQUEST_URI: /login | METHOD: POST
+REQUEST_URI: /posts | METHOD: POST
+REQUEST_URI: /login | METHOD: POST
+REQUEST_URI: /notifications | METHOD: GET
+REQUEST_URI: /login | METHOD: POST
+REQUEST_URI: /notifications | METHOD: GET
+REQUEST_URI: /login | METHOD: POST
+REQUEST_URI: /posts | METHOD: POST
+REQUEST_URI: /login | METHOD: POST
+REQUEST_URI: /notifications | METHOD: GET
+REQUEST_URI: /notifications | METHOD: GET
+[20-May-2025 00:06:21 UTC] PHP Fatal error:  Uncaught Error: Class "Src\Controllers\Post" not found in /home9/unifyzec/public_html/src/Controllers/NotificationController.php:30
+Stack trace:
+#0 [internal function]: Src\Controllers\NotificationController->filterNotificationResponse()
+#1 /home9/unifyzec/public_html/src/Controllers/NotificationController.php(76): array_map()
+#2 [internal function]: Src\Controllers\NotificationController->getAllNotifications()
+#3 /home9/unifyzec/public_html/src/Core/Router.php(61): call_user_func_array()
+#4 /home9/unifyzec/public_html/src/Core/Router.php(46): Src\Core\Router->executeHandler()
+#5 /home9/unifyzec/public_html/index.php(104): Src\Core\Router->dispatch()
+#6 {main}
+  thrown in /home9/unifyzec/public_html/src/Controllers/NotificationController.php on line 30
+REQUEST_URI: /notifications | METHOD: GET
+REQUEST_URI: /notifications | METHOD: GET
+REQUEST_URI: /.well-known/cf-custom-hostname-challenge/ca210335-1d9b-43fe-a5f8-49711bb48a81 | METHOD: GET
+REQUEST_URI: /.well-known/cf-custom-hostname-challenge/ca210335-1d9b-43fe-a5f8-49711bb48a81 | METHOD: GET
+REQUEST_URI: /register | METHOD: POST
+REQUEST_URI: /password-reset/reset | METHOD: POST
+REQUEST_URI: /password-reset/reset | METHOD: POST
+REQUEST_URI: /password-reset/reset | METHOD: POST
+REQUEST_URI: /password-reset/reset | METHOD: POST
+REQUEST_URI: /password-reset/reset | METHOD: POST
+REQUEST_URI: /password-reset/reset | METHOD: POST
+REQUEST_URI: /login | METHOD: POST
+REQUEST_URI: /admins | METHOD: GET
+REQUEST_URI: /.well-known/cf-custom-hostname-challenge/ca210335-1d9b-43fe-a5f8-49711bb48a81 | METHOD: GET
+REQUEST_URI: /.well-known/cf-custom-hostname-challenge/ca210335-1d9b-43fe-a5f8-49711bb48a81 | METHOD: GET
+REQUEST_URI: /.well-known/cf-custom-hostname-challenge/ca210335-1d9b-43fe-a5f8-49711bb48a81 | METHOD: GET
+REQUEST_URI: /.well-known/cf-custom-hostname-challenge/ca210335-1d9b-43fe-a5f8-49711bb48a81 | METHOD: GET
