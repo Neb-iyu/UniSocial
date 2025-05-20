@@ -39,10 +39,24 @@ class FileUploader
                 throw new Exception('Failed to move uploaded file.');
             }
             $relativePath = 'uploads/' . $type . '/' . $filename;
-            return ['success' => true, 'path' => $relativePath];
+            $absoluteUrl = self::getAbsoluteUrl($relativePath);
+            return ['success' => true, 'path' => $relativePath, 'absolute_url' => $absoluteUrl];
         } catch (Exception $e) {
             return ['success' => false, 'error' => $e->getMessage()];
         }
+    }
+
+    /**
+     * Returns the absolute URL for a relative file path.
+     * @param string $relativePath
+     * @return string
+     */
+    public static function getAbsoluteUrl(string $relativePath): string
+    {
+        $scheme = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
+        $host = $_SERVER['HTTP_HOST'] ?? 'localhost';
+        $relativePath = ltrim($relativePath, '/');
+        return "$scheme://$host/$relativePath";
     }
 
     private static function validateType(string $type): void
