@@ -1,0 +1,27 @@
+{
+  "name": "unisocial/backend",
+  "type": "project",
+  "description": "Unisocial API - Social Media Backend",
+  "license": "MIT",
+  "require": {
+    "php": "^8.1",
+    "ext-json": "*",
+    "ext-pdo": "*",
+    "firebase/php-jwt": "^6.4",
+    "phpmailer/phpmailer": "^6.10",
+    "vlucas/phpdotenv": "^5.5"
+  },
+  "autoload": {
+    "psr-4": {
+      "Src\\": "src/"
+    },
+    "files": ["src/Utilities/helpers.php"]
+  },
+  "config": {
+    "optimize-autoloader": true,
+    "sort-packages": true,
+    "platform-check": false
+  },
+  "minimum-stability": "stable",
+  "prefer-stable": true
+}

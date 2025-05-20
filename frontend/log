@@ -1,0 +1,262 @@
+[17-May-2025 20:44:11 UTC] PHP Parse error:  syntax error, unexpected '|', expecting variable (T_VARIABLE) in /home9/unifyzec/public_html/src/Core/Router.php on line 21
+[17-May-2025 20:56:45 UTC] PHP Fatal error:  Uncaught Dotenv\Exception\InvalidFileException: Failed to parse dotenv file. Encountered unexpected whitespace at [unifyzec_ db]. in /home9/unifyzec/public_html/vendor/vlucas/phpdotenv/src/Parser/Parser.php:30
+Stack trace:
+#0 /home9/unifyzec/public_html/vendor/graham-campbell/result-type/src/Error.php(119): Dotenv\Parser\Parser::Dotenv\Parser\{closure}('Encountered une...')
+#1 /home9/unifyzec/public_html/vendor/vlucas/phpdotenv/src/Parser/Parser.php(31): GrahamCampbell\ResultType\Error->mapError(Object(Closure))
+#2 /home9/unifyzec/public_html/vendor/vlucas/phpdotenv/src/Dotenv.php(222): Dotenv\Parser\Parser->parse('APP_ENV=product...')
+#3 /home9/unifyzec/public_html/index.php(12): Dotenv\Dotenv->load()
+#4 {main}
+  thrown in /home9/unifyzec/public_html/vendor/vlucas/phpdotenv/src/Parser/Parser.php on line 30
+[17-May-2025 20:57:21 UTC] PHP Fatal error:  Uncaught Dotenv\Exception\InvalidFileException: Failed to parse dotenv file. Encountered unexpected whitespace at [unifyzec_ db]. in /home9/unifyzec/public_html/vendor/vlucas/phpdotenv/src/Parser/Parser.php:30
+Stack trace:
+#0 /home9/unifyzec/public_html/vendor/graham-campbell/result-type/src/Error.php(119): Dotenv\Parser\Parser::Dotenv\Parser\{closure}('Encountered une...')
+#1 /home9/unifyzec/public_html/vendor/vlucas/phpdotenv/src/Parser/Parser.php(31): GrahamCampbell\ResultType\Error->mapError(Object(Closure))
+#2 /home9/unifyzec/public_html/vendor/vlucas/phpdotenv/src/Dotenv.php(222): Dotenv\Parser\Parser->parse('APP_ENV=product...')
+#3 /home9/unifyzec/public_html/index.php(12): Dotenv\Dotenv->load()
+#4 {main}
+  thrown in /home9/unifyzec/public_html/vendor/vlucas/phpdotenv/src/Parser/Parser.php on line 30
+[17-May-2025 20:57:42 UTC] PHP Fatal error:  Uncaught Dotenv\Exception\InvalidFileException: Failed to parse dotenv file. Encountered unexpected whitespace at [unifyzec_ db]. in /home9/unifyzec/public_html/vendor/vlucas/phpdotenv/src/Parser/Parser.php:30
+Stack trace:
+#0 /home9/unifyzec/public_html/vendor/graham-campbell/result-type/src/Error.php(119): Dotenv\Parser\Parser::Dotenv\Parser\{closure}('Encountered une...')
+#1 /home9/unifyzec/public_html/vendor/vlucas/phpdotenv/src/Parser/Parser.php(31): GrahamCampbell\ResultType\Error->mapError(Object(Closure))
+#2 /home9/unifyzec/public_html/vendor/vlucas/phpdotenv/src/Dotenv.php(222): Dotenv\Parser\Parser->parse('APP_ENV=product...')
+#3 /home9/unifyzec/public_html/index.php(12): Dotenv\Dotenv->load()
+#4 {main}
+  thrown in /home9/unifyzec/public_html/vendor/vlucas/phpdotenv/src/Parser/Parser.php on line 30
+[17-May-2025 21:00:03 UTC] PHP Parse error:  syntax error, unexpected '|', expecting variable (T_VARIABLE) in /home9/unifyzec/public_html/src/Core/Router.php on line 21
+REQUEST_URI: /register | METHOD: POST
+REQUEST_URI: /register | METHOD: POST
+[17-May-2025 21:21:35 UTC] PHP Fatal error:  Uncaught RuntimeException: Database connection failed: SQLSTATE[HY000] [1045] Access denied for user ''@'localhost' (using password: NO) in /home9/unifyzec/public_html/src/Core/Database.php:37
+Stack trace:
+#0 /home9/unifyzec/public_html/src/Core/Database.php(16): Src\Core\Database->createConnection()
+#1 /home9/unifyzec/public_html/src/Core/Database.php(22): Src\Core\Database->__construct()
+#2 /home9/unifyzec/public_html/src/Core/Model.php(18): Src\Core\Database::getInstance()
+#3 /home9/unifyzec/public_html/src/Controllers/BaseController.php(17): Src\Core\Model->__construct()
+#4 /home9/unifyzec/public_html/src/Controllers/AuthController.php(18): Src\Controllers\BaseController->__construct()
+#5 /home9/unifyzec/public_html/src/Core/Router.php(60): Src\Controllers\AuthController->__construct()
+#6 /home9/unifyzec/public_html/src/Core/Router.php(46): Src\Core\Router->executeHandler()
+#7 /home9/unifyzec/public_html/index.php(94): Src\Core\Router->dispatch()
+#8 {main}
+  thrown in /home9/unifyzec/public_html/src/Core/Database.php on line 37
+REQUEST_URI: /register | METHOD: POST
+[17-May-2025 21:22:07 UTC] PHP Fatal error:  Uncaught RuntimeException: Database connection failed: SQLSTATE[HY000] [1045] Access denied for user ''@'localhost' (using password: NO) in /home9/unifyzec/public_html/src/Core/Database.php:37
+Stack trace:
+#0 /home9/unifyzec/public_html/src/Core/Database.php(16): Src\Core\Database->createConnection()
+#1 /home9/unifyzec/public_html/src/Core/Database.php(22): Src\Core\Database->__construct()
+#2 /home9/unifyzec/public_html/src/Core/Model.php(18): Src\Core\Database::getInstance()
+#3 /home9/unifyzec/public_html/src/Controllers/BaseController.php(17): Src\Core\Model->__construct()
+#4 /home9/unifyzec/public_html/src/Controllers/AuthController.php(18): Src\Controllers\BaseController->__construct()
+#5 /home9/unifyzec/public_html/src/Core/Router.php(60): Src\Controllers\AuthController->__construct()
+#6 /home9/unifyzec/public_html/src/Core/Router.php(46): Src\Core\Router->executeHandler()
+#7 /home9/unifyzec/public_html/index.php(94): Src\Core\Router->dispatch()
+#8 {main}
+  thrown in /home9/unifyzec/public_html/src/Core/Database.php on line 37
+REQUEST_URI: /register | METHOD: POST
+[17-May-2025 21:28:03 UTC] PHP Fatal error:  Uncaught RuntimeException: Database connection failed: SQLSTATE[HY000] [1044] Access denied for user 'unifyzec_username'@'localhost' to database 'unifyzec_db' in /home9/unifyzec/public_html/src/Core/Database.php:37
+Stack trace:
+#0 /home9/unifyzec/public_html/src/Core/Database.php(16): Src\Core\Database->createConnection()
+#1 /home9/unifyzec/public_html/src/Core/Database.php(22): Src\Core\Database->__construct()
+#2 /home9/unifyzec/public_html/src/Core/Model.php(18): Src\Core\Database::getInstance()
+#3 /home9/unifyzec/public_html/src/Controllers/BaseController.php(17): Src\Core\Model->__construct()
+#4 /home9/unifyzec/public_html/src/Controllers/AuthController.php(18): Src\Controllers\BaseController->__construct()
+#5 /home9/unifyzec/public_html/src/Core/Router.php(60): Src\Controllers\AuthController->__construct()
+#6 /home9/unifyzec/public_html/src/Core/Router.php(46): Src\Core\Router->executeHandler()
+#7 /home9/unifyzec/public_html/index.php(94): Src\Core\Router->dispatch()
+#8 {main}
+  thrown in /home9/unifyzec/public_html/src/Core/Database.php on line 37
+REQUEST_URI: /register | METHOD: POST
+[17-May-2025 21:34:05 UTC] PHP Fatal error:  Uncaught RuntimeException: Database connection failed: SQLSTATE[HY000] [1044] Access denied for user 'unifyzec_username'@'localhost' to database 'unifyzec_db' in /home9/unifyzec/public_html/src/Core/Database.php:37
+Stack trace:
+#0 /home9/unifyzec/public_html/src/Core/Database.php(16): Src\Core\Database->createConnection()
+#1 /home9/unifyzec/public_html/src/Core/Database.php(22): Src\Core\Database->__construct()
+#2 /home9/unifyzec/public_html/src/Core/Model.php(18): Src\Core\Database::getInstance()
+#3 /home9/unifyzec/public_html/src/Controllers/BaseController.php(17): Src\Core\Model->__construct()
+#4 /home9/unifyzec/public_html/src/Controllers/AuthController.php(18): Src\Controllers\BaseController->__construct()
+#5 /home9/unifyzec/public_html/src/Core/Router.php(60): Src\Controllers\AuthController->__construct()
+#6 /home9/unifyzec/public_html/src/Core/Router.php(46): Src\Core\Router->executeHandler()
+#7 /home9/unifyzec/public_html/index.php(94): Src\Core\Router->dispatch()
+#8 {main}
+  thrown in /home9/unifyzec/public_html/src/Core/Database.php on line 37
+REQUEST_URI: /register | METHOD: POST
+[17-May-2025 21:37:37 UTC] PHP Fatal error:  Uncaught RuntimeException: Database connection failed: SQLSTATE[HY000] [1044] Access denied for user 'unifyzec_username'@'localhost' to database 'unifyzec_db' in /home9/unifyzec/public_html/src/Core/Database.php:37
+Stack trace:
+#0 /home9/unifyzec/public_html/src/Core/Database.php(16): Src\Core\Database->createConnection()
+#1 /home9/unifyzec/public_html/src/Core/Database.php(22): Src\Core\Database->__construct()
+#2 /home9/unifyzec/public_html/src/Core/Model.php(18): Src\Core\Database::getInstance()
+#3 /home9/unifyzec/public_html/src/Controllers/BaseController.php(17): Src\Core\Model->__construct()
+#4 /home9/unifyzec/public_html/src/Controllers/AuthController.php(18): Src\Controllers\BaseController->__construct()
+#5 /home9/unifyzec/public_html/src/Core/Router.php(60): Src\Controllers\AuthController->__construct()
+#6 /home9/unifyzec/public_html/src/Core/Router.php(46): Src\Core\Router->executeHandler()
+#7 /home9/unifyzec/public_html/index.php(94): Src\Core\Router->dispatch()
+#8 {main}
+  thrown in /home9/unifyzec/public_html/src/Core/Database.php on line 37
+REQUEST_URI: /register | METHOD: POST
+[17-May-2025 21:49:22 UTC] PHP Fatal error:  Uncaught RuntimeException: Database connection failed: SQLSTATE[HY000] [1045] Access denied for user 'cpses_una55dit6t'@'localhost' (using password: YES) in /home9/unifyzec/public_html/src/Core/Database.php:37
+Stack trace:
+#0 /home9/unifyzec/public_html/src/Core/Database.php(16): Src\Core\Database->createConnection()
+#1 /home9/unifyzec/public_html/src/Core/Database.php(22): Src\Core\Database->__construct()
+#2 /home9/unifyzec/public_html/src/Core/Model.php(18): Src\Core\Database::getInstance()
+#3 /home9/unifyzec/public_html/src/Controllers/BaseController.php(17): Src\Core\Model->__construct()
+#4 /home9/unifyzec/public_html/src/Controllers/AuthController.php(18): Src\Controllers\BaseController->__construct()
+#5 /home9/unifyzec/public_html/src/Core/Router.php(60): Src\Controllers\AuthController->__construct()
+#6 /home9/unifyzec/public_html/src/Core/Router.php(46): Src\Core\Router->executeHandler()
+#7 /home9/unifyzec/public_html/index.php(94): Src\Core\Router->dispatch()
+#8 {main}
+  thrown in /home9/unifyzec/public_html/src/Core/Database.php on line 37
+REQUEST_URI: / | METHOD: GET
+REQUEST_URI: /register | METHOD: POST
+[18-May-2025 04:34:32 UTC] PHP Fatal error:  Uncaught RuntimeException: Database connection failed: SQLSTATE[HY000] [1045] Access denied for user 'cpses_una55dit6t'@'localhost' (using password: YES) in /home9/unifyzec/public_html/src/Core/Database.php:37
+Stack trace:
+#0 /home9/unifyzec/public_html/src/Core/Database.php(16): Src\Core\Database->createConnection()
+#1 /home9/unifyzec/public_html/src/Core/Database.php(22): Src\Core\Database->__construct()
+#2 /home9/unifyzec/public_html/src/Core/Model.php(18): Src\Core\Database::getInstance()
+#3 /home9/unifyzec/public_html/src/Controllers/BaseController.php(17): Src\Core\Model->__construct()
+#4 /home9/unifyzec/public_html/src/Controllers/AuthController.php(18): Src\Controllers\BaseController->__construct()
+#5 /home9/unifyzec/public_html/src/Core/Router.php(60): Src\Controllers\AuthController->__construct()
+#6 /home9/unifyzec/public_html/src/Core/Router.php(46): Src\Core\Router->executeHandler()
+#7 /home9/unifyzec/public_html/index.php(94): Src\Core\Router->dispatch()
+#8 {main}
+  thrown in /home9/unifyzec/public_html/src/Core/Database.php on line 37
+REQUEST_URI: /register | METHOD: POST
+[18-May-2025 04:36:53 UTC] PHP Fatal error:  Uncaught RuntimeException: Database connection failed: SQLSTATE[HY000] [1045] Access denied for user 'cpses_una55dit6t@localhost'@'localhost' (using password: YES) in /home9/unifyzec/public_html/src/Core/Database.php:37
+Stack trace:
+#0 /home9/unifyzec/public_html/src/Core/Database.php(16): Src\Core\Database->createConnection()
+#1 /home9/unifyzec/public_html/src/Core/Database.php(22): Src\Core\Database->__construct()
+#2 /home9/unifyzec/public_html/src/Core/Model.php(18): Src\Core\Database::getInstance()
+#3 /home9/unifyzec/public_html/src/Controllers/BaseController.php(17): Src\Core\Model->__construct()
+#4 /home9/unifyzec/public_html/src/Controllers/AuthController.php(18): Src\Controllers\BaseController->__construct()
+#5 /home9/unifyzec/public_html/src/Core/Router.php(60): Src\Controllers\AuthController->__construct()
+#6 /home9/unifyzec/public_html/src/Core/Router.php(46): Src\Core\Router->executeHandler()
+#7 /home9/unifyzec/public_html/index.php(94): Src\Core\Router->dispatch()
+#8 {main}
+  thrown in /home9/unifyzec/public_html/src/Core/Database.php on line 37
+REQUEST_URI: /register | METHOD: POST
+[18-May-2025 05:33:30 UTC] PHP Fatal error:  Uncaught RuntimeException: Database connection failed: SQLSTATE[HY000] [1045] Access denied for user 'cpses_una55dit6t'@'localhost' (using password: YES) in /home9/unifyzec/public_html/src/Core/Database.php:37
+Stack trace:
+#0 /home9/unifyzec/public_html/src/Core/Database.php(16): Src\Core\Database->createConnection()
+#1 /home9/unifyzec/public_html/src/Core/Database.php(22): Src\Core\Database->__construct()
+#2 /home9/unifyzec/public_html/src/Core/Model.php(18): Src\Core\Database::getInstance()
+#3 /home9/unifyzec/public_html/src/Controllers/BaseController.php(17): Src\Core\Model->__construct()
+#4 /home9/unifyzec/public_html/src/Controllers/AuthController.php(18): Src\Controllers\BaseController->__construct()
+#5 /home9/unifyzec/public_html/src/Core/Router.php(60): Src\Controllers\AuthController->__construct()
+#6 /home9/unifyzec/public_html/src/Core/Router.php(46): Src\Core\Router->executeHandler()
+#7 /home9/unifyzec/public_html/index.php(94): Src\Core\Router->dispatch()
+#8 {main}
+  thrown in /home9/unifyzec/public_html/src/Core/Database.php on line 37
+REQUEST_URI: /register | METHOD: POST
+[18-May-2025 05:39:24 UTC] PHP Fatal error:  Uncaught RuntimeException: Database connection failed: SQLSTATE[HY000] [1045] Access denied for user 'cpses_una55dit6t'@'localhost' (using password: YES) in /home9/unifyzec/public_html/src/Core/Database.php:37
+Stack trace:
+#0 /home9/unifyzec/public_html/src/Core/Database.php(16): Src\Core\Database->createConnection()
+#1 /home9/unifyzec/public_html/src/Core/Database.php(22): Src\Core\Database->__construct()
+#2 /home9/unifyzec/public_html/src/Core/Model.php(18): Src\Core\Database::getInstance()
+#3 /home9/unifyzec/public_html/src/Controllers/BaseController.php(17): Src\Core\Model->__construct()
+#4 /home9/unifyzec/public_html/src/Controllers/AuthController.php(18): Src\Controllers\BaseController->__construct()
+#5 /home9/unifyzec/public_html/src/Core/Router.php(60): Src\Controllers\AuthController->__construct()
+#6 /home9/unifyzec/public_html/src/Core/Router.php(46): Src\Core\Router->executeHandler()
+#7 /home9/unifyzec/public_html/index.php(94): Src\Core\Router->dispatch()
+#8 {main}
+  thrown in /home9/unifyzec/public_html/src/Core/Database.php on line 37
+REQUEST_URI: / | METHOD: GET
+REQUEST_URI: /password-reset/request | METHOD: GET
+REQUEST_URI: /password-reset/request | METHOD: GET
+REQUEST_URI: /password-reset/request | METHOD: GET
+REQUEST_URI: /register | METHOD: GET
+REQUEST_URI: /register | METHOD: GET
+REQUEST_URI: /register | METHOD: POST
+[18-May-2025 08:48:48 UTC] PHP Fatal error:  Uncaught RuntimeException: Database connection failed: SQLSTATE[HY000] [1045] Access denied for user 'cpses_una55dit6t'@'localhost' (using password: YES) in /home9/unifyzec/public_html/src/Core/Database.php:37
+Stack trace:
+#0 /home9/unifyzec/public_html/src/Core/Database.php(16): Src\Core\Database->createConnection()
+#1 /home9/unifyzec/public_html/src/Core/Database.php(22): Src\Core\Database->__construct()
+#2 /home9/unifyzec/public_html/src/Core/Model.php(18): Src\Core\Database::getInstance()
+#3 /home9/unifyzec/public_html/src/Controllers/BaseController.php(17): Src\Core\Model->__construct()
+#4 /home9/unifyzec/public_html/src/Controllers/AuthController.php(18): Src\Controllers\BaseController->__construct()
+#5 /home9/unifyzec/public_html/src/Core/Router.php(60): Src\Controllers\AuthController->__construct()
+#6 /home9/unifyzec/public_html/src/Core/Router.php(46): Src\Core\Router->executeHandler()
+#7 /home9/unifyzec/public_html/index.php(94): Src\Core\Router->dispatch()
+#8 {main}
+  thrown in /home9/unifyzec/public_html/src/Core/Database.php on line 37
+REQUEST_URI: /register | METHOD: POST
+[18-May-2025 08:48:57 UTC] PHP Fatal error:  Uncaught RuntimeException: Database connection failed: SQLSTATE[HY000] [1045] Access denied for user 'cpses_una55dit6t'@'localhost' (using password: YES) in /home9/unifyzec/public_html/src/Core/Database.php:37
+Stack trace:
+#0 /home9/unifyzec/public_html/src/Core/Database.php(16): Src\Core\Database->createConnection()
+#1 /home9/unifyzec/public_html/src/Core/Database.php(22): Src\Core\Database->__construct()
+#2 /home9/unifyzec/public_html/src/Core/Model.php(18): Src\Core\Database::getInstance()
+#3 /home9/unifyzec/public_html/src/Controllers/BaseController.php(17): Src\Core\Model->__construct()
+#4 /home9/unifyzec/public_html/src/Controllers/AuthController.php(18): Src\Controllers\BaseController->__construct()
+#5 /home9/unifyzec/public_html/src/Core/Router.php(60): Src\Controllers\AuthController->__construct()
+#6 /home9/unifyzec/public_html/src/Core/Router.php(46): Src\Core\Router->executeHandler()
+#7 /home9/unifyzec/public_html/index.php(94): Src\Core\Router->dispatch()
+#8 {main}
+  thrown in /home9/unifyzec/public_html/src/Core/Database.php on line 37
+REQUEST_URI: /register | METHOD: POST
+[18-May-2025 08:49:03 UTC] PHP Fatal error:  Uncaught RuntimeException: Database connection failed: SQLSTATE[HY000] [1045] Access denied for user 'cpses_una55dit6t'@'localhost' (using password: YES) in /home9/unifyzec/public_html/src/Core/Database.php:37
+Stack trace:
+#0 /home9/unifyzec/public_html/src/Core/Database.php(16): Src\Core\Database->createConnection()
+#1 /home9/unifyzec/public_html/src/Core/Database.php(22): Src\Core\Database->__construct()
+#2 /home9/unifyzec/public_html/src/Core/Model.php(18): Src\Core\Database::getInstance()
+#3 /home9/unifyzec/public_html/src/Controllers/BaseController.php(17): Src\Core\Model->__construct()
+#4 /home9/unifyzec/public_html/src/Controllers/AuthController.php(18): Src\Controllers\BaseController->__construct()
+#5 /home9/unifyzec/public_html/src/Core/Router.php(60): Src\Controllers\AuthController->__construct()
+#6 /home9/unifyzec/public_html/src/Core/Router.php(46): Src\Core\Router->executeHandler()
+#7 /home9/unifyzec/public_html/index.php(94): Src\Core\Router->dispatch()
+#8 {main}
+  thrown in /home9/unifyzec/public_html/src/Core/Database.php on line 37
+REQUEST_URI: / | METHOD: HEAD
+REQUEST_URI: / | METHOD: HEAD
+REQUEST_URI: /register | METHOD: POST
+[18-May-2025 09:10:11 UTC] PHP Fatal error:  Uncaught RuntimeException: Database connection failed: SQLSTATE[HY000] [1045] Access denied for user 'cpses_una55dit6t'@'localhost' (using password: YES) in /home9/unifyzec/public_html/src/Core/Database.php:37
+Stack trace:
+#0 /home9/unifyzec/public_html/src/Core/Database.php(16): Src\Core\Database->createConnection()
+#1 /home9/unifyzec/public_html/src/Core/Database.php(22): Src\Core\Database->__construct()
+#2 /home9/unifyzec/public_html/src/Core/Model.php(18): Src\Core\Database::getInstance()
+#3 /home9/unifyzec/public_html/src/Controllers/BaseController.php(17): Src\Core\Model->__construct()
+#4 /home9/unifyzec/public_html/src/Controllers/AuthController.php(18): Src\Controllers\BaseController->__construct()
+#5 /home9/unifyzec/public_html/src/Core/Router.php(60): Src\Controllers\AuthController->__construct()
+#6 /home9/unifyzec/public_html/src/Core/Router.php(46): Src\Core\Router->executeHandler()
+#7 /home9/unifyzec/public_html/index.php(94): Src\Core\Router->dispatch()
+#8 {main}
+  thrown in /home9/unifyzec/public_html/src/Core/Database.php on line 37
+REQUEST_URI: / | METHOD: GET
+REQUEST_URI: /register | METHOD: POST
+[18-May-2025 09:59:04 UTC] PHP Fatal error:  Uncaught RuntimeException: Database connection failed: SQLSTATE[HY000] [1045] Access denied for user 'cpses_una55dit6t'@'localhost' (using password: YES) in /home9/unifyzec/public_html/src/Core/Database.php:37
+Stack trace:
+#0 /home9/unifyzec/public_html/src/Core/Database.php(16): Src\Core\Database->createConnection()
+#1 /home9/unifyzec/public_html/src/Core/Database.php(22): Src\Core\Database->__construct()
+#2 /home9/unifyzec/public_html/src/Core/Model.php(18): Src\Core\Database::getInstance()
+#3 /home9/unifyzec/public_html/src/Controllers/BaseController.php(17): Src\Core\Model->__construct()
+#4 /home9/unifyzec/public_html/src/Controllers/AuthController.php(18): Src\Controllers\BaseController->__construct()
+#5 /home9/unifyzec/public_html/src/Core/Router.php(60): Src\Controllers\AuthController->__construct()
+#6 /home9/unifyzec/public_html/src/Core/Router.php(46): Src\Core\Router->executeHandler()
+#7 /home9/unifyzec/public_html/index.php(94): Src\Core\Router->dispatch()
+#8 {main}
+  thrown in /home9/unifyzec/public_html/src/Core/Database.php on line 37
+REQUEST_URI: /register | METHOD: POST
+[18-May-2025 10:23:26 UTC] PHP Warning:  Undefined array key "JWT_SECRET" in /home9/unifyzec/public_html/src/Core/Auth.php on line 58
+[18-May-2025 10:23:26 UTC] PHP Fatal error:  Uncaught InvalidArgumentException: key must be a string when using hmac in /home9/unifyzec/public_html/vendor/firebase/php-jwt/src/JWT.php:249
+Stack trace:
+#0 /home9/unifyzec/public_html/vendor/firebase/php-jwt/src/JWT.php(219): Firebase\JWT\JWT::sign()
+#1 /home9/unifyzec/public_html/src/Core/Auth.php(58): Firebase\JWT\JWT::encode()
+#2 /home9/unifyzec/public_html/src/Controllers/AuthController.php(58): Src\Core\Auth->generateToken()
+#3 [internal function]: Src\Controllers\AuthController->register()
+#4 /home9/unifyzec/public_html/src/Core/Router.php(61): call_user_func_array()
+#5 /home9/unifyzec/public_html/src/Core/Router.php(46): Src\Core\Router->executeHandler()
+#6 /home9/unifyzec/public_html/index.php(94): Src\Core\Router->dispatch()
+#7 {main}
+  thrown in /home9/unifyzec/public_html/vendor/firebase/php-jwt/src/JWT.php on line 249
+REQUEST_URI: /register | METHOD: POST
+REQUEST_URI: /login | METHOD: POST
+REQUEST_URI: /me | METHOD: GET
+REQUEST_URI: /login | METHOD: POST
+REQUEST_URI: /login | METHOD: POST
+REQUEST_URI: /users/217e1a0b-33d2-11f0-9695-6a82d4f500cb/follow | METHOD: POST
+REQUEST_URI: /login | METHOD: POST
+REQUEST_URI: /notifications | METHOD: GET
+REQUEST_URI: /me | METHOD: GET
+REQUEST_URI: / | METHOD: GET
+REQUEST_URI: / | METHOD: GET
+REQUEST_URI: /register | METHOD: OPTIONS
+REQUEST_URI: /register | METHOD: OPTIONS
+REQUEST_URI: /register | METHOD: OPTIONS
+REQUEST_URI: /register | METHOD: OPTIONS
+REQUEST_URI: /register | METHOD: OPTIONS
+REQUEST_URI: /register | METHOD: OPTIONS
