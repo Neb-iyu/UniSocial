@@ -22,10 +22,12 @@ class PostController extends BaseController
     private function filterPostResponse(array $post): array
     {
         $user_uuid = $this->userModel->getUuidFromId($post['user_id']);
+        $media_urls = json_decode($post['media_urls'] ?? '[]', true) ?: [];
+        $media_urls = array_map(['\Src\Utilities\FileUploader', 'getAbsoluteUrl'], $media_urls);
         $response = [
             'public_uuid' => $post['public_uuid'] ?? null,
             'content' => $post['content'] ?? '',
-            'media_urls' => json_decode($post['media_urls'] ?? '[]', true) ?: [],
+            'media_urls' => $media_urls,
             'visibility' => $post['visibility'] ?? 'public',
             'user_uuid' => $user_uuid,
             'likes_count' => (int)($post['likes_count'] ?? 0),
@@ -60,20 +62,62 @@ class PostController extends BaseController
     {
         $currentUser = $this->requireAuth();
         if (!$currentUser) return;
-        $input = json_decode(file_get_contents('php://input'), true);
-        $input = Validator::sanitizeInput($input);
-        $input['user_id'] = $currentUser['id'];
-        $errors = [];
-        if (empty($input['content']) || !is_string($input['content']) || strlen($input['content']) < 1) {
-            $errors['content'] = 'Content is required.';
+
+        $content = isset($_POST['content']) ? trim($_POST['content']) : '';
+        $mediaUrls = [];
+
+        // Accepts only one image per post
+        $hasImage = false;
+        if (!empty($_FILES['image'])) {
+            // Single file upload (recommended field: 'image')
+            $file = $_FILES['image'];
+            $result = \Src\Utilities\FileUploader::upload($file, 'posts');
+            if ($result['success']) {
+                $mediaUrls[] = \Src\Utilities\FileUploader::getAbsoluteUrl($result['path']);
+                $hasImage = true;
+            } else {
+                Response::error('Image upload failed: ' . $result['error'], 400);
+                return;
+            }
+        } elseif (!empty($_FILES['images'])) {
+            // If sent as images[]
+            $files = $_FILES['images'];
+            if (is_array($files['name']) && count($files['name']) > 1) {
+                Response::error('Only one image can be uploaded per post.', 400);
+                return;
+            }
+            $file = [
+                'name' => $files['name'][0],
+                'type' => $files['type'][0],
+                'tmp_name' => $files['tmp_name'][0],
+                'error' => $files['error'][0],
+                'size' => $files['size'][0]
+            ];
+            $result = \Src\Utilities\FileUploader::upload($file, 'posts');
+            if ($result['success']) {
+                $mediaUrls[] = \Src\Utilities\FileUploader::getAbsoluteUrl($result['path']);
+                $hasImage = true;
+            } else {
+                Response::error('Image upload failed: ' . $result['error'], 400);
+                return;
+            }
         }
-        if ($errors) {
-            Response::validationError($errors);
+
+        // Validation: at least one of content or image must be present
+        if (empty($content) && !$hasImage) {
+            Response::validationError(['content' => 'Text content or an image is required.']);
             return;
         }
-        $postId = $this->postModel->create($input);
+        $postModel = new \Src\Models\Post();
+        $postData = [
+            'user_id' => $currentUser['id'],
+            'content' => $content,
+            'media_urls' => $mediaUrls
+        ];
+
+        $postId = $postModel->create($postData);
         if ($postId) {
-            $post = $this->postModel->find($postId);
+            $post = $postModel->find($postId);
             $post = $this->filterPostResponse($post);
             Response::success($post, 'Post created', 201);
         } else {
