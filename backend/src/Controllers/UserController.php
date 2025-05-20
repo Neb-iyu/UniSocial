@@ -111,7 +111,6 @@ class UserController extends BaseController
         }
         Response::success($followers, 'Followers fetched successfully');
     }
-
     // GET /users/{uuid}/following
     public function getFollowing(string $uuid): void
     {
@@ -170,9 +169,12 @@ class UserController extends BaseController
             Response::error($result['error'], 400);
             return;
         }
+
         $success = $this->userModel->update($user['id'], ['profile_picture_url' => $result['path']]);
         if ($success) {
             $user = $this->userModel->findByUuid($uuid);
+            // Overwrite profile_picture_url with absolute URL for API response
+            $user['profile_picture_url'] = FileUploader::getAbsoluteUrl($result['path']);
             $user = $this->filterUserResponse($user);
             Response::success($user, 'Profile picture updated');
         } else {
@@ -215,7 +217,6 @@ class UserController extends BaseController
             Response::error('Failed to demote admin.', 500);
         }
     }
-
     // GET /admins
     public function getAdminList(): void
     {
